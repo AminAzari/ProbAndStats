@@ -1,0 +1,927 @@
+\begin{PSbox}[unbreakable]{obj}{Learning Objectives}
+
+After completing this module, students will be able to:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Define random variables and explain their role in engineering analysis
+\item
+  Distinguish between discrete and continuous random variables
+\item
+  Compute and interpret PMF, PDF, and CDF
+\item
+  Clearly explain the difference between probability mass, density, and cumulative probability
+\item
+  Apply transformations to random variables
+\item
+  Use MATLAB to generate, visualize, and analyze random variables
+\end{enumerate}
+
+\end{PSbox}
+
+\PSsection{2.1}{Introduction: Why Random Variables?}
+
+\PSsubsection{The Problem}
+
+In Module 1, we worked with events — subsets of a sample space. But engineering analysis requires \textbf{numbers}:
+
+\begin{itemize}
+\tightlist
+\item
+  How much noise voltage is present?
+\item
+  How many packets arrived?
+\item
+  What is the received signal power?
+\end{itemize}
+
+A \textbf{random variable} maps outcomes of a random experiment to real numbers, enabling us to use all the tools of calculus and algebra.
+
+\PSsubsection{Engineering Motivation}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}cc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{We want to analyze…} & \PSth{We define a random variable…} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Noise in a circuit & $X$ = noise voltage (volts) \\
+Bit errors in a frame & $N$ = number of bit errors \\
+Component lifetime & $T$ = time until failure (hours) \\
+Signal amplitude & A = received amplitude $(V)$ \\
+Packet delay & $D$ = end-to-end delay $(ms)$ \\
+\end{longtable}
+}
+
+\PSsection{2.2}{Definition of a Random Variable}
+
+\PSsubsection{Formal Definition}
+
+A \textbf{random variable} $X$ is a function that maps each outcome $\omega$ in the sample space $S$ to a real number:
+
+\PSdisplay{X: S \rightarrow \mathbb{R}}\PSdisplay{\omega \mapsto X(\omega)}
+
+\PSsubsection{Interpretation}
+
+The random variable assigns a numerical value to each possible outcome of the experiment. The randomness comes from which outcome $\omega$ occurs — once $\omega$ is determined, $X(\omega)$ is a definite number.
+
+\PSsubsection{Engineering Example}
+
+\textbf{Experiment:} Transmit 5 bits over a noisy channel.\PSbr{}\textbf{Sample space:} $S$ = all possible sequences of correct/error for 5 bits ($2^{5} = 32$ outcomes)\PSbr{}\textbf{Random variable:} $X$ = number of bit errors
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}cc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{Outcome $\omega$} & \PSth{$X(\omega)$} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+$(C,\,C,\,C,\,C,\,C)$ & 0 \\
+$(E,\,C,\,C,\,C,\,C)$ & 1 \\
+$(E,\,E,\,C,\,C,\,C)$ & 2 \\
+… & … \\
+$(E,\,E,\,E,\,E,\,E)$ & 5 \\
+\end{longtable}
+}
+
+Now instead of working with 32 outcomes, we work with a single number $X \in \{0,\,1,\,2,\,3,\,4,\,5\}$.
+
+\PSsection{2.3}{Discrete Random Variables}
+
+\begin{PSbox}[unbreakable]{def}{Definition}
+
+A random variable $X$ is \textbf{discrete} if it takes values from a \textbf{countable} set (finite or countably infinite).
+
+\end{PSbox}
+
+\PSsubsection{Characteristics}
+
+\begin{itemize}
+\tightlist
+\item
+  Values can be listed: $\{x_{1},\, x_{2},\, x_{3},\, \ldots \}$
+\item
+  Each value has a specific probability (a ``mass'' of probability)
+\item
+  Sum of all probabilities = 1
+\end{itemize}
+
+\PSsubsection{Engineering Examples}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.3810}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.4048}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.2143}}@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{Random Variable} & \PSth{Possible Values} & \PSth{Context} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Number of bit errors & $\{0,\, 1,\, 2,\, \ldots,\, n\}$ & Packet transmission \\
+Number of retransmissions & \{0, 1, 2, …\} & ARQ protocol \\
+Quantized voltage level & $\{0,\, 1,\, \ldots,\, 2^{N}-1\}$ & N-bit ADC output \\
+Number of arrivals per second & \{0, 1, 2, …\} & Network traffic \\
+Number of defective chips & $\{0,\, 1,\, \ldots,\, n\}$ & Wafer testing \\
+\end{longtable}
+}
+
+\PSsection{2.4}{Continuous Random Variables}
+
+\begin{PSbox}[unbreakable]{def}{Definition}
+
+A random variable $X$ is \textbf{continuous} if it takes values from an \textbf{uncountable} set (interval of real numbers).
+
+\end{PSbox}
+
+\PSsubsection{Characteristics}
+
+\begin{itemize}
+\tightlist
+\item
+  $X$ can take any value in a range (e.g., $[0,\, \infty)$ or $(-\infty,\, \infty)$)
+\item
+  Probability of any single exact value is ZERO: $P(X = x) = 0$
+\item
+  Probabilities are defined for intervals: $P(a \le X \le b)$
+\end{itemize}
+
+\PSsubsection{Engineering Examples}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.5000}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.2188}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.2812}}@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{Random Variable} & \PSth{Range} & \PSth{Context} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Thermal noise voltage & $(-\infty,\, \infty)$ & Circuit noise \\
+Time until failure & $[0,\, \infty)$ & Reliability \\
+Phase of received signal & $[0,\, 2\pi)$ & Communications \\
+Resistor value & $(R_{0} - \delta,\, R_{0} + \delta)$ & Manufacturing \\
+Channel gain & $[0,\, \infty)$ & Wireless fading \\
+\end{longtable}
+}
+
+\PSsubsection{Why $P(X = x) = 0$ for Continuous RVs}
+
+Imagine measuring a voltage. The probability that $V$ = exactly 3.14159265… volts (infinite precision) is zero. We can only ask about intervals: $P(3.14 < V < 3.15)$.
+
+\PSsection{2.5}{Probability Mass Function (PMF)}
+
+\begin{PSbox}[unbreakable]{def}{Definition}
+
+For a discrete random variable $X$, the \textbf{probability mass function} is:
+
+\PSdisplay{p_X(x) = P(X = x)}
+
+\end{PSbox}
+
+\PSsubsection{Properties}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Non-negativity:} $p_{X}(x) \ge 0$ for all $x$
+\item
+  \textbf{Normalization:} $\sum p_{X}(x_{i}) = 1$ (sum over all possible values)
+\item
+  \textbf{Probability computation:} $P(X \in A) = \sum_{x \in A} p_{X}(x)$
+\end{enumerate}
+
+\PSsubsection{Visualization}
+
+The PMF is represented as \textbf{vertical lines} (impulses) at each possible value, with height equal to the probability.
+
+\PSfigure{m02-pmf-stems}
+
+\PSsubsection{Engineering Example: Bit Errors in a Byte}
+
+Transmit 8 bits, each with independent error probability $p = 0.1$.\PSbr{}$X$ = number of bit errors.
+
+$p_{X}(k) = C(8,\,k) \cdot (0.1)^{k} \cdot (0.9)^{8-k}$, for $k = 0,\, 1,\, \ldots,\, 8$
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}cc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{$k$} & \PSth{$p_{X}(k)$} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 0.4305 \\
+1 & 0.3826 \\
+2 & 0.1488 \\
+3 & 0.0331 \\
+4 & 0.0046 \\
+5+ & \textless{} 0.001 \\
+\end{longtable}
+}
+
+\PSsection{2.6}{Probability Density Function (PDF)}
+
+\begin{PSbox}[unbreakable]{def}{Definition}
+
+For a continuous random variable $X$, the \textbf{probability density function} $f_{X}(x)$ is defined such that:
+
+\PSdisplay{P(a \leq X \leq b) = \int_a^b f_X(x) \, dx}
+
+\end{PSbox}
+
+\PSsubsection{Properties}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Non-negativity:} $f_{X}(x) \ge 0$ for all $x$
+\item
+  \textbf{Normalization:} $\int_{-\infty}^{\infty} f_{X}(x)\,dx = 1$
+\item
+  \textbf{Probability = Area under curve} between two points
+\end{enumerate}
+
+\PSsubsection{Critical Point: $f_{X}(x)$ is NOT a Probability!}
+
+\begin{PSquote}
+
+\PSwarn{} $f_{X}(x)$ can be GREATER than 1!
+
+\end{PSquote}
+
+The PDF gives probability \textbf{density} — probability per unit length. Only the \textbf{integral} (area) gives probability.
+
+\textbf{Analogy:} Mass density (kg/m\textsuperscript{3}) is not mass. You need to integrate density over volume to get mass. Similarly, probability density is not probability — you integrate over an interval to get probability.
+
+\PSsubsection{Visualization}
+
+\PSfigure{m02-pdf-area}
+
+\begin{PSbox}[unbreakable]{ex}{Engineering Example: Thermal Noise Voltage}
+
+Thermal noise voltage in a circuit often follows a Gaussian distribution:
+
+\PSdisplay{f_X(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{-x^2/(2\sigma^2)}}
+
+where $\sigma$ is the RMS noise voltage.
+
+$P(\text{noise exceeds 2}\sigma) = P(\lvert X\rvert > 2\sigma) = 1 - P(-2\sigma \le X \le 2\sigma) \approx 1 - 0.9545 = 0.0455$
+
+\end{PSbox}
+
+\PSsection{2.7}{Cumulative Distribution Function (CDF)}
+
+\begin{PSbox}[unbreakable]{def}{Definition}
+
+For any random variable $X$ (discrete or continuous), the \textbf{cumulative distribution function} is:
+
+\PSdisplay{F_X(x) = P(X \leq x)}
+
+\end{PSbox}
+
+\PSsubsection{Properties}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Non-decreasing:} if $a < b$, then $F_{X}(a) \le F_{X}(b)$
+\item
+  \textbf{Limits:} $F_{X}(-\infty) = 0,\, F_{X}(+\infty) = 1$
+\item
+  \textbf{Right-continuous:} $F_{X}(x)$ is continuous from the right
+\item
+  \textbf{Probability of interval:} $P(a < X \le b) = F_{X}(b) - F_{X}(a)$
+\end{enumerate}
+
+\PSsubsection{CDF for Discrete RVs}
+
+The CDF is a \textbf{staircase function} with jumps at each possible value:
+
+\PSfigure{m02-cdf-discrete}
+
+Jump at $x = k$ has height $p_{X}(k)$.
+
+\PSsubsection{CDF for Continuous RVs}
+
+The CDF is a \textbf{smooth, continuous} curve:
+
+\PSdisplay{F_X(x) = \int_{-\infty}^{x} f_X(t) \, dt}
+
+And conversely:\PSdisplay{f_X(x) = \frac{dF_X(x)}{dx}}
+
+\PSfigure{m02-cdf-continuous}
+
+\PSsubsection{Relationship: $\mathrm{PDF}$ \ensuremath{\leftrightarrow} CDF}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.3793}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.3103}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.3103}}@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{Direction} & \PSth{Formula} & \PSth{Meaning} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+$\mathrm{PDF}$ \ensuremath{\to} CDF & $F_{X}(x) = \int_{-\infty}^{x} f_{X}(t)dt$ & Integrate density to get cumulative probability \\
+$\mathrm{CDF}$ \ensuremath{\to} PDF & $f_{X}(x) = \frac{dF_{X}}{dx}$ & Differentiate CDF to get density \\
+\end{longtable}
+}
+
+\PSsection{2.8}{KEY DISTINCTION: Mass vs. Density vs. Cumulative}
+
+This is one of the most important conceptual distinctions in probability theory.
+
+\PSsubsection{Comparison Table}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 6\tabcolsep) * \real{0.2326}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 6\tabcolsep) * \real{0.2558}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 6\tabcolsep) * \real{0.2558}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 6\tabcolsep) * \real{0.2558}}@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{Property} & \PSth{PMF $p_{X}(x)$} & \PSth{PDF $f_{X}(x)$} & \PSth{CDF $F_{X}(x)$} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{Applies to} & Discrete RVs only & Continuous RVs only & Both \\
+\textbf{Gives directly} & $P(X = x)$ & Probability density at $x$ & $P(X \le x)$ \\
+\textbf{Range of values} & [0, 1] & $[0,\, \infty)$ — can exceed 1! & [0, 1] \\
+\textbf{Sum/Integral} & $\sum p_{X}(x) = 1$ & $\int f_{X}(x)dx = 1$ & Starts at 0, ends at 1 \\
+\textbf{Get probability} & $P(X = x) = p_{X}(x)$ & $P(a \le X \le b) = \int f_{X}(x)dx$ & $P(a < X \le b) = F(b)-F(a)$ \\
+\end{longtable}
+}
+
+\PSsubsection{Visual Analogy: The Warehouse}
+
+Imagine probability as ``material'' distributed across possible values:
+
+\textbf{Discrete (PMF):} Like storing material in numbered boxes. Each box has a specific mass. The PMF tells you the mass in each box.
+
+\PSfigure{m02-pmf-boxes}
+
+\textbf{Continuous (PDF):} Like spreading material along a continuous shelf. The density tells you how thick the material is at each point. You find mass by computing area (thickness \ensuremath{\times} width).
+
+\PSfigure{m02-pdf-area-12}
+
+\textbf{Cumulative (CDF):} Like a running total — how much material have you accumulated up to this point?
+
+\PSsubsection{Why This Matters in Engineering}
+
+\textbf{Example:} A noise voltage $X$ has PDF $f_{X}(x) = 2$ for $x \in [0,\, 0.5]$.
+
+\begin{itemize}
+\tightlist
+\item
+  $f_{X}(0.3) = 2$ — this is NOT a probability! It means the density is $2\,\mathrm{V}^{-1}$.
+\item
+  $P(0.2 \le X \le 0.4) = \int_{0.2}^{0.4} 2\,dx = 2 \times 0.2 = 0.4$ — THIS is a probability.
+\item
+  $P(X = 0.3) = 0$ — a single point has zero probability for continuous RVs.
+\end{itemize}
+
+\PSsubsection{Common Errors to Avoid}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 2\tabcolsep) * \real{0.5000}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{\PSno{} Wrong Statement} & \PSth{\PSyes{} Correct Statement} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+``The probability at $x = 2$ is $f(2)$'' & ``The probability density at $x = 2$ is $f(2)$'' \\
+``$f(x)$ must be \ensuremath{\le} 1'' & ``$f(x)$ can be any non-negative value'' \\
+``$P(X = 3) = f(3)$ for continuous $X$'' & ``$P(X = 3) = 0$ for continuous $X$'' \\
+``PMF and PDF are the same thing'' & ``PMF gives mass; PDF gives density'' \\
+\end{longtable}
+}
+
+\PSsection{2.9}{Transformations of Random Variables}
+
+\PSsubsection{Motivation}
+
+In engineering, we often know the distribution of one quantity but need the distribution of a \textbf{function} of that quantity:
+
+\begin{itemize}
+\tightlist
+\item
+  Know voltage $V$ \ensuremath{\to} need power $P = \frac{V^{2}}{R}$
+\item
+  Know linear signal $X$ \ensuremath{\to} need dB value $Y = 10 \cdot \log_{10}(X)$
+\item
+  Know noise $N$ \ensuremath{\to} need $\lvert N\rvert$ (rectified noise)
+\end{itemize}
+
+\begin{PSbox}[unbreakable]{prob}{Problem Statement}
+
+Given: $X$ with known PDF $f_{X}(x)$ or PMF $p_{X}(x)$\PSbr{}Find: The distribution of $Y = g(X)$
+
+\end{PSbox}
+
+\PSsubsection{Case 1: Discrete RV Transformation}
+
+If $X$ is discrete with PMF $p_{X}(x)$, and $Y = g(X)$:
+
+\PSdisplay{p_Y(y) = \sum_{x: g(x)=y} p_X(x)}
+
+Sum the probabilities of all $x$ values that map to the same $y$.
+
+\textbf{Example:} $X \in \{-2,\, -1,\, 0,\, 1,\, 2\}$ with equal probability 0.2 each.\PSbr{}$Y = X^{2}$
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}ccc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{$Y = X^{2}$} & \PSth{$X$ values mapping to $Y$} & \PSth{$p_{Y}(y)$} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & \{0\} & 0.2 \\
+1 & \{-1, 1\} & 0.4 \\
+4 & \{-2, 2\} & 0.4 \\
+\end{longtable}
+}
+
+\PSsubsection{Case 2: Monotonic Transformation (Continuous)}
+
+If $Y = g(X)$ where $g$ is strictly monotonic and differentiable:
+
+\PSdisplay{f_Y(y) = f_X(g^{-1}(y)) \cdot \left|\frac{dg^{-1}(y)}{dy}\right|}
+
+Or equivalently:\PSdisplay{f_Y(y) = \frac{f_X(x)}{|g'(x)|}\bigg|_{x=g^{-1}(y)}}
+
+\textbf{Derivation via CDF method:}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Start with CDF: $F_{Y}(y) = P(Y \le y) = P(g(X) \le y)$
+\item
+  Invert: $= P(X \le g^{-1}(y))$ if $g$ is increasing
+\item
+  Differentiate: $f_{Y}(y) = f_{X}(g^{-1}(y)) \cdot \frac{d}{dy}[g^{-1}(y)]$
+\end{enumerate}
+
+\PSsubsection{Case 3: Non-Monotonic Transformation}
+
+If $g$ is not monotonic, split the domain into intervals where $g$ IS monotonic:
+
+\PSdisplay{f_Y(y) = \sum_i \frac{f_X(x_i)}{|g'(x_i)|}}
+
+where $x_{1},\, x_{2}$, … are all solutions of $g(x) = y$.
+
+\begin{PSbox}[unbreakable]{ex}{Engineering Example: Power from Voltage}
+
+A noise voltage $X$ has PDF $f_{X}(x)$ (e.g., Gaussian with zero mean).\PSbr{}Power dissipated in a 1\ensuremath{\Omega} resistor: $P = X^{2}$
+
+Since $Y = X^{2}$ is NOT monotonic (both $+x$ and $-x$ give the same $y$):
+
+For $y > 0$: $x = +\sqrt{y}$ and $x = -\sqrt{y}$ are both solutions.\PSbr{}$g(x) = x^{2}$, so $g'(x) = 2x$
+
+\PSdisplay{f_Y(y) = \frac{f_X(\sqrt{y})}{2\sqrt{y}} + \frac{f_X(-\sqrt{y})}{2\sqrt{y}}, \quad y > 0}
+
+If $X$ is zero-mean Gaussian: $f_{X}(x) = f_{X}(-x)$, so:\PSdisplay{f_Y(y) = \frac{f_X(\sqrt{y})}{\sqrt{y}}, \quad y > 0}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{Engineering Example: Linear Amplification}
+
+Signal $Y$ = aX $+ b$ (amplifier with gain a and offset b).\PSbr{}$X$ has PDF $f_{X}(x)$.
+
+$g^{-1}(y) = \frac{y-b}{a}$, and $\lvert \frac{d}{dy}\left[\frac{y-b}{a}\right]\rvert = \frac{1}{\lvert a\rvert}$
+
+\PSdisplay{f_Y(y) = \frac{1}{|a|} f_X\left(\frac{y-b}{a}\right)}
+
+\end{PSbox}
+
+\PSsection{2.10}{MATLAB Examples}
+
+\begin{PSbox}[unbreakable]{ex}{Example 1: Plotting a PMF}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% PMF of Number of Bit Errors in a Byte}
+\VariableTok{n} \OperatorTok{=} \FloatTok{8}\OperatorTok{;}           \CommentTok{\% bits per byte}
+\VariableTok{p} \OperatorTok{=} \FloatTok{0.1}\OperatorTok{;}         \CommentTok{\% bit error probability}
+\VariableTok{k} \OperatorTok{=} \FloatTok{0}\OperatorTok{:}\VariableTok{n}\OperatorTok{;}         \CommentTok{\% possible values}
+
+\CommentTok{\% Compute PMF (binomial distribution)}
+\VariableTok{pmf} \OperatorTok{=} \VariableTok{binopdf}\NormalTok{(}\VariableTok{k}\OperatorTok{,} \VariableTok{n}\OperatorTok{,} \VariableTok{p}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Plot}
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{stem}\NormalTok{(}\VariableTok{k}\OperatorTok{,} \VariableTok{pmf}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}filled\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Number of Errors (k)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(X = k)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}PMF: Bit Errors in 8{-}bit Byte (p = 0.1)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;}
+
+\CommentTok{\% Verify normalization}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Sum of PMF = \%.6f (should be 1)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{sum}\NormalTok{(}\VariableTok{pmf}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{Example 2: Plotting a PDF and Verifying Properties}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% PDF of Gaussian Noise Voltage}
+\VariableTok{sigma} \OperatorTok{=} \FloatTok{0.5}\OperatorTok{;}     \CommentTok{\% RMS noise voltage}
+\VariableTok{x} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\OperatorTok{{-}}\FloatTok{3}\OperatorTok{*}\VariableTok{sigma}\OperatorTok{,} \FloatTok{3}\OperatorTok{*}\VariableTok{sigma}\OperatorTok{,} \FloatTok{1000}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Compute PDF}
+\VariableTok{pdf\_x} \OperatorTok{=} \VariableTok{normpdf}\NormalTok{(}\VariableTok{x}\OperatorTok{,} \FloatTok{0}\OperatorTok{,} \VariableTok{sigma}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Plot}
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{x}\OperatorTok{,} \VariableTok{pdf\_x}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}b{-}\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Voltage (V)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}f\_X(x) [V\^{}\{{-}1\}]\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}PDF: Gaussian Noise (σ = 0.5 V)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;}
+
+\CommentTok{\% Verify normalization (numerical integration)}
+\VariableTok{dx} \OperatorTok{=} \VariableTok{x}\NormalTok{(}\FloatTok{2}\NormalTok{) }\OperatorTok{{-}} \VariableTok{x}\NormalTok{(}\FloatTok{1}\NormalTok{)}\OperatorTok{;}
+\VariableTok{total\_area} \OperatorTok{=} \VariableTok{trapz}\NormalTok{(}\VariableTok{x}\OperatorTok{,} \VariableTok{pdf\_x}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Total area under PDF = \%.6f (should be 1)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{total\_area}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Note: PDF values can exceed 1!}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Maximum PDF value = \%.4f (can be \textgreater{} 1!)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{max}\NormalTok{(}\VariableTok{pdf\_x}\NormalTok{))}\OperatorTok{;}
+
+\CommentTok{\% Compute P(|X| \textgreater{} 1V)}
+\VariableTok{prob\_exceed} \OperatorTok{=} \FloatTok{1} \OperatorTok{{-}} \VariableTok{normcdf}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \FloatTok{0}\OperatorTok{,} \VariableTok{sigma}\NormalTok{) }\OperatorTok{+} \VariableTok{normcdf}\NormalTok{(}\OperatorTok{{-}}\FloatTok{1}\OperatorTok{,} \FloatTok{0}\OperatorTok{,} \VariableTok{sigma}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(|X| \textgreater{} 1V) = \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{prob\_exceed}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{Example 3: CDF Visualization}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Comparing CDF for Discrete vs Continuous}
+
+\VariableTok{figure}\OperatorTok{;}
+
+\CommentTok{\% Subplot 1: Discrete CDF (Poisson, packets per second)}
+\VariableTok{subplot}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\FloatTok{2}\OperatorTok{,}\FloatTok{1}\NormalTok{)}\OperatorTok{;}
+\VariableTok{lambda} \OperatorTok{=} \FloatTok{3}\OperatorTok{;}      \CommentTok{\% average arrivals per second}
+\VariableTok{k} \OperatorTok{=} \FloatTok{0}\OperatorTok{:}\FloatTok{10}\OperatorTok{;}
+\VariableTok{cdf\_discrete} \OperatorTok{=} \VariableTok{poisscdf}\NormalTok{(}\VariableTok{k}\OperatorTok{,} \VariableTok{lambda}\NormalTok{)}\OperatorTok{;}
+\VariableTok{stairs}\NormalTok{(}\VariableTok{k}\OperatorTok{,} \VariableTok{cdf\_discrete}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r{-}\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Number of Packets\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}F\_X(x) = P(X ≤ x)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}CDF: Discrete (Poisson, λ=3)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;} \VariableTok{ylim}\NormalTok{([}\FloatTok{0} \FloatTok{1.1}\NormalTok{])}\OperatorTok{;}
+
+\CommentTok{\% Subplot 2: Continuous CDF (Exponential, time to failure)}
+\VariableTok{subplot}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\FloatTok{2}\OperatorTok{,}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{mu} \OperatorTok{=} \FloatTok{5}\OperatorTok{;}          \CommentTok{\% mean time to failure (hours)}
+\VariableTok{t} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\FloatTok{0}\OperatorTok{,} \FloatTok{20}\OperatorTok{,} \FloatTok{500}\NormalTok{)}\OperatorTok{;}
+\VariableTok{cdf\_continuous} \OperatorTok{=} \VariableTok{expcdf}\NormalTok{(}\VariableTok{t}\OperatorTok{,} \VariableTok{mu}\NormalTok{)}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{t}\OperatorTok{,} \VariableTok{cdf\_continuous}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}b{-}\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Time (hours)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}F\_X(x) = P(X ≤ x)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}CDF: Continuous (Exponential, μ=5)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;} \VariableTok{ylim}\NormalTok{([}\FloatTok{0} \FloatTok{1.1}\NormalTok{])}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\PSsubsection{Example 4: Transformation of a Random Variable}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Transformation: Power from Noise Voltage}
+\CommentTok{\% X = noise voltage, Gaussian(0, sigma)}
+\CommentTok{\% Y = X\^{}2 = instantaneous power (in 1{-}ohm load)}
+
+\VariableTok{sigma} \OperatorTok{=} \FloatTok{1}\OperatorTok{;}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+
+\CommentTok{\% Generate Gaussian noise samples}
+\VariableTok{X} \OperatorTok{=} \VariableTok{sigma} \OperatorTok{*} \VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Transform: power = voltage\^{}2}
+\VariableTok{Y} \OperatorTok{=} \VariableTok{X}\OperatorTok{.\^{}}\FloatTok{2}\OperatorTok{;}
+
+\CommentTok{\% Plot empirical PDF of Y using histogram}
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{subplot}\NormalTok{(}\FloatTok{2}\OperatorTok{,}\FloatTok{1}\OperatorTok{,}\FloatTok{1}\NormalTok{)}\OperatorTok{;}
+\VariableTok{histogram}\NormalTok{(}\VariableTok{X}\OperatorTok{,} \FloatTok{100}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Normalization\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}pdf\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+\VariableTok{x\_theory} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\OperatorTok{{-}}\FloatTok{4}\OperatorTok{,} \FloatTok{4}\OperatorTok{,} \FloatTok{500}\NormalTok{)}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{x\_theory}\OperatorTok{,} \VariableTok{normpdf}\NormalTok{(}\VariableTok{x\_theory}\OperatorTok{,} \FloatTok{0}\OperatorTok{,} \VariableTok{sigma}\NormalTok{)}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r{-}\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Voltage X\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}f\_X(x)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Input: Gaussian Noise Voltage\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{legend}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Empirical\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Theoretical\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{subplot}\NormalTok{(}\FloatTok{2}\OperatorTok{,}\FloatTok{1}\OperatorTok{,}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{histogram}\NormalTok{(}\VariableTok{Y}\OperatorTok{,} \FloatTok{100}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Normalization\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}pdf\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+\CommentTok{\% Theoretical: Y \textasciitilde{} chi{-}squared with 1 degree of freedom}
+\VariableTok{y\_theory} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\FloatTok{0.01}\OperatorTok{,} \FloatTok{10}\OperatorTok{,} \FloatTok{500}\NormalTok{)}\OperatorTok{;}
+\VariableTok{pdf\_y\_theory} \OperatorTok{=} \VariableTok{chi2pdf}\NormalTok{(}\VariableTok{y\_theory}\OperatorTok{,} \FloatTok{1}\NormalTok{)}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{y\_theory}\OperatorTok{,} \VariableTok{pdf\_y\_theory}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r{-}\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Power Y = X\^{}2\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}f\_Y(y)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Output: Instantaneous Power\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{legend}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Empirical\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Theoretical (χ²₁)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\PSsubsection{Example 5: PMF vs PDF vs CDF Comparison}
+
+\tcbset{PScodemode/.style={breakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Complete Visualization: PMF/PDF and CDF side by side}
+\VariableTok{figure}\OperatorTok{;}
+
+\CommentTok{\% {-}{-}{-} Discrete Case: Number of retransmissions {-}{-}{-}}
+\CommentTok{\% Geometric distribution: number of trials until first success}
+\VariableTok{p\_success} \OperatorTok{=} \FloatTok{0.3}\OperatorTok{;}   \CommentTok{\% success probability per trial}
+\VariableTok{k} \OperatorTok{=} \FloatTok{1}\OperatorTok{:}\FloatTok{15}\OperatorTok{;}
+
+\CommentTok{\% PMF}
+\VariableTok{subplot}\NormalTok{(}\FloatTok{2}\OperatorTok{,}\FloatTok{2}\OperatorTok{,}\FloatTok{1}\NormalTok{)}\OperatorTok{;}
+\VariableTok{pmf\_geom} \OperatorTok{=} \VariableTok{geopdf}\NormalTok{(}\VariableTok{k}\OperatorTok{{-}}\FloatTok{1}\OperatorTok{,} \VariableTok{p\_success}\NormalTok{)}\OperatorTok{;}  \CommentTok{\% MATLAB\textquotesingle{}s geopdf counts failures}
+\VariableTok{stem}\NormalTok{(}\VariableTok{k}\OperatorTok{,} \VariableTok{pmf\_geom}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}filled\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{1.5}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}k (transmissions)\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(X = k)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Discrete PMF: Retransmissions\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;}
+
+\CommentTok{\% CDF}
+\VariableTok{subplot}\NormalTok{(}\FloatTok{2}\OperatorTok{,}\FloatTok{2}\OperatorTok{,}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{cdf\_geom} \OperatorTok{=} \VariableTok{geocdf}\NormalTok{(}\VariableTok{k}\OperatorTok{{-}}\FloatTok{1}\OperatorTok{,} \VariableTok{p\_success}\NormalTok{)}\OperatorTok{;}
+\VariableTok{stairs}\NormalTok{(}\VariableTok{k}\OperatorTok{,} \VariableTok{cdf\_geom}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}k\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(X ≤ k)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Discrete CDF\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;} \VariableTok{ylim}\NormalTok{([}\FloatTok{0} \FloatTok{1.1}\NormalTok{])}\OperatorTok{;}
+
+\CommentTok{\% {-}{-}{-} Continuous Case: Delay time {-}{-}{-}}
+\CommentTok{\% Exponential distribution}
+\VariableTok{mu} \OperatorTok{=} \FloatTok{2}\OperatorTok{;}  \CommentTok{\% mean delay in ms}
+\VariableTok{t} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\FloatTok{0}\OperatorTok{,} \FloatTok{10}\OperatorTok{,} \FloatTok{500}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% PDF}
+\VariableTok{subplot}\NormalTok{(}\FloatTok{2}\OperatorTok{,}\FloatTok{2}\OperatorTok{,}\FloatTok{3}\NormalTok{)}\OperatorTok{;}
+\VariableTok{pdf\_exp} \OperatorTok{=} \VariableTok{exppdf}\NormalTok{(}\VariableTok{t}\OperatorTok{,} \VariableTok{mu}\NormalTok{)}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{t}\OperatorTok{,} \VariableTok{pdf\_exp}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Delay (ms)\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}f\_X(x) [ms\^{}\{{-}1\}]\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Continuous PDF: Delay\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;}
+
+\CommentTok{\% CDF}
+\VariableTok{subplot}\NormalTok{(}\FloatTok{2}\OperatorTok{,}\FloatTok{2}\OperatorTok{,}\FloatTok{4}\NormalTok{)}\OperatorTok{;}
+\VariableTok{cdf\_exp} \OperatorTok{=} \VariableTok{expcdf}\NormalTok{(}\VariableTok{t}\OperatorTok{,} \VariableTok{mu}\NormalTok{)}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{t}\OperatorTok{,} \VariableTok{cdf\_exp}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Delay (ms)\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(X ≤ x)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Continuous CDF\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;} \VariableTok{ylim}\NormalTok{([}\FloatTok{0} \FloatTok{1.1}\NormalTok{])}\OperatorTok{;}
+
+\VariableTok{sgtitle}\NormalTok{(}\SpecialStringTok{\textquotesingle{}PMF/PDF vs CDF: Discrete and Continuous\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}FontSize\textquotesingle{}}\OperatorTok{,} \FloatTok{14}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\PSsection{2.11}{Practice Problems}
+
+\begin{PSbox}[unbreakable]{prob}{Problem 1: Identifying RV Type}
+
+Classify each as discrete or continuous and state the range:
+
+\begin{enumerate}
+\def\labelenumi{(\alph{enumi})}
+\tightlist
+\item
+  Number of dropped calls in one hour
+\item
+  Received signal strength (dBm)
+\item
+  Number of bits in error in a 1500-byte Ethernet frame
+\item
+  Time between packet arrivals
+\item
+  Quantizer output level (3-bit quantizer)
+\end{enumerate}
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\alph{enumi})}
+\tightlist
+\item
+  Discrete, $X \in \{0,\, 1,\, 2,\, \ldots \}$
+\item
+  Continuous, $X \in (-\infty,\, \infty)$ practically $\sim (-120,\, 0)$ dBm
+\item
+  Discrete, $X \in \{0,\, 1,\, 2,\, \ldots,\, 12000\}$
+\item
+  Continuous, $T \in [0,\, \infty)$
+\item
+  Discrete, $X \in \{0,\, 1,\, 2,\, 3,\, 4,\, 5,\, 6,\, 7\}$
+\end{enumerate}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{Problem 2: PMF Properties}
+
+A random variable $X$ has PMF: $p_{X}(0) = 0.1,\, p_{X}(1) = 0.3,\, p_{X}(2) = c,\, p_{X}(3) = 0.2$.
+
+\begin{enumerate}
+\def\labelenumi{(\alph{enumi})}
+\tightlist
+\item
+  Find $c$.
+\item
+  Find $P(X \ge 2)$.
+\item
+  Find $F_{X}(1.5)$.
+\item
+  Find $P(0.5 < X \le 2.5)$.
+\end{enumerate}
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\alph{enumi})}
+\item
+  Sum = 1: $0.1 + 0.3 + c + 0.2 = 1 \to c = 0.4$
+\item
+  $P(X \ge 2) = p_{X}(2) + p_{X}(3) = 0.4 + 0.2 = 0.6$
+\item
+  $F_{X}(1.5) = P(X \le 1.5) = p_{X}(0) + p_{X}(1) = 0.1 + 0.3 = 0.4$
+\item
+  $P(0.5 < X \le 2.5) = p_{X}(1) + p_{X}(2) = 0.3 + 0.4 = 0.7$
+\end{enumerate}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{Problem 3: PDF and CDF}
+
+A random variable has PDF:\PSbr{}$f_{X}(x)$ = cx for $0 \le x \le 4$, and 0 otherwise.
+
+\begin{enumerate}
+\def\labelenumi{(\alph{enumi})}
+\tightlist
+\item
+  Find $c$.
+\item
+  Find the CDF $F_{X}(x)$.
+\item
+  Find $P(1 \le X \le 3)$.
+\item
+  Find the value $x_{0}$ such that $P(X \le x_{0}) = 0.5$.
+\end{enumerate}
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\alph{enumi})}
+\item
+  $\int_{0}^{4}$ cx $dx = c \cdot \left[\frac{x^{2}}{2}\right]_{0}^{4} = c \cdot 8 = 1 \to c = \frac{1}{8}$
+\item
+  $F_{X}(x) = \int_{0}^{x} \frac{t}{8}dt = \frac{x^{2}}{16}$, for $0 \le x \le 4$\PSbr{}$F_{X}(x) = 0$ for $x < 0$; $F_{X}(x) = 1$ for $x > 4$
+\item
+  $\displaystyle P(1 \le X \le 3) = F_{X}(3) - F_{X}(1) = \frac{9}{16} - \frac{1}{16} = \frac{8}{16} = 0.5$
+\item
+  $\displaystyle \frac{x_{0}^{2}}{16} = 0.5 \to x_{0}^{2} = 8 \to x_{0} = 2\sqrt{2} \approx 2.83$
+\end{enumerate}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{Problem 4: Transformation}
+
+A sensor measures temperature $X$ uniformly distributed on [20, 30] \ensuremath{^{\circ}}C.\PSbr{}The output voltage is $Y = 0.1X - 2$ (linear sensor).
+
+\begin{enumerate}
+\def\labelenumi{(\alph{enumi})}
+\tightlist
+\item
+  Find the PDF of $Y$.
+\item
+  Find the range of $Y$.
+\item
+  Find $P(Y > 0.5)$.
+\end{enumerate}
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\alph{enumi})}
+\item
+  $X \sim \mathrm{Uniform}[20,\, 30]$, so $f_{X}(x) = \frac{1}{10}$ for $20 \le x \le 30$.\PSbr{}$Y = 0.1X - 2$, so $a = 0.1,\, b = -2$.\PSbr{}$f_{Y}(y) = \frac{1}{\lvert a\rvert} \cdot f_{X}\left(\frac{y-b}{a}\right) = \frac{1}{0.1} \cdot \frac{1}{10} = 1$ for the valid range.
+\item
+  When $X = 20$: $Y = 0.1(20) - 2 = 0$; When $X = 30$: $Y = 0.1(30) - 2 = 1$\PSbr{}Range of $Y$: [0, 1]. So $Y \sim \mathrm{Uniform}[0,\, 1]$.
+\item
+  $P(Y > 0.5) = 1 - F_{Y}(0.5) = 1 - 0.5 = 0.5$
+\end{enumerate}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{Problem 5: Non-Monotonic Transformation}
+
+A voltage $X \sim \mathrm{Uniform}[-1,\, 1] V$. The instantaneous power is $Y = X^{2}$.
+
+\begin{enumerate}
+\def\labelenumi{(\alph{enumi})}
+\tightlist
+\item
+  Find the CDF of $Y$.
+\item
+  Find the PDF of $Y$.
+\item
+  Verify using MATLAB simulation.
+\end{enumerate}
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\alph{enumi})}
+\tightlist
+\item
+  For $0 \le y \le 1$:\PSbr{}$F_{Y}(y) = P(X^{2} \le y) = P\left(-\sqrt{y} \le X \le \sqrt{y}\right) = F_{X}\left(\sqrt{y}\right) - F_{X}\left(-\sqrt{y}\right)$
+\end{enumerate}
+
+Since $X \sim \mathrm{Uniform}[-1,\,1]$: $F_{X}(x) = \frac{x+1}{2}$
+
+$\displaystyle F_{Y}(y) = \frac{\sqrt{y} + 1}{2} - \frac{-\sqrt{y} + 1}{2} = \sqrt{y}$
+
+\begin{enumerate}
+\def\labelenumi{(\alph{enumi})}
+\setcounter{enumi}{1}
+\item
+  $f_{Y}(y) = \frac{dF_{Y}}{dy} = \frac{1}{2\sqrt{y}}$ for $0 < y \le 1$
+\item
+  MATLAB:
+\end{enumerate}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+\VariableTok{X} \OperatorTok{=} \FloatTok{2}\OperatorTok{*}\VariableTok{rand}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\VariableTok{N}\NormalTok{) }\OperatorTok{{-}} \FloatTok{1}\OperatorTok{;}   \CommentTok{\% Uniform[{-}1,1]}
+\VariableTok{Y} \OperatorTok{=} \VariableTok{X}\OperatorTok{.\^{}}\FloatTok{2}\OperatorTok{;}
+\VariableTok{histogram}\NormalTok{(}\VariableTok{Y}\OperatorTok{,} \FloatTok{100}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Normalization\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}pdf\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+\VariableTok{y} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\FloatTok{0.01}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \FloatTok{200}\NormalTok{)}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{y}\OperatorTok{,} \FloatTok{1}\OperatorTok{./}\NormalTok{(}\FloatTok{2}\OperatorTok{*}\VariableTok{sqrt}\NormalTok{(}\VariableTok{y}\NormalTok{))}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r{-}\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{legend}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Empirical\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Theory: 1/(2√y)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Y = X²\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}f\_Y(y)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\PSsection{2.12}{Key Takeaways}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Random variables} convert experimental outcomes into numbers for mathematical analysis
+\item
+  \textbf{PMF} gives the actual probability for discrete RVs (bar heights sum to 1)
+\item
+  \textbf{PDF} gives probability density for continuous RVs (area gives probability, not height)
+\item
+  \textbf{CDF} works universally — gives cumulative probability $P(X \le x)$
+\item
+  \textbf{Transformations} let us derive distributions of functions of random variables
+\item
+  The \textbf{CDF method} (find CDF first, then differentiate) is often the safest approach for transformations
+\end{enumerate}
+
+\emph{Next Module: {Module 3 — Important Probability Distributions}}

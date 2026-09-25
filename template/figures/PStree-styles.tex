@@ -1,0 +1,14 @@
+% shared styles for the decision trees (mirrored in Persian: trunk on the right)
+\tikzset{
+  PStree/.style={x=\ifPSrtl -1cm\else 1cm\fi, y=1cm, font=\small},
+  PSroot/.style={fill=PSnavy, text=white, rounded corners=3pt, inner sep=5pt,
+    anchor=\PSstart, font=\small\bfseries},
+  PSq/.style={draw=PSnavy!45, fill=PSnavy!4, rounded corners=2pt, inner sep=4pt,
+    text width=#1, align=\PSalign, anchor=\PSstart},
+  PSq/.default=6.1cm,
+  PSr/.style={draw=PSteal, fill=PSteal!12, rounded corners=2pt, inner sep=4.5pt,
+    anchor=\PSstart, text=PSnavy},
+  PSyes/.style={font=\scriptsize\bfseries, text=PSteal!85!black, above=1pt},
+  PStrunk/.style={PSnavy!45, line width=0.9pt},
+  PSarrow/.style={-{Stealth[length=5pt]}, PSteal!80!black, line width=0.9pt},
+}

@@ -1,0 +1,381 @@
+\begin{PSbox}[unbreakable]{obj}{Learning Objectives}
+
+After completing this module, students will be able to:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Correctly interpret confidence intervals (frequentist interpretation)
+\item
+  Construct CIs for means (known and unknown variance)
+\item
+  Apply the t-distribution for small samples
+\item
+  Construct CIs for variance
+\item
+  Determine required sample sizes
+\item
+  Avoid common misconceptions about CIs
+\end{enumerate}
+
+\end{PSbox}
+
+\PSsection{14.1}{Introduction: Why Point Estimates Aren’t Enough}
+
+A point estimate (e.g., $\bar{X} = 3.47$) gives no information about \textbf{precision}. We need to quantify uncertainty:
+
+``The true mean is estimated to be 3.47, \textbf{give or take} some amount.''
+
+A \textbf{confidence interval} provides a range that, with a specified confidence level, captures the true parameter.
+
+\PSsection{14.2}{Correct Interpretation of Confidence Intervals}
+
+\PSsubsection{\PSyes{} CORRECT (Frequentist) Interpretation}
+
+\begin{PSquote}
+
+``If we repeat this experiment many times, each time computing a 95\% CI, then approximately 95\% of those intervals will contain the true parameter $\mu$.''
+
+\end{PSquote}
+
+The \textbf{procedure} has a 95\% success rate. Each specific interval either contains $\mu$ or it doesn’t.
+
+\PSsubsection{\PSno{} WRONG Interpretation}
+
+\begin{PSquote}
+
+$\sim \sim "\mathrm{There}$ is a 95\% probability that $\mu$ is inside this particular interval $[2.1,\, 4.8]." \sim \sim$
+
+\end{PSquote}
+
+\textbf{Why this is wrong:} $\mu$ is a fixed (non-random) number. It’s either in [2.1, 4.8] or not — there is no probability about it. The \textbf{interval} is random (varies from sample to sample), not the parameter.
+
+\PSsubsection{Analogy}
+
+Think of CIs like a fishing net:
+
+\begin{itemize}
+\tightlist
+\item
+  Before you cast: 95\% chance your net will catch the fish (the procedure works 95\% of the time)
+\item
+  After you cast: the fish is either caught or not — no probability anymore
+\item
+  The fish $(\mu)$ doesn’t move; your net $(\mathrm{CI})$ does
+\end{itemize}
+
+\PSsection{14.3}{CI for Mean — Known Variance (Z-interval)}
+
+\PSsubsection{Setup}
+
+Data: $X_{1},\, \ldots,\, X_{n}$ i.i.d. from $N(\mu,\, \sigma^{2})$ with $\sigma^{2}$ \textbf{known}.
+
+\PSsubsection{Derivation}
+
+$\bar{X} \sim N\left(\mu,\, \frac{\sigma^{2}}{n}\right)$, so $Z = \frac{\bar{X} - \mu}{\frac{\sigma}{\sqrt{n}}} \sim N(0,\,1)$
+
+$P(-z_{\alpha /2} \le Z \le z_{\alpha /2}) = 1 - \alpha$
+
+Solving for $\mu$:\PSdisplay{P\left(\bar{X} - z_{\alpha/2}\frac{\sigma}{\sqrt{n}} \leq \mu \leq \bar{X} + z_{\alpha/2}\frac{\sigma}{\sqrt{n}}\right) = 1 - \alpha}
+
+\PSsubsection{Formula}
+
+\PSdisplay{\text{CI: } \bar{X} \pm z_{\alpha/2} \cdot \frac{\sigma}{\sqrt{n}}}
+
+\PSsubsection{Common z-values}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}ccc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{Confidence Level} & \PSth{$\alpha$} & \PSth{$z_{\alpha /2}$} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+90\% & 0.10 & 1.645 \\
+95\% & 0.05 & 1.960 \\
+99\% & 0.01 & 2.576 \\
+\end{longtable}
+}
+
+\begin{PSbox}[unbreakable]{ex}{Example}
+
+Noise measurements: $n = 36,\, \bar{X} = 0.52\,\mathrm{V},\, \sigma = 0.12\,\mathrm{V}$ (known from equipment spec).
+
+95\% CI: $0.52 \pm 1.96 \times \frac{0.12}{\sqrt{36}} = 0.52 \pm 0.0392 = \ast \ast [0.481,\, 0.559] V$**
+
+\end{PSbox}
+
+\PSsection{14.4}{CI for Mean — Unknown Variance (t-interval)}
+
+\PSsubsection{The Problem}
+
+Usually $\sigma$ is unknown. We estimate it with $S$. But $\frac{\bar{X}}{\frac{S}{\sqrt{n}}}$ does NOT follow $N(0,\,1)$.
+
+\PSsubsection{Student’s t-Distribution}
+
+\PSdisplay{T = \frac{\bar{X} - \mu}{S/\sqrt{n}} \sim t(n-1)}
+
+The t-distribution:
+
+\begin{itemize}
+\tightlist
+\item
+  Symmetric about 0
+\item
+  Heavier tails than $N(0,\,1)$ (more uncertainty because $S$ is estimated)
+\item
+  Degrees of freedom: $\nu = n - 1$
+\item
+  As $\nu \to \infty$: $t(\nu) \to N(0,\,1)$
+\item
+  For $\nu \ge 30$: $t \approx z$ (practically)
+\end{itemize}
+
+\PSsubsection{Formula}
+
+\PSdisplay{\text{CI: } \bar{X} \pm t_{\alpha/2, n-1} \cdot \frac{S}{\sqrt{n}}}
+
+\begin{PSbox}[unbreakable]{ex}{Example}
+
+Component delay: $n = 15,\, \bar{X} = 2.34$ ns, $S = 0.45$ ns.
+
+95\% CI: $t_{0.025, 14} = 2.145$
+
+CI: $2.34 \pm 2.145 \times \frac{0.45}{\sqrt{15}} = 2.34 \pm 0.249 = \ast \ast [2.09,\, 2.59]$ ns**
+
+(Wider than z-interval because of additional uncertainty in S.)
+
+\end{PSbox}
+
+\PSsection{14.5}{CI for Variance}
+
+\PSsubsection{Setup}
+
+Data from $N(\mu,\, \sigma^{2})$. Want CI for $\sigma^{2}$.
+
+\PSsubsection{Key Distribution}
+
+\PSdisplay{(n-1)S^2/\sigma^2 \sim \chi^2(n-1)}
+
+\PSsubsection{Formula}
+
+\PSdisplay{\left[\frac{(n-1)S^2}{\chi^2_{\alpha/2, n-1}}, \quad \frac{(n-1)S^2}{\chi^2_{1-\alpha/2, n-1}}\right]}
+
+\begin{PSbox}[unbreakable]{ex}{Example}
+
+Noise power: $n = 20,\, S^{2} = 0.045\,\mathrm{V}^{2}$.
+
+95\% CI for $\sigma^{2}$: $\chi^{2}_{0.025, 19} = 32.852,\, \chi^{2}_{0.975, 19} = 8.907$
+
+CI: $\left[\frac{(19)(0.045)}{32.852},\, \frac{(19)(0.045)}{8.907}\right] = [0.026,\, 0.096] V^{2}$
+
+95\% CI for $\sigma$: $\left[\sqrt{0.026},\, \sqrt{0.096}\right] = [0.161,\, 0.310] V$
+
+\end{PSbox}
+
+\PSsection{14.6}{CI for Proportions}
+
+\PSsubsection{Setup}
+
+$n$ trials, $\hat{x} = \frac{k}{n}$ successes. Estimate $p$ = true proportion.
+
+\PSsubsection{Large-Sample Formula (Wald Interval)}
+
+\PSdisplay{\hat{p} \pm z_{\alpha/2}\sqrt{\frac{\hat{p}(1-\hat{p})}{n}}}
+
+\begin{PSbox}[unbreakable]{ex}{Example: Bit Error Rate}
+
+Transmitted 100,000 bits, observed 53 errors. $\hat{p} = \frac{53}{100000} = 5.3 \times 10^{-4}$.
+
+95\% CI: $5.3 \times 10^{-4} \pm 1.96\sqrt{5.3 \times 10^{-4} \times \frac{0.9995}{100000}} = 5.3 \times 10^{-4} \pm 1.43 \times 10^{-4}$
+
+CI: \textbf{$[3.9 \times 10^{-4},\, 6.7 \times 10^{-4}]$}
+
+\end{PSbox}
+
+\PSsection{14.7}{Factors Affecting CI Width}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.2162}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.4324}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.3514}}@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{Factor} & \PSth{Effect on Width} & \PSth{Explanation} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\ensuremath{\uparrow} Sample size $n$ & Narrower & More data \ensuremath{\to} more precision \\
+\ensuremath{\uparrow} Confidence level & Wider & More confidence \ensuremath{\to} wider net \\
+\ensuremath{\uparrow} Variability $\sigma$ & Wider & More noise \ensuremath{\to} harder to pin down $\mu$ \\
+\end{longtable}
+}
+
+\PSsubsection{The Tradeoff}
+
+\begin{itemize}
+\tightlist
+\item
+  Want narrow CI (precise) \ensuremath{\to} need more data or accept lower confidence
+\item
+  Want high confidence \ensuremath{\to} accept wider CI or collect more data
+\item
+  Want both narrow AND high confidence \ensuremath{\to} need LOTS of data
+\end{itemize}
+
+\PSsection{14.8}{Sample Size Determination}
+
+\PSsubsection{Question: How many measurements $do$ I need?}
+
+For CI width $\le 2E$ (margin of error $E$):
+
+\PSdisplay{n \geq \left(\frac{z_{\alpha/2} \cdot \sigma}{E}\right)^2}
+
+\begin{PSbox}[unbreakable]{ex}{Example}
+
+Want to estimate mean delay within $\pm 0.5\,\mathrm{ms}$ with 95\% confidence. Expect $\sigma \approx 3\,\mathrm{ms}$.
+
+$n \ge \left(1.96 \times \frac{3}{0.5}\right)^{2} = (11.76)^{2} = 138.3$ \ensuremath{\to} need \textbf{$n = 139$ measurements}
+
+\end{PSbox}
+
+\PSsection{14.9}{MATLAB Demonstrations}
+
+\begin{PSbox}[breakable]{ex}{Example 1: CI Coverage Demonstration}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Demonstrate: \textasciitilde{}95\% of 95\% CIs contain the true mean}
+\VariableTok{mu\_true} \OperatorTok{=} \FloatTok{5}\OperatorTok{;}  \VariableTok{sigma} \OperatorTok{=} \FloatTok{2}\OperatorTok{;}  \VariableTok{n} \OperatorTok{=} \FloatTok{25}\OperatorTok{;}
+\VariableTok{N\_experiments} \OperatorTok{=} \FloatTok{1000}\OperatorTok{;}
+\VariableTok{alpha} \OperatorTok{=} \FloatTok{0.05}\OperatorTok{;}
+\VariableTok{z\_crit} \OperatorTok{=} \VariableTok{norminv}\NormalTok{(}\FloatTok{1}\OperatorTok{{-}}\VariableTok{alpha}\OperatorTok{/}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{covers} \OperatorTok{=} \FloatTok{0}\OperatorTok{;}
+\VariableTok{figure}\OperatorTok{;} \VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+\KeywordTok{for} \VariableTok{i} \OperatorTok{=} \FloatTok{1}\OperatorTok{:}\VariableTok{N\_experiments}
+    \VariableTok{data} \OperatorTok{=} \VariableTok{mu\_true} \OperatorTok{+} \VariableTok{sigma}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{n}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{x\_bar} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{data}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{margin} \OperatorTok{=} \VariableTok{z\_crit} \OperatorTok{*} \VariableTok{sigma} \OperatorTok{/} \VariableTok{sqrt}\NormalTok{(}\VariableTok{n}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{ci\_low} \OperatorTok{=} \VariableTok{x\_bar} \OperatorTok{{-}} \VariableTok{margin}\OperatorTok{;}
+    \VariableTok{ci\_high} \OperatorTok{=} \VariableTok{x\_bar} \OperatorTok{+} \VariableTok{margin}\OperatorTok{;}
+    
+    \KeywordTok{if} \VariableTok{ci\_low} \OperatorTok{\textless{}=} \VariableTok{mu\_true} \OperatorTok{\&\&} \VariableTok{mu\_true} \OperatorTok{\textless{}=} \VariableTok{ci\_high}
+        \VariableTok{covers} \OperatorTok{=} \VariableTok{covers} \OperatorTok{+} \FloatTok{1}\OperatorTok{;}
+        \VariableTok{color} \OperatorTok{=} \SpecialStringTok{\textquotesingle{}b\textquotesingle{}}\OperatorTok{;}
+    \KeywordTok{else}
+        \VariableTok{color} \OperatorTok{=} \SpecialStringTok{\textquotesingle{}r\textquotesingle{}}\OperatorTok{;}
+    \KeywordTok{end}
+    
+    \KeywordTok{if} \VariableTok{i} \OperatorTok{\textless{}=} \FloatTok{100}  \CommentTok{\% Plot first 100}
+        \VariableTok{plot}\NormalTok{([}\VariableTok{ci\_low} \VariableTok{ci\_high}\NormalTok{]}\OperatorTok{,}\NormalTok{ [}\VariableTok{i} \VariableTok{i}\NormalTok{]}\OperatorTok{,} \VariableTok{color}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{0.5}\NormalTok{)}\OperatorTok{;}
+    \KeywordTok{end}
+\KeywordTok{end}
+\VariableTok{plot}\NormalTok{([}\VariableTok{mu\_true} \VariableTok{mu\_true}\NormalTok{]}\OperatorTok{,}\NormalTok{ [}\FloatTok{0} \FloatTok{101}\NormalTok{]}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}k{-}{-}\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}μ\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Experiment \#\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\VariableTok{sprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}95\%\% CI Coverage: \%.1f\%\% of \%d intervals contain μ\textquotesingle{}}\OperatorTok{,} \OperatorTok{...}
+    \FloatTok{100}\OperatorTok{*}\VariableTok{covers}\OperatorTok{/}\VariableTok{N\_experiments}\OperatorTok{,} \VariableTok{N\_experiments}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Coverage: \%.1f\%\% (theory: 95\%\%)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \FloatTok{100}\OperatorTok{*}\VariableTok{covers}\OperatorTok{/}\VariableTok{N\_experiments}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{Example 2: t-interval in Practice}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% t{-}Confidence Interval: Unknown Variance}
+\VariableTok{data} \OperatorTok{=}\NormalTok{ [}\FloatTok{2.3}\OperatorTok{,} \FloatTok{2.7}\OperatorTok{,} \FloatTok{2.1}\OperatorTok{,} \FloatTok{2.8}\OperatorTok{,} \FloatTok{2.5}\OperatorTok{,} \FloatTok{2.9}\OperatorTok{,} \FloatTok{2.4}\OperatorTok{,} \FloatTok{2.6}\OperatorTok{,} \FloatTok{2.2}\OperatorTok{,} \FloatTok{2.7}\NormalTok{]}\OperatorTok{;}
+\VariableTok{n} \OperatorTok{=} \VariableTok{length}\NormalTok{(}\VariableTok{data}\NormalTok{)}\OperatorTok{;}
+\VariableTok{x\_bar} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{data}\NormalTok{)}\OperatorTok{;}
+\VariableTok{s} \OperatorTok{=} \VariableTok{std}\NormalTok{(}\VariableTok{data}\NormalTok{)}\OperatorTok{;}
+\VariableTok{alpha} \OperatorTok{=} \FloatTok{0.05}\OperatorTok{;}
+
+\VariableTok{t\_crit} \OperatorTok{=} \VariableTok{tinv}\NormalTok{(}\FloatTok{1}\OperatorTok{{-}}\VariableTok{alpha}\OperatorTok{/}\FloatTok{2}\OperatorTok{,} \VariableTok{n}\OperatorTok{{-}}\FloatTok{1}\NormalTok{)}\OperatorTok{;}
+\VariableTok{margin} \OperatorTok{=} \VariableTok{t\_crit} \OperatorTok{*} \VariableTok{s} \OperatorTok{/} \VariableTok{sqrt}\NormalTok{(}\VariableTok{n}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Sample mean: \%.3f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{x\_bar}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Sample std:  \%.3f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{s}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}t\_crit (df=\%d): \%.3f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{n}\OperatorTok{{-}}\FloatTok{1}\OperatorTok{,} \VariableTok{t\_crit}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}95\%\% CI: [\%.3f, \%.3f]\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{x\_bar}\OperatorTok{{-}}\VariableTok{margin}\OperatorTok{,} \VariableTok{x\_bar}\OperatorTok{+}\VariableTok{margin}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{Example 3: Sample Size Calculation}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% How many samples do we need?}
+\VariableTok{sigma} \OperatorTok{=} \FloatTok{0.1}\OperatorTok{;}           \CommentTok{\% Expected std dev (from pilot study)}
+\VariableTok{E\_values} \OperatorTok{=}\NormalTok{ [}\FloatTok{0.05}\OperatorTok{,} \FloatTok{0.02}\OperatorTok{,} \FloatTok{0.01}\OperatorTok{,} \FloatTok{0.005}\NormalTok{]}\OperatorTok{;}  \CommentTok{\% Desired margins}
+\VariableTok{confidence} \OperatorTok{=} \FloatTok{0.95}\OperatorTok{;}
+\VariableTok{z} \OperatorTok{=} \VariableTok{norminv}\NormalTok{(}\FloatTok{1} \OperatorTok{{-}}\NormalTok{ (}\FloatTok{1}\OperatorTok{{-}}\VariableTok{confidence}\NormalTok{)}\OperatorTok{/}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Desired Margin | Required n\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}+{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\KeywordTok{for} \VariableTok{E} \OperatorTok{=} \VariableTok{E\_values}
+    \VariableTok{n\_req} \OperatorTok{=} \VariableTok{ceil}\NormalTok{((}\VariableTok{z}\OperatorTok{*}\VariableTok{sigma}\OperatorTok{/}\VariableTok{E}\NormalTok{)}\OperatorTok{\^{}}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}  ±\%.3f      |    \%d\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{E}\OperatorTok{,} \VariableTok{n\_req}\NormalTok{)}\OperatorTok{;}
+\KeywordTok{end}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\PSsection{14.10}{Practice Problems}
+
+\begin{PSbox}[unbreakable]{prob}{Problem 1}
+
+A sensor measures voltage. From 50 measurements: $\bar{X} = 3.32\,\mathrm{V},\, S = 0.15\,\mathrm{V}$.
+
+\begin{enumerate}
+\def\labelenumi{(\alph{enumi})}
+\tightlist
+\item
+  Construct 95\% CI for $\mu$. (b) Construct 99\% CI for $\mu$. (c) Which is wider and why?
+\end{enumerate}
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\alph{enumi})}
+\tightlist
+\item
+  $t_{0.025,49} \approx 2.010$. CI: $3.32 \pm 2.010\left(\frac{0.15}{\sqrt{50}}\right) = 3.32 \pm 0.043 = [3.277,\, 3.363]$
+\item
+  $t_{0.005,49} \approx 2.680$. CI: $3.32 \pm 2.680\left(\frac{0.15}{\sqrt{50}}\right) = 3.32 \pm 0.057 = [3.263,\, 3.377]$
+\item
+  99\% CI is wider — higher confidence requires a wider interval.
+\end{enumerate}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{Problem 2}
+
+From 25 noise power measurements: $S^{2} = 0.048\,\mathrm{V}^{2}$. Construct 95\% CI for $\sigma^{2}$.
+
+\PSsolution{} $\chi^{2}_{0.025,24} = 39.364,\, \chi^{2}_{0.975,24} = 12.401$\PSbr{}CI: $\left[\frac{24(0.048)}{39.364},\, \frac{24(0.048)}{12.401}\right] = [0.029,\, 0.093] V^{2}$
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{Problem 3}
+
+How many BER measurements needed to estimate BER within $\pm 20\%$ of its true value with 95\% confidence, if expected $\mathrm{BER} \approx 10^{-3}$?
+
+\PSsolution{} For proportion: $n \ge \frac{z^{2}p(1-p)}{E^{2}}$ where $E = 0.2p = 2 \times 10^{-4}$.\PSbr{}$n \ge \frac{(1.96)^{2}(10^{-3})(0.999)}{(2 \times 10^{-4})^{2}} = 3.84 \times \frac{10^{-3}}{4 \times 10^{-8}} \approx 96{,}000$ bits.\PSbr{}Need to transmit approximately 96,000 bits (or observe $\sim 96$ errors).
+
+\emph{Next Module: {Module 15 — Hypothesis Testing}}
+
+\end{PSbox}

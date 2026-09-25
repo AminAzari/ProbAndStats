@@ -1,0 +1,826 @@
+\begin{PSbox}[unbreakable]{obj}{اهداف یادگیری}
+
+پس از تکمیل این ماژول، دانشجویان قادر خواهند بود:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  مقادیر امید ریاضی را برای متغیرهای تصادفی گسسته و پیوسته محاسبه کنند
+\item
+  واریانس و انحراف معیار را محاسبه کرده و معنای مهندسی آن‌ها را تفسیر کنند
+\item
+  ویژگی‌های امید ریاضی و واریانس را در تحلیل مهندسی به کار ببرند
+\item
+  گشتاورهای مراتب بالاتر را محاسبه و تفسیر کنند
+\item
+  از تابع مولد گشتاور \lr{\mbox{(MGF)}} استفاده کنند
+\item
+  گشتاورهای آماری را به کمیت‌های فیزیکی مهندسی مرتبط کنند
+\end{enumerate}
+
+\end{PSbox}
+
+\PSsection{4.1}{مقدمه: چرا آماره‌های خلاصه؟}
+
+\PSsubsection{نیاز مهندسی}
+
+یک توزیع احتمال تمام اطلاعات مربوط به یک متغیر تصادفی را در خود دارد. اما برای تصمیم‌های مهندسی، اغلب به خلاصه‌های موجز نیاز داریم:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{پردازش سیگنال:} توان میانگین چقدر است؟ \lr{\mbox{\ensuremath{\to}}} میانگین \lr{$X^{2}$}
+\item
+  \textbf{کنترل کیفیت:} قطعات چقدر تغییر می‌کنند؟ \lr{\mbox{\ensuremath{\to}}} واریانس
+\item
+  \textbf{مخابرات:} توان نویز چقدر است؟ \lr{$\to E[N^{2}]$}
+\item
+  \textbf{قابلیت اطمینان:} عمر میانگین چقدر است؟ \lr{\mbox{\ensuremath{\to}}} میانگین
+\end{itemize}
+
+گشتاورها (میانگین، واریانس و \lr{…}) خلاصه‌های ضروری و \textbf{مرتبط با مهندسی} از یک توزیع هستند.
+
+\PSsection{4.2}{مقدار امید ریاضی (میانگین)}
+
+\begin{PSbox}[unbreakable]{def}{تعریف \lr{—} متغیر تصادفی گسسته}
+
+\PSdisplay{E[X] = \mu_X = \sum_{x} x \cdot p_X(x)}
+
+جمع (هر مقدار \ensuremath{\times} احتمال آن).
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{def}{تعریف \lr{—} متغیر تصادفی پیوسته}
+
+\PSdisplay{E[X] = \mu_X = \int_{-\infty}^{\infty} x \cdot f_X(x) \, dx}
+
+\end{PSbox}
+
+\PSsubsection{تفسیر مهندسی}
+
+مقدار امید ریاضی همان \textbf{میانگین درازمدت} است: اگر آزمایش را بارها تکرار کنید و نتایج را میانگین بگیرید، مقدار تقریبی \lr{$E[X]$} به دست می‌آید.
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}cc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{کمیت مهندسی} & \PSth{معنای مقدار امید ریاضی} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+ولتاژ نویز \lr{$E[N]$} & بایاس/آفست \lr{\mbox{DC}} در نویز \\
+دامنه سیگنال \lr{$E[A]$} & سطح میانگین سیگنال \\
+عمر قطعه \lr{$E[T]$} & میانگین زمان تا خرابی \lr{\mbox{(MTTF)}} \\
+تأخیر بسته \lr{$E[D]$} & تأخیر میانگین \\
+خطاهای بیت \lr{$E[X]$} & تعداد خطای میانگین \\
+\end{longtable}
+}
+
+\begin{PSbox}[unbreakable]{ex}{مثال: توان میانگین نویز}
+
+برای نویز گاوسی با میانگین صفر \lr{$N \sim N(0,\, \sigma^{2})$}:
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$E[N] = 0$} (بدون مؤلفه \lr{\mbox{DC}})
+\item
+  توان میانگین \lr{$= E[N^{2}] = \sigma^{2}$} (این همان واریانس است!)
+\end{itemize}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{مثال: تعداد مورد انتظار ارسال مجدد}
+
+پروتکل \lr{\mbox{ARQ}}: هر انتقال با احتمال \lr{$p = 0.8$} موفق است.\PSbr{}تعداد تلاش‌ها \lr{$X \sim \mathrm{Geometric}(0.8)$}.\PSbr{}\lr{$E[X] = \frac{1}{p} = \frac{1}{0.8} = 1.25$} تلاش به‌طور میانگین.
+
+\end{PSbox}
+
+\PSsection{4.3}{مقدار امید ریاضی یک تابع: \lr{$E[g(X)]$}}
+
+\begin{PSbox}[unbreakable]{thm}{قضیه \lr{\mbox{LOTUS}} (قانون آماردان ناخودآگاه)}
+
+برای یافتن \lr{$E[g(X)]$}، نیازی به توزیع \lr{$Y = g(X)$} ندارید:
+
+\textbf{گسسته:}\PSdisplay{E[g(X)] = \sum_{x} g(x) \cdot p_X(x)}
+
+\textbf{پیوسته:}\PSdisplay{E[g(X)] = \int_{-\infty}^{\infty} g(x) \cdot f_X(x) \, dx}
+
+\end{PSbox}
+
+\PSsubsection{کاربردهای مهندسی}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}cc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{تابع \lr{$g(X)$}} & \PSth{معنای مهندسی} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\lr{$g(X) = X^{2}$} & مقدار میانگین مربع (توان) \\
+\lr{$g(X) = (X - \mu)^{2}$} & واریانس (توان \lr{\mbox{AC}}) \\
+\lr{\mbox{$g(X)$ =}} & \lr{$X$} \\
+\lr{$g(X) = e^{j\omega X}$} & تابع مشخصه \\
+\end{longtable}
+}
+
+\begin{PSbox}[unbreakable]{ex}{مثال: توان میانگین یک سیگنال}
+
+سیگنال \lr{$X$} دارای \lr{\mbox{PDF $f_{X}(x)$}} است. توان \lr{$P = X^{2}$}.
+
+\lr{$E[P] = E[X^{2}] = \int x^{2} f_{X}(x)\,dx$}
+
+برای \lr{\mbox{$X \sim N(0,\, \sigma^{2})$: $E[X^{2}] = \sigma^{2}$}} (توان نویز برابر واریانس است).
+
+برای \lr{$X \sim N(\mu,\, \sigma^{2})$: $E[X^{2}] = \mu^{2} + \sigma^{2}$} (توان کل = توان \lr{$\mathrm{DC}$} + توان \lr{\mbox{AC}}).
+
+\end{PSbox}
+
+\PSsection{4.4}{واریانس}
+
+\begin{PSbox}[unbreakable]{def}{تعریف}
+
+\PSdisplay{\PSmtext{Var}(X) = E[(X - \mu_X)^2] = E[X^2] - (E[X])^2}
+
+فرمول دوم (فرمول محاسباتی) اغلب آسان‌تر است.
+
+\end{PSbox}
+
+\PSsubsection{استخراج فرمول محاسباتی}
+
+\lr{$\operatorname{Var}(X) = E[(X - \mu)^{2}]$}\PSbr{}\lr{$= E[X^{2} - 2\mu X + \mu^{2}]$}\PSbr{}\lr{$= E[X^{2}] - 2\mu E[X] + \mu^{2}$}\PSbr{}\lr{$= E[X^{2}] - 2\mu^{2} + \mu^{2}$}\PSbr{}\lr{$= E[X^{2}] - \mu^{2}$}
+
+\PSsubsection{تفسیر مهندسی}
+
+واریانس \textbf{پراکندگی/پخش‌شدگی/عدم‌قطعیت} را می‌سنجد:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}cc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{زمینه} & \PSth{معنای واریانس} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+سیگنال نویز & توان نویز (برای نویز با میانگین صفر) \\
+ساخت و تولید & میزان انحراف قطعات از مقدار نامی \\
+اندازه‌گیری‌ها & دقت اندازه‌گیری (کوچک‌تر = دقیق‌تر) \\
+سیگنال & مؤلفه توان \lr{\mbox{AC}} \\
+عمر & عمر چقدر قابل پیش‌بینی است؟ \\
+\end{longtable}
+}
+
+\PSsubsection{نکته کلیدی: واریانس = توان در مهندسی}
+
+برای یک سیگنال با میانگین صفر \lr{$X$}:
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$E[X^{2}] = \operatorname{Var}(X) = \sigma^{2}$} = \textbf{توان کل}
+\item
+  برای \lr{$X \sim N(0,\, \sigma^{2})$}: توان نویز \lr{$= \sigma^{2} = \operatorname{Var}(X)$}
+\end{itemize}
+
+برای یک سیگنال با آفست \lr{\mbox{DC $(\mu \ne 0)$}}:
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$E[X^{2}] = \mu^{2} + \sigma^{2}$} = \textbf{توان کل = توان \lr{$\mathrm{DC}$} + توان \lr{\mbox{AC}}}
+\item
+  \lr{$\operatorname{Var}(X) = \sigma^{2}$} = \textbf{فقط توان \lr{\mbox{AC}}}
+\end{itemize}
+
+\PSsection{4.5}{انحراف معیار}
+
+\begin{PSbox}[unbreakable]{def}{تعریف}
+
+\PSdisplay{\sigma_X = \sqrt{\PSmtext{Var}(X)}}
+
+\end{PSbox}
+
+\PSsubsection{اهمیت مهندسی}
+
+انحراف معیار \textbf{همان یکای} \lr{$X$} را دارد و بنابراین مستقیماً قابل تفسیر است:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}ccc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{متغیر تصادفی} & \PSth{یکای انحراف معیار} & \PSth{تفسیر} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+نویز ولتاژ & ولت & ولتاژ نویز مؤثر \lr{\mbox{(RMS)}} \\
+جیتر زمان‌بندی & ثانیه & جیتر مؤثر \lr{\mbox{(RMS)}} \\
+خطای فاصله & متر & خطای موقعیت مؤثر \lr{\mbox{(RMS)}} \\
+دما & \lr{\mbox{\ensuremath{^{\circ}}C}} & نوسان دمای مؤثر \lr{\mbox{(RMS)}} \\
+\end{longtable}
+}
+
+انحراف معیار برای سیگنال‌های با میانگین صفر همان مقدار \textbf{مؤثر \lr{\mbox{(RMS)}}} است.
+
+\PSsection{4.6}{ویژگی‌های امید ریاضی}
+
+\PSsubsection{خطی‌بودن (بنیادی)}
+
+\PSdisplay{E[aX + b] = aE[X] + b}
+
+\PSdisplay{E[X + Y] = E[X] + E[Y] \quad \PSmtext{(ALWAYS, even if dependent!)}}
+
+\PSdisplay{E\left[\sum_{i=1}^n a_i X_i\right] = \sum_{i=1}^n a_i E[X_i]}
+
+\PSsubsection{یکنوایی}
+
+اگر همواره \lr{$X \ge 0$} باشد، آنگاه \lr{$E[X] \ge 0$}.
+
+اگر همواره \lr{$X \ge Y$} باشد، آنگاه \lr{$E[X] \ge E[Y]$}.
+
+\PSsubsection{برای متغیرهای تصادفی مستقل}
+
+اگر \lr{$X$} و \lr{$Y$} مستقل باشند:\PSdisplay{E[XY] = E[X] \cdot E[Y]}
+
+\begin{PSquote}
+
+\lr{\mbox{\PSwarn{}}} این رابطه برای متغیرهای وابسته برقرار نیست!
+
+\end{PSquote}
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی: نویز کل}
+
+یک سیگنال دریافتی: \lr{$R = S + N_{1} + N_{2}$} (سیگنال به‌همراه دو منبع نویز)
+
+\lr{$E[R] = E[S] + E[N_{1}] + E[N_{2}] = E[S] + 0 + 0 = E[S]$}
+
+(نویز با میانگین صفر، مقدار مورد انتظار سیگنال دریافتی را بایاس نمی‌کند.)
+
+\end{PSbox}
+
+\PSsection{4.7}{ویژگی‌های واریانس}
+
+\PSsubsection{مقیاس‌بندی و انتقال}
+
+\PSdisplay{\PSmtext{Var}(aX + b) = a^2 \PSmtext{Var}(X)}
+
+\begin{itemize}
+\tightlist
+\item
+  افزودن ثابت \lr{$b$} واریانس را تغییر نمی‌دهد (انتقال، پراکندگی را تغییر نمی‌دهد)
+\item
+  مقیاس‌بندی با \lr{$a$}، واریانس را در \lr{$a^{2}$} ضرب می‌کند
+\end{itemize}
+
+\PSsubsection{جمع متغیرهای تصادفی مستقل}
+
+اگر \lr{$X_{1},\, X_{2},\, \ldots,\, X_{n}$} \textbf{مستقل} باشند:
+
+\PSdisplay{\PSmtext{Var}(X_1 + X_2 + \cdots + X_n) = \PSmtext{Var}(X_1) + \PSmtext{Var}(X_2) + \cdots + \PSmtext{Var}(X_n)}
+
+\begin{PSquote}
+
+\lr{\mbox{\PSwarn{}}} واریانس‌ها فقط برای متغیرهای مستقل جمع می‌شوند!
+
+\end{PSquote}
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی: جمع توان نویز}
+
+دو منبع نویز مستقل (\lr{$\sigma_{1}^{2} = 0.01\,\mathrm{V}^{2}$}، \lr{$\sigma_{2}^{2} = 0.04\,\mathrm{V}^{2}$}):
+
+توان نویز کل \lr{$= \sigma_{1}^{2} + \sigma_{2}^{2} = 0.05\,\mathrm{V}^{2}$}\PSbr{}نویز مؤثر کل \lr{$= \sqrt{0.05} = 0.224\,\mathrm{V}$}
+
+توجه: مقادیر مؤثر \lr{\mbox{(RMS)}} مستقیماً جمع نمی‌شوند! \lr{$(0.1 + 0.2 \ne 0.224)$}
+
+\end{PSbox}
+
+\PSsubsection{واریانس میانگین نمونه}
+
+برای \lr{$n$} مشاهده مستقل و هم‌توزیع \lr{$(i.i.d.) X_{1},\, \ldots,\, X_{n}$} با واریانس \lr{$\sigma^{2}$}:
+
+\PSdisplay{\PSmtext{Var}(\bar{X}) = \PSmtext{Var}\left(\frac{1}{n}\sum X_i\right) = \frac{\sigma^2}{n}}
+
+اندازه‌گیری‌های بیشتر \lr{\mbox{\ensuremath{\to}}} عدم‌قطعیت کمتر در میانگین.
+
+\PSsection{4.8}{گشتاورهای مراتب بالاتر}
+
+\PSsubsection{گشتاور مرتبه \lr{$n$}}
+
+\PSdisplay{\mu_n' = E[X^n] = \int_{-\infty}^{\infty} x^n f_X(x) \, dx}
+
+\PSsubsection{گشتاور مرکزی مرتبه \lr{$n$}}
+
+\PSdisplay{\mu_n = E[(X - \mu)^n]}
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$\mu_{1} = 0$} (همیشه)
+\item
+  \lr{$\mu_{2} = \operatorname{Var}(X)$}
+\item
+  \lr{$\mu_{3}$} به \textbf{چولگی} مربوط است
+\item
+  \lr{$\mu_{4}$} به \textbf{کشیدگی} مربوط است
+\end{itemize}
+
+\PSsubsection{چولگی (گشتاور مرکزی سوم، نرمال‌شده)}
+
+\PSdisplay{\gamma_1 = \frac{E[(X-\mu)^3]}{\sigma^3}}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}ccc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{چولگی} & \PSth{شکل} & \PSth{مثال} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\lr{$\gamma_{1} = 0$} & متقارن & گاوسی \\
+\lr{$\gamma_{1} > 0$} & چوله به راست (دنباله بلند در راست) & نمایی \\
+\lr{$\gamma_{1} < 0$} & چوله به چپ (دنباله بلند در چپ) & نمایی منفی‌شده \\
+\end{longtable}
+}
+
+\textbf{اهمیت مهندسی:} چولگی به ما می‌گوید آیا مقادیر حدی در یک جهت محتمل‌تر هستند یا نه. برای قابلیت اطمینان مهم است (توزیع‌های زمان خرابی چوله به راست هستند).
+
+\PSsubsection{کشیدگی (گشتاور مرکزی چهارم، نرمال‌شده)}
+
+\PSdisplay{\gamma_2 = \frac{E[(X-\mu)^4]}{\sigma^4} - 3}
+
+(کسر کردن 3 باعث می‌شود کشیدگی گاوسی صفر شود: «کشیدگی مازاد».)
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}ccc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{کشیدگی} & \PSth{تفسیر} & \PSth{معنا} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\lr{$\gamma_{2} = 0$} & مزوکورتیک & دنباله‌هایی شبیه گاوسی \\
+\lr{$\gamma_{2} > 0$} & لپتوکورتیک & دنباله‌های سنگین‌تر از گاوسی \\
+\lr{$\gamma_{2} < 0$} & پلاتی‌کورتیک & دنباله‌های سبک‌تر از گاوسی \\
+\end{longtable}
+}
+
+\textbf{اهمیت مهندسی:} کشیدگی زیاد به معنای مقادیر پرت بیشتر است \lr{—} برای مدل‌سازی نویز تکانشی مهم است.
+
+\PSsection{4.9}{تابع مولد گشتاور \lr{\mbox{(MGF)}}}
+
+\begin{PSbox}[unbreakable]{def}{تعریف}
+
+\PSdisplay{M_X(t) = E[e^{tX}]}
+
+\textbf{گسسته:} \lr{$M_{X}(t) = \sum e^{tx} p_{X}(x)$}
+
+\textbf{پیوسته:} \lr{$M_{X}(t) = \int e^{tx} f_{X}(x)\,dx$}
+
+\end{PSbox}
+
+\PSsubsection{چرا «مولد گشتاور»؟}
+
+گشتاور مرتبه \lr{$n$} با \lr{$n$} بار مشتق‌گیری در \lr{$t = 0$} به دست می‌آید:
+
+\PSdisplay{E[X^n] = \frac{d^n M_X(t)}{dt^n}\bigg|_{t=0}}
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$M_{X}'(0) = E[X]$}
+\item
+  \lr{$M_{X}''(0) = E[X^{2}]$}
+\item
+  \lr{$\operatorname{Var}(X) = M_{X}''(0) - [M_{X}'(0)]^{2}$}
+\end{itemize}
+
+\PSsubsection{ویژگی‌ها}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{یگانگی:} اگر \lr{$M_{X}(t) = M_{Y}(t)$} برای تمام \lr{$t$} در همسایگی 0 برقرار باشد، آنگاه \lr{$X$} و \lr{$Y$} توزیع یکسانی دارند.
+\item
+  \textbf{جمع متغیرهای تصادفی مستقل:} اگر \lr{$X$} و \lr{$Y$} مستقل باشند:\PSbr{}\lr{$M_{X+Y}(t) = M_{X}(t) \cdot M_{Y}(t)$}
+\item
+  \textbf{تبدیل خطی:} \lr{$M_{\PSmtext{aX}+b}(t) = e^{bt} \cdot M_{X}(at)$}
+\end{enumerate}
+
+\PSsubsection{\lr{\mbox{MGF}} توزیع‌های رایج}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 2\tabcolsep) * \real{0.5200}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 2\tabcolsep) * \real{0.4800}}@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{توزیع} & \PSth{\lr{\mbox{MGF}} یعنی \lr{$M_{X}(t)$}} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\lr{$\mathrm{Bernoulli}(p)$} & \lr{$1 - p + pe^{t}$} \\
+\lr{$\mathrm{Binomial}(n,\,p)$} & \lr{$(1 - p + pe^{t})^{n}$} \\
+\lr{$\mathrm{Poisson}(\lambda)$} & \lr{$\exp (\lambda (e^{t} - 1))$} \\
+\lr{$\mathrm{Exponential}(\lambda)$} & \lr{$\frac{\lambda}{\lambda - t},\, t < \lambda$} \\
+\lr{$\mathrm{Gaussian}(\mu,\,\sigma^{2})$} & \lr{$\exp \left(\mu t + \frac{\sigma^{2}t^{2}}{2}\right)$} \\
+\end{longtable}
+}
+
+\PSsubsection{کاربرد مهندسی: جمع سیگنال‌های مستقل}
+
+اگر مؤلفه‌های سیگنال \lr{$X_{1} \sim N(\mu_{1},\, \sigma_{1}^{2})$} و \lr{$X_{2} \sim N(\mu_{2},\, \sigma_{2}^{2})$} مستقل باشند:
+
+\lr{$M_{X_{1}+X_{2}}(t) = M_{X_{1}}(t) \cdot M_{X_{2}}(t)$}\PSbr{}\lr{$\displaystyle = \exp \left(\mu_{1}t + \frac{\sigma_{1}^{2}t^{2}}{2}\right) \cdot \exp \left(\mu_{2}t + \frac{\sigma_{2}^{2}t^{2}}{2}\right)$}\PSbr{}\lr{$\displaystyle = \exp \left((\mu_{1}+\mu_{2})t + \frac{(\sigma_{1}^{2}+\sigma_{2}^{2})t^{2}}{2}\right)$}
+
+این همان \lr{\mbox{MGF}} توزیع \lr{$N(\mu_{1}+\mu_{2},\, \sigma_{1}^{2}+\sigma_{2}^{2})$} است. بنابراین \lr{$X_{1}+X_{2} \sim N(\mu_{1}+\mu_{2},\, \sigma_{1}^{2}+\sigma_{2}^{2})$}.
+
+\PSsection{4.10}{کاربردهای مهندسی گشتاورها}
+
+\PSsubsection{کاربرد 1: مشخصه‌سازی توان نویز}
+
+یک سیگنال نویز \lr{$N(t)$} نمونه‌برداری می‌شود. نمونه‌ها میانگین \lr{$\mu_{N}$} و واریانس \lr{$\sigma_{N}^{2}$} دارند.
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{مؤلفه \lr{\mbox{DC}} (بایاس):} \lr{$\mu_{N}$} \lr{—} برای نویز ایده‌آل باید صفر باشد
+\item
+  \textbf{توان نویز \lr{\mbox{AC}}:} \lr{$\sigma_{N}^{2}$} \lr{—} تعیین‌کننده \lr{\mbox{SNR}}
+\item
+  \textbf{توان کل:} \lr{$E[N^{2}] = \mu_{N}^{2} + \sigma_{N}^{2}$}
+\end{itemize}
+
+\textbf{\lr{\mbox{SNR}} (نسبت سیگنال به نویز):}\PSdisplay{\PSmtext{SNR} = \frac{E[S^2]}{\sigma_N^2} = \frac{\PSmtext{Signal Power}}{\PSmtext{Noise Power}}}
+
+\PSsubsection{کاربرد 2: خطای اندازه‌گیری}
+
+یک حسگر مقدار واقعی \lr{$\theta$} را با خطای \lr{$E$} اندازه‌گیری می‌کند:
+
+\begin{itemize}
+\tightlist
+\item
+  اندازه‌گیری: \lr{$X = \theta + E$}
+\item
+  \lr{$E[X] = \theta + E[E]$} \lr{—} بایاس در اندازه‌گیری
+\item
+  \lr{$\operatorname{Var}(X) = \operatorname{Var}(E)$} \lr{—} دقت اندازه‌گیری
+\end{itemize}
+
+\textbf{صحّت:} \lr{$\lvert E[E]\rvert$} (میانگین چقدر به مقدار واقعی نزدیک است)\PSbr{}\textbf{دقت (تکرارپذیری):} \lr{$\sigma_{E}$} (اندازه‌گیری‌ها چقدر تکرارپذیر هستند)
+
+\PSsubsection{کاربرد 3: آماره‌های عمر قطعه}
+
+قطعات عمر \lr{$T \sim \mathrm{Exponential}(\lambda)$} دارند:
+
+\begin{itemize}
+\tightlist
+\item
+  میانگین زمان تا خرابی: \lr{$\mathrm{MTTF} = E[T] = \frac{1}{\lambda}$}
+\item
+  انحراف معیار: \lr{\mbox{$\sigma_{T} = \frac{1}{\lambda}$ = MTTF}}
+\item
+  برای نمایی: ضریب تغییرات \lr{\mbox{CV $= \frac{\sigma}{\mu} = 1$}} (همیشه!)
+\end{itemize}
+
+\PSsubsection{کاربرد 4: دامنه سیگنال مخابراتی}
+
+سیگنال دریافتی \lr{$R = A + N$} که در آن \lr{$A$} = دامنه سیگنال و \lr{$N \sim N(0,\, \sigma^{2})$}:
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$E[R] = A$} (دامنه سیگنال به‌طور میانگین حفظ می‌شود)
+\item
+  \lr{$\operatorname{Var}(R) = \sigma^{2}$} (توان نویز واریانس را تعیین می‌کند)
+\item
+  \lr{$\displaystyle \mathrm{SNR} = \frac{A^{2}}{\sigma^{2}}$}
+\end{itemize}
+
+\PSsection{4.11}{مثال‌های \lr{\mbox{MATLAB}}}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 1: محاسبه گشتاورها از یک توزیع}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Moments of Common Distributions}
+
+\CommentTok{\% Exponential: failure time, lambda = 0.01 (per hour)}
+\VariableTok{lambda} \OperatorTok{=} \FloatTok{0.01}\OperatorTok{;}
+\VariableTok{beta} \OperatorTok{=} \FloatTok{1}\OperatorTok{/}\VariableTok{lambda}\OperatorTok{;}  \CommentTok{\% mean = 100 hours}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}=== Exponential Distribution (λ = \%.3f) ===\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{lambda}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Mean (MTTF) = \%.1f hours\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{beta}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Variance = \%.1f hours²\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{beta}\OperatorTok{\^{}}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Std Dev = \%.1f hours\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{beta}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Coefficient of Variation = \%.2f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{beta}\OperatorTok{/}\VariableTok{beta}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Gaussian: noise voltage, sigma = 0.1V}
+\VariableTok{mu} \OperatorTok{=} \FloatTok{0}\OperatorTok{;} \VariableTok{sigma} \OperatorTok{=} \FloatTok{0.1}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}\textbackslash{}n=== Gaussian Distribution (μ=\%.1f, σ=\%.2f V) ===\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mu}\OperatorTok{,} \VariableTok{sigma}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Mean = \%.2f V\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mu}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Variance (noise power) = \%.4f V²\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{sigma}\OperatorTok{\^{}}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}RMS noise = \%.3f V\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{sigma}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}E[X²] (total power) = \%.4f V²\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mu}\OperatorTok{\^{}}\FloatTok{2} \OperatorTok{+} \VariableTok{sigma}\OperatorTok{\^{}}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 2: بررسی ویژگی‌های واریانس}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Variance of Sum of Independent RVs}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+
+\CommentTok{\% Two independent noise sources}
+\VariableTok{sigma1} \OperatorTok{=} \FloatTok{0.1}\OperatorTok{;}   \CommentTok{\% RMS of noise 1}
+\VariableTok{sigma2} \OperatorTok{=} \FloatTok{0.2}\OperatorTok{;}   \CommentTok{\% RMS of noise 2}
+
+\VariableTok{X1} \OperatorTok{=} \VariableTok{sigma1} \OperatorTok{*} \VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{X2} \OperatorTok{=} \VariableTok{sigma2} \OperatorTok{*} \VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{Y} \OperatorTok{=} \VariableTok{X1} \OperatorTok{+} \VariableTok{X2}\OperatorTok{;}   \CommentTok{\% Combined noise}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Var(X1) = \%.4f (theory: \%.4f)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{var}\NormalTok{(}\VariableTok{X1}\NormalTok{)}\OperatorTok{,} \VariableTok{sigma1}\OperatorTok{\^{}}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Var(X2) = \%.4f (theory: \%.4f)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{var}\NormalTok{(}\VariableTok{X2}\NormalTok{)}\OperatorTok{,} \VariableTok{sigma2}\OperatorTok{\^{}}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Var(X1+X2) = \%.4f (theory: \%.4f)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{var}\NormalTok{(}\VariableTok{Y}\NormalTok{)}\OperatorTok{,} \VariableTok{sigma1}\OperatorTok{\^{}}\FloatTok{2} \OperatorTok{+} \VariableTok{sigma2}\OperatorTok{\^{}}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Std(X1+X2) = \%.4f (theory: \%.4f)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{std}\NormalTok{(}\VariableTok{Y}\NormalTok{)}\OperatorTok{,} \VariableTok{sqrt}\NormalTok{(}\VariableTok{sigma1}\OperatorTok{\^{}}\FloatTok{2}\OperatorTok{+}\VariableTok{sigma2}\OperatorTok{\^{}}\FloatTok{2}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}\textbackslash{}nNote: std devs do NOT add: \%.3f + \%.3f = \%.3f ≠ \%.3f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \OperatorTok{...}
+    \VariableTok{sigma1}\OperatorTok{,} \VariableTok{sigma2}\OperatorTok{,} \VariableTok{sigma1}\OperatorTok{+}\VariableTok{sigma2}\OperatorTok{,} \VariableTok{sqrt}\NormalTok{(}\VariableTok{sigma1}\OperatorTok{\^{}}\FloatTok{2}\OperatorTok{+}\VariableTok{sigma2}\OperatorTok{\^{}}\FloatTok{2}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 3: میانگین و واریانس یک متغیر تصادفی تبدیل‌شده}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% E[g(X)] using LOTUS: Power from Voltage}
+\CommentTok{\% X = voltage \textasciitilde{} N(0, 0.5V)}
+\CommentTok{\% P = X\^{}2 / R, with R = 50 ohms}
+
+\VariableTok{sigma} \OperatorTok{=} \FloatTok{0.5}\OperatorTok{;}    \CommentTok{\% noise voltage RMS}
+\VariableTok{R} \OperatorTok{=} \FloatTok{50}\OperatorTok{;}         \CommentTok{\% resistance}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+
+\VariableTok{X} \OperatorTok{=} \VariableTok{sigma} \OperatorTok{*} \VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{P} \OperatorTok{=} \VariableTok{X}\OperatorTok{.\^{}}\FloatTok{2} \OperatorTok{/} \VariableTok{R}\OperatorTok{;}   \CommentTok{\% instantaneous power}
+
+\CommentTok{\% Using LOTUS: E[X\^{}2/R] = E[X\^{}2]/R = sigma\^{}2/R}
+\VariableTok{E\_P\_theory} \OperatorTok{=} \VariableTok{sigma}\OperatorTok{\^{}}\FloatTok{2} \OperatorTok{/} \VariableTok{R}\OperatorTok{;}
+\VariableTok{E\_P\_sim} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{P}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Mean power: Theory = \%.6f W, Sim = \%.6f W\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{E\_P\_theory}\OperatorTok{,} \VariableTok{E\_P\_sim}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Mean power = \%.3f mW\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{E\_P\_theory} \OperatorTok{*} \FloatTok{1000}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 4: گشتاورهای مراتب بالاتر و چولگی}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Skewness and Kurtosis Comparison}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+
+\CommentTok{\% Gaussian (symmetric)}
+\VariableTok{X\_gauss} \OperatorTok{=} \VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Exponential (right{-}skewed)}
+\VariableTok{X\_exp} \OperatorTok{=} \VariableTok{exprnd}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Uniform (symmetric, light tails)}
+\VariableTok{X\_unif} \OperatorTok{=} \VariableTok{rand}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Distribution    | Skewness | Kurtosis\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}+{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}+{-}{-}{-}{-}{-}{-}{-}{-}{-}\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Gaussian        | \%+.3f   | \%+.3f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{skewness}\NormalTok{(}\VariableTok{X\_gauss}\NormalTok{)}\OperatorTok{,} \VariableTok{kurtosis}\NormalTok{(}\VariableTok{X\_gauss}\NormalTok{)}\OperatorTok{{-}}\FloatTok{3}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Exponential     | \%+.3f   | \%+.3f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{skewness}\NormalTok{(}\VariableTok{X\_exp}\NormalTok{)}\OperatorTok{,} \VariableTok{kurtosis}\NormalTok{(}\VariableTok{X\_exp}\NormalTok{)}\OperatorTok{{-}}\FloatTok{3}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Uniform         | \%+.3f   | \%+.3f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{skewness}\NormalTok{(}\VariableTok{X\_unif}\NormalTok{)}\OperatorTok{,} \VariableTok{kurtosis}\NormalTok{(}\VariableTok{X\_unif}\NormalTok{)}\OperatorTok{{-}}\FloatTok{3}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}\textbackslash{}nTheoretical:\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Gaussian:    skew=0, kurt=0\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Exponential: skew=2, kurt=6\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Uniform:     skew=0, kurt={-}1.2\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 5: بررسی \lr{\mbox{MGF}}}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Verify MGF: Compute moments by differentiation (numerical)}
+\CommentTok{\% For X \textasciitilde{} Exponential(lambda)}
+\VariableTok{lambda\_rate} \OperatorTok{=} \FloatTok{2}\OperatorTok{;}
+\VariableTok{beta\_scale} \OperatorTok{=} \FloatTok{1}\OperatorTok{/}\VariableTok{lambda\_rate}\OperatorTok{;}
+
+\CommentTok{\% MGF: M(t) = lambda/(lambda {-} t)}
+\CommentTok{\% M\textquotesingle{}(0) = E[X], M\textquotesingle{}\textquotesingle{}(0) = E[X\^{}2]}
+
+\VariableTok{t} \OperatorTok{=} \FloatTok{0}\OperatorTok{;}
+\VariableTok{dt} \OperatorTok{=} \FloatTok{1e{-}6}\OperatorTok{;}
+
+\CommentTok{\% Numerical derivatives}
+\VariableTok{M} \OperatorTok{=} \OperatorTok{@}\NormalTok{(}\VariableTok{t}\NormalTok{) }\VariableTok{lambda\_rate} \OperatorTok{./}\NormalTok{ (}\VariableTok{lambda\_rate} \OperatorTok{{-}} \VariableTok{t}\NormalTok{)}\OperatorTok{;}
+\VariableTok{M\_prime} \OperatorTok{=}\NormalTok{ (}\VariableTok{M}\NormalTok{(}\VariableTok{t}\OperatorTok{+}\VariableTok{dt}\NormalTok{) }\OperatorTok{{-}} \VariableTok{M}\NormalTok{(}\VariableTok{t}\OperatorTok{{-}}\VariableTok{dt}\NormalTok{)) }\OperatorTok{/}\NormalTok{ (}\FloatTok{2}\OperatorTok{*}\VariableTok{dt}\NormalTok{)}\OperatorTok{;}
+\VariableTok{M\_double\_prime} \OperatorTok{=}\NormalTok{ (}\VariableTok{M}\NormalTok{(}\VariableTok{t}\OperatorTok{+}\VariableTok{dt}\NormalTok{) }\OperatorTok{{-}} \FloatTok{2}\OperatorTok{*}\VariableTok{M}\NormalTok{(}\VariableTok{t}\NormalTok{) }\OperatorTok{+} \VariableTok{M}\NormalTok{(}\VariableTok{t}\OperatorTok{{-}}\VariableTok{dt}\NormalTok{)) }\OperatorTok{/} \VariableTok{dt}\OperatorTok{\^{}}\FloatTok{2}\OperatorTok{;}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}From MGF derivatives:\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}  E[X] = M\textquotesingle{}\textquotesingle{}(0) = \%.4f (theory: \%.4f)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{M\_prime}\OperatorTok{,} \FloatTok{1}\OperatorTok{/}\VariableTok{lambda\_rate}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}  E[X²] = M\textquotesingle{}\textquotesingle{}\textquotesingle{}\textquotesingle{}(0) = \%.4f (theory: \%.4f)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{M\_double\_prime}\OperatorTok{,} \FloatTok{2}\OperatorTok{/}\VariableTok{lambda\_rate}\OperatorTok{\^{}}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}  Var(X) = E[X²] {-} (E[X])² = \%.4f (theory: \%.4f)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \OperatorTok{...}
+    \VariableTok{M\_double\_prime} \OperatorTok{{-}} \VariableTok{M\_prime}\OperatorTok{\^{}}\FloatTok{2}\OperatorTok{,} \FloatTok{1}\OperatorTok{/}\VariableTok{lambda\_rate}\OperatorTok{\^{}}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\PSsection{4.12}{مسایل تمرینی}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 1: محاسبه پایه}
+
+یک متغیر تصادفی گسسته \lr{$X$} دارای \lr{\mbox{PMF}} زیر است: \lr{$P(X = -1) = 0.2$}، \lr{$P(X = 0) = 0.5$}، \lr{$P(X = 1) = 0.2$}، \lr{$P(X = 2) = 0.1$}.
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  \lr{$E[X]$} را بیابید.
+\item
+  \lr{$E[X^{2}]$} را بیابید.
+\item
+  \lr{$\operatorname{Var}(X)$} را بیابید.
+\item
+  \lr{$E[3X + 2]$} را بیابید.
+\item
+  \lr{$\operatorname{Var}(3X + 2)$} را بیابید.
+\end{enumerate}
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\item
+  \lr{$E[X] = (-1)(0.2) + (0)(0.5) + (1)(0.2) + (2)(0.1) = -0.2 + 0 + 0.2 + 0.2 = 0.2$}
+\item
+  \lr{$E[X^{2}] = (1)(0.2) + (0)(0.5) + (1)(0.2) + (4)(0.1) = 0.2 + 0 + 0.2 + 0.4 = 0.8$}
+\item
+  \lr{$\operatorname{Var}(X) = E[X^{2}] - (E[X])^{2} = 0.8 - 0.04 = 0.76$}
+\item
+  \lr{$E[3X + 2] = 3E[X] + 2 = 3(0.2) + 2 = 2.6$}
+\item
+  \lr{$\operatorname{Var}(3X + 2) = 9 \cdot \operatorname{Var}(X) = 9(0.76) = 6.84$}
+\end{enumerate}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 2: سیگنال و نویز}
+
+یک سیگنال دریافتی \lr{$R = 2.5 + N$} که در آن \lr{$N \sim N(0,\, 0.04)$}.
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  \lr{$E[R]$} و \lr{$\operatorname{Var}(R)$} را بیابید.
+\item
+  \lr{\mbox{SNR}} را بر حسب \lr{\mbox{dB}} بیابید.
+\item
+  \lr{$P(R < 0)$} را بیابید \lr{—} احتمال این‌که سیگنال منفی شود.
+\end{enumerate}
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\item
+  \lr{$E[R] = 2.5$}، \lr{$\operatorname{Var}(R) = \operatorname{Var}(N) = 0.04$}، \lr{$\sigma_{R} = 0.2$}
+\item
+  توان سیگنال \lr{$= 2.5^{2} = 6.25$}، توان نویز = \lr{\mbox{0.04}}\PSbr{}\lr{$\mathrm{SNR} = \frac{6.25}{0.04} = 156.25 \to \mathrm{SNR}_{dB} = 10 \cdot \log_{10}(156.25) = 21.94$ dB}
+\item
+  \lr{$P(R < 0) = P(N < -2.5) = \Phi \left(-\frac{2.5}{0.2}\right) = \Phi (-12.5) \approx 0$} (بسیار نامحتمل)
+\end{enumerate}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 3: میانگین‌گیری از اندازه‌گیری‌ها}
+
+یک حسگر \lr{$n$} اندازه‌گیری مستقل از یک ولتاژ ثابت \lr{$V = 3.3\,\mathrm{V}$} انجام می‌دهد.\PSbr{}هر اندازه‌گیری: \lr{$X_{i} = 3.3 + N_{i}$} که در آن \lr{$N_{i} \sim N(0,\, 0.01)$}.
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  برای \lr{$n = 1$} مقدار \lr{$E[\bar{X}]$} و \lr{$\operatorname{Var}(\bar{X})$} چقدر است؟
+\item
+  چه تعداد اندازه‌گیری \lr{$n$} لازم است تا \lr{$\sigma_{\bar{X}} < 0.01\,\mathrm{V}$} شود؟
+\item
+  با \lr{$n = 100$}، مقدار \lr{$P(\lvert \bar{X} - 3.3\rvert > 0.02)$} چقدر است؟
+\end{enumerate}
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\item
+  \lr{$E[\bar{X}] = 3.3$}، \lr{$\operatorname{Var}(\bar{X}) = \frac{0.01}{1} = 0.01$}، \lr{$\sigma = 0.1\,\mathrm{V}$}
+\item
+  \lr{$\sigma_{\bar{X}} = \frac{\sigma}{\sqrt{n}} < 0.01 \to \sqrt{n} > 10 \to n > 100$ \ensuremath{\to}} به \lr{$n \ge 101$} نیاز است
+\item
+  \lr{$\displaystyle \sigma_{\bar{X}} = \frac{0.1}{\sqrt{100}} = 0.01\,\mathrm{V}$}\PSbr{}\lr{$P(\lvert \bar{X} - 3.3\rvert > 0.02) = P(\lvert Z\rvert > 2) = 2(1-\Phi (2)) = 0.0455$}
+\end{enumerate}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 4: عمر قطعه}
+
+قطعات عمر \lr{$T \sim \mathrm{Exp}(\lambda = 0.002\ \text{\rl{در هر ساعت}})$} دارند.
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  \lr{\mbox{MTTF}}، \lr{$\sigma_{T}$} و ضریب تغییرات را بیابید.
+\item
+  \lr{$P(T > 1000\ \text{\rl{ساعت}})$} را بیابید.
+\item
+  \lr{$E[T^{2}]$} را بیابید و تفسیر کنید.
+\end{enumerate}
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\item
+  \lr{$\mathrm{MTTF} = \frac{1}{\lambda} = 500$} ساعت، \lr{$\sigma_{T} = 500$} ساعت، \lr{\mbox{CV $= \frac{\sigma}{\mu} = 1$}}
+\item
+  \lr{$P(T > 1000) = e^{-0.002 \times 1000} = e^{-2} = 0.1353$}
+\item
+  \lr{$E[T^{2}] = \operatorname{Var}(T) + (E[T])^{2} = 500^{2} + 500^{2} = 500000\,\mathrm{hours}^{2}$}\PSbr{}\lr{$\sqrt{E[T^{2}]} = 707$} ساعت (عمر مؤثر)
+\end{enumerate}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 5: کاربرد \lr{\mbox{MGF}}}
+
+\lr{$X$} دارای \lr{\mbox{MGF}} زیر است: \lr{$M_{X}(t) = \frac{1}{3}e^{t} + \frac{2}{3}e^{2t}$}.
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  \lr{$X$} چه نوع متغیر تصادفی است؟ \lr{\mbox{PMF}} آن را بیابید.
+\item
+  با استفاده از \lr{\mbox{MGF}} مقدار \lr{$E[X]$} را بیابید.
+\item
+  با استفاده از \lr{\mbox{MGF}} مقدار \lr{$\operatorname{Var}(X)$} را بیابید.
+\end{enumerate}
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\item
+  \lr{$X$} گسسته است. با مقایسه با \lr{$\sum p_{X}(x)e^{tx}$}:\PSbr{}\lr{$P(X = 1) = \frac{1}{3}$}، \lr{$P(X = 2) = \frac{2}{3}$}
+\item
+  \lr{$\displaystyle M'(t) = \frac{1}{3}e^{t} + \frac{4}{3}e^{2t}$}\PSbr{}\lr{$\displaystyle E[X] = M'(0) = \frac{1}{3} + \frac{4}{3} = \frac{5}{3}$}
+\item
+  \lr{$\displaystyle M''(t) = \frac{1}{3}e^{t} + \frac{8}{3}e^{2t}$}\PSbr{}\lr{$\displaystyle E[X^{2}] = M''(0) = \frac{1}{3} + \frac{8}{3} = 3$}\PSbr{}\lr{$\displaystyle \operatorname{Var}(X) = 3 - \frac{5}{3}^{2} = 3 - \frac{25}{9} = \frac{2}{9}$}
+\end{enumerate}
+
+\end{PSbox}
+
+\PSsection{4.13}{نکات کلیدی}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{\lr{$E[X]$} = میانگین درازمدت} \lr{—} مرکز توزیع، مؤلفه \lr{\mbox{DC}}
+\item
+  \textbf{\lr{$\operatorname{Var}(X)$} = پراکندگی/توان} \lr{—} برای سیگنال‌های با میانگین صفر، واریانس همان توان است
+\item
+  \textbf{\lr{$\sigma$} همان یکای \lr{$X$} را دارد} \lr{—} مستقیماً به‌عنوان مقدار مؤثر \lr{\mbox{(RMS)}} قابل تفسیر است
+\item
+  \textbf{خطی‌بودن امید ریاضی} همواره برقرار است؛ جمع واریانس‌ها نیازمند استقلال است
+\item
+  \textbf{\lr{\mbox{MGF}} به‌طور یکتا} یک توزیع را مشخص می‌کند و تمام گشتاورها را تولید می‌کند
+\item
+  \textbf{در مهندسی:} میانگین \lr{\mbox{\ensuremath{\to}}} سطح سیگنال، واریانس \lr{\mbox{\ensuremath{\to}}} توان نویز، انحراف معیار \lr{\mbox{\ensuremath{\to}}} نویز مؤثر
+\end{enumerate}
+
+\emph{ماژول بعدی: {ماژول 5 \lr{—} توابع مهم متغیر تصادفی}}

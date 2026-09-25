@@ -1,0 +1,429 @@
+\begin{PSbox}[unbreakable]{obj}{اهداف یادگیری}
+
+پس از تکمیل این ماژول، دانشجویان قادر خواهند بود:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \lr{\mbox{PMF}}، \lr{\mbox{PDF}} و \lr{\mbox{CDF}} مشترک را تعریف و محاسبه کنند
+\item
+  توزیع‌های حاشیه‌ای را از توزیع‌های مشترک استخراج کنند
+\item
+  توزیع‌های شرطی را محاسبه کنند
+\item
+  استقلال دو متغیر تصادفی را آزمون کنند
+\item
+  امیدهای ریاضی شرطی را محاسبه کنند
+\item
+  توزیع‌های مشترک را در \lr{\mbox{MATLAB}} مصورسازی کنند
+\end{enumerate}
+
+\end{PSbox}
+
+\PSsection{6.1}{مقدمه: چرا توزیع‌های مشترک را مطالعه کنیم؟}
+
+سیستم‌های مهندسی واقعی شامل \textbf{چند کمیت نامعین برهم‌کنش‌کننده} هستند:
+
+\begin{itemize}
+\tightlist
+\item
+  ولتاژ و جریان در یک مدار نویزی
+\item
+  سیگنال و نویز در گیرنده
+\item
+  دما و مقاومت یک حسگر
+\item
+  کانال \lr{$I$} و کانال \lr{$Q$} یک سیگنال مخابراتی
+\end{itemize}
+
+درک \textbf{رفتار مشترک} چیزهایی را به ما می‌گوید که توزیع‌های حاشیه‌ای نمی‌توانند \lr{—} مانند همبستگی، وابستگی و رفتار شرطی.
+
+\PSsection{6.2}{\lr{\mbox{PMF}} مشترک (حالت گسسته)}
+
+\begin{PSbox}[unbreakable]{def}{تعریف}
+
+برای متغیرهای تصادفی گسسته \lr{$X$}، \lr{$Y$}:\PSdisplay{p_{X,Y}(x,y) = P(X = x, Y = y)}
+
+\end{PSbox}
+
+\PSsubsection{ویژگی‌ها}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \lr{$p_{X,Y}(x,\,y) \ge 0$}
+\item
+  \lr{$\sum_{x} \Sigma_{y} p_{X,Y}(x,\,y) = 1$}
+\end{enumerate}
+
+\PSsubsection{مصورسازی: جدول احتمال}
+
+\textbf{مثال:} \lr{$X$} = تعداد ارسال‌های مجدد \lr{\mbox{(0,1,2)}}، \lr{$Y$} = دسته تأخیر تأیید (\lr{$1 = \text{\rl{سریع}}$}، \lr{$2 = \text{\rl{کند}}$})
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}cccc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}& \PSth{\lr{$Y = 1$}} & \PSth{\lr{$Y = 2$}} & \PSth{\lr{$p_{X}(x)$}} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\lr{$X = 0$} & \PSnum{0.30} & \PSnum{0.10} & \PSnum{0.40} \\
+\lr{$X = 1$} & \PSnum{0.15} & \PSnum{0.20} & \PSnum{0.35} \\
+\lr{$X = 2$} & \PSnum{0.05} & \PSnum{0.20} & \PSnum{0.25} \\
+\lr{$p_{Y}(y)$} & \PSnum{0.50} & \PSnum{0.50} & \PSnum{1.00} \\
+\end{longtable}
+}
+
+\PSsection{6.3}{\lr{\mbox{PDF}} مشترک (حالت پیوسته)}
+
+\begin{PSbox}[unbreakable]{def}{تعریف}
+
+برای متغیرهای تصادفی پیوسته \lr{$X$}، \lr{$Y$}، \lr{\mbox{PDF}} مشترک \lr{$f_{X,Y}(x,\,y)$} در رابطه زیر صدق می‌کند:\PSdisplay{P((X,Y) \in A) = \iint_A f_{X,Y}(x,y) \, dx \, dy}
+
+\end{PSbox}
+
+\PSsubsection{ویژگی‌ها}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \lr{$f_{X,Y}(x,\,y) \ge 0$}
+\item
+  \lr{$\int \int f_{X,Y}(x,\,y)\,dx\,dy = 1$}
+\end{enumerate}
+
+\PSsubsection{مصورسازی}
+
+\lr{\mbox{PDF}} مشترک یک \textbf{رویه} روی صفحه \lr{$(x,\,y)$} است. احتمال = حجم زیر رویه روی یک ناحیه.
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی: گاوسی دوبعدی}
+
+دو ولتاژ نویز همبسته \lr{$(X,\, Y)$} با همبستگی \lr{$\rho$}:
+
+\PSdisplay{f_{X,Y}(x,y) = \frac{1}{2\pi\sigma_X\sigma_Y\sqrt{1-\rho^2}} \exp\left(-\frac{1}{2(1-\rho^2)}\left[\frac{x^2}{\sigma_X^2} - \frac{2\rho xy}{\sigma_X\sigma_Y} + \frac{y^2}{\sigma_Y^2}\right]\right)}
+
+\end{PSbox}
+
+\PSsection{6.4}{\lr{\mbox{CDF}} مشترک}
+
+\begin{PSbox}[unbreakable]{def}{تعریف}
+
+\PSdisplay{F_{X,Y}(x,y) = P(X \leq x, Y \leq y)}
+
+\end{PSbox}
+
+\PSsubsection{ویژگی‌ها}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \lr{$F_{X,Y}(-\infty,\, y) = 0$}، \lr{$F_{X,Y}(x,\, -\infty) = 0$}
+\item
+  \lr{$F_{X,Y}(\infty,\, \infty) = 1$}
+\item
+  نسبت به هر دو آرگومان نامنزولی است
+\item
+  \lr{$\displaystyle f_{X,Y}(x,\,y) = \frac{\partial^{2}F_{X,Y}}{\partial x \partial y}$}
+\end{enumerate}
+
+\PSsection{6.5}{توزیع‌های حاشیه‌ای}
+
+\PSsubsection{به‌دست‌آوردن حاشیه‌ای‌ها از توزیع مشترک}
+
+\textbf{گسسته:}\PSdisplay{p_X(x) = \sum_y p_{X,Y}(x,y), \quad p_Y(y) = \sum_x p_{X,Y}(x,y)}
+
+\textbf{پیوسته:}\PSdisplay{f_X(x) = \int_{-\infty}^{\infty} f_{X,Y}(x,y) \, dy, \quad f_Y(y) = \int_{-\infty}^{\infty} f_{X,Y}(x,y) \, dx}
+
+\PSsubsection{تفسیر بصری}
+
+\lr{\mbox{PDF}} حاشیه‌ای \lr{$f_{X}(x)$} همان \textbf{تصویر} (انتگرال) رویه مشترک روی محور \lr{$x$} است. به‌همین‌ترتیب \lr{$f_{Y}(y)$} روی محور \lr{$y$} تصویر می‌شود.
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی}
+
+\lr{\mbox{PDF}} مشترک: \lr{$f_{X,Y}(x,\,y) = 2e^{-x}e^{-2y}$}، \lr{$x \ge 0$}، \lr{$y \ge 0$}
+
+حاشیه‌ای‌ها:
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$\displaystyle f_{X}(x) = \int_{0}^{\infty} 2e^{-x}e^{-2y}\,dy = 2e^{-x} \cdot \left[\frac{1}{2}\right] = e^{-x} \to X \sim \mathrm{Exp}(1)$}
+\item
+  \lr{$f_{Y}(y) = \int_{0}^{\infty} 2e^{-x}e^{-2y}\,dx = 2e^{-2y} \cdot [1] = 2e^{-2y} \to Y \sim \mathrm{Exp}(2)$}
+\end{itemize}
+
+\end{PSbox}
+
+\PSsection{6.6}{توزیع‌های شرطی}
+
+\PSsubsection{گسسته}
+
+\PSdisplay{p_{X|Y}(x|y) = \frac{p_{X,Y}(x,y)}{p_Y(y)}}
+
+\PSsubsection{پیوسته}
+
+\PSdisplay{f_{X|Y}(x|y) = \frac{f_{X,Y}(x,y)}{f_Y(y)}}
+
+\PSsubsection{تفسیر}
+
+توزیع شرطی، \lr{$X$} را هنگامی توصیف می‌کند که \lr{$Y = y$} را \textbf{می‌دانیم}. این یک «برش» از توزیع مشترک در مقدار ثابت \lr{$y$} است که به‌گونه‌ای نرمال شده که انتگرال آن برابر 1 شود.
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی: سیگنال به‌شرط وضعیت کانال}
+
+توان دریافتی \lr{$Y$} به‌شرط وضعیت کانال \lr{$X$}:
+
+\begin{itemize}
+\tightlist
+\item
+  اگر کانال خوب باشد \lr{\mbox{$(X = 1)$: $Y \sim N(10,\, 1)$}}
+\item
+  اگر کانال ضعیف باشد \lr{\mbox{$(X = 0)$: $Y \sim N(2,\, 4)$}}
+\item
+  \lr{$P(X = 1) = 0.7$}، \lr{$P(X = 0) = 0.3$}
+\end{itemize}
+
+\lr{\mbox{PDF}}‌های شرطی رفتار گیرنده در هر وضعیت را توصیف می‌کنند.
+
+\end{PSbox}
+
+\PSsection{6.7}{استقلال دو متغیر تصادفی}
+
+\begin{PSbox}[unbreakable]{def}{تعریف}
+
+\lr{$X$} و \lr{$Y$} مستقل هستند اگر و تنها اگر:
+
+\PSdisplay{f_{X,Y}(x,y) = f_X(x) \cdot f_Y(y) \quad \PSmtext{for all } x, y}
+
+(یا به‌طور معادل برای \lr{\mbox{PMF}}‌ها: \lr{$p_{X,Y}(x,\,y) = p_{X}(x) \cdot p_{Y}(y)$})
+
+\end{PSbox}
+
+\PSsubsection{پیامدهای استقلال}
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$f_{X \mid Y}(x \mid y) = f_{X}(x)$} (دانستن \lr{$Y$} مقدار \lr{$X$} را تغییر نمی‌دهد)
+\item
+  \lr{$E[XY] = E[X]E[Y]$}
+\item
+  \lr{$\operatorname{Var}(X + Y) = \operatorname{Var}(X) + \operatorname{Var}(Y)$}
+\end{itemize}
+
+\PSsubsection{آزمون استقلال}
+
+بررسی کنید: آیا توزیع مشترک به حاصل‌ضرب یک تابع فقط از \lr{$x$} و یک تابع فقط از \lr{$y$} تجزیه می‌شود؟
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$f_{X,Y}(x,\,y) = 2e^{-x} \cdot e^{-2y} = [e^{-x}] \cdot [2e^{-2y}]$ \PSyes{}} مستقل!
+\item
+  \lr{$f_{X,Y}(x,\,y) = x + y$} برای \lr{\mbox{$0 \le x,\,y \le 1$ \ensuremath{\to}}} تجزیه نمی‌شود \lr{\mbox{\ensuremath{\to}}} مستقل نیست
+\end{itemize}
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی: سیگنال و نویز مستقل}
+
+سیگنال ارسالی \lr{$S$} و نویز کانال \lr{$N$} بر اساس فرض فیزیکی مستقل هستند:\PSbr{}\lr{$f_{S,N}(s,\,n) = f_{S}(s) \cdot f_{N}(n)$}
+
+این فرض استقلال برای طراحی سیستم مخابراتی بنیادی است.
+
+\end{PSbox}
+
+\PSsection{6.8}{امید ریاضی شرطی}
+
+\begin{PSbox}[unbreakable]{def}{تعریف}
+
+\PSdisplay{E[X|Y=y] = \begin{cases} \sum_x x \cdot p_{X|Y}(x|y) & \PSmtext{discrete} \\ \int_{-\infty}^{\infty} x \cdot f_{X|Y}(x|y) \, dx & \PSmtext{continuous} \end{cases}}
+
+\end{PSbox}
+
+\PSsubsection{تفسیر}
+
+\lr{$E[X \mid Y = y]$} \textbf{بهترین پیش‌بینی} \lr{$X$} است به‌شرط این‌که \lr{$Y = y$} را مشاهده کرده‌ایم (به معنای میانگین مربعات).
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی: مقاومت وابسته به دما}
+
+مقدار یک مقاومت \lr{$R$} به دما \lr{$T$} وابسته است. اگر \lr{$R \mid T \sim N(1000 + 0.5T,\, 4)$}:
+
+\lr{$E[R \mid T = 50^{\circ}C] = 1000 + 0.5(50) = 1025\,\Omega$}
+
+با دانستن دما، می‌توانیم مقاومت را پیش‌بینی کنیم.
+
+\end{PSbox}
+
+\PSsection{6.9}{مثال‌های \lr{\mbox{MATLAB}}}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 1: مصورسازی \lr{\mbox{PMF}} مشترک}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Joint PMF: Retransmissions vs Delay Category}
+\VariableTok{pXY} \OperatorTok{=}\NormalTok{ [}\FloatTok{0.30} \FloatTok{0.10}\OperatorTok{;} \FloatTok{0.15} \FloatTok{0.20}\OperatorTok{;} \FloatTok{0.05} \FloatTok{0.20}\NormalTok{]}\OperatorTok{;}
+\VariableTok{x} \OperatorTok{=} \FloatTok{0}\OperatorTok{:}\FloatTok{2}\OperatorTok{;} \VariableTok{y} \OperatorTok{=} \FloatTok{1}\OperatorTok{:}\FloatTok{2}\OperatorTok{;}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{bar3}\NormalTok{(}\VariableTok{pXY}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Delay Category Y\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Retransmissions X\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{zlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(X=x, Y=y)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Joint PMF\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Marginals}
+\VariableTok{pX} \OperatorTok{=} \VariableTok{sum}\NormalTok{(}\VariableTok{pXY}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{\textquotesingle{};}   \CommentTok{\% Sum over Y}
+\VariableTok{pY} \OperatorTok{=} \VariableTok{sum}\NormalTok{(}\VariableTok{pXY}\OperatorTok{,} \FloatTok{1}\NormalTok{)}\OperatorTok{;}    \CommentTok{\% Sum over X}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Marginal of X: [\%.2f \%.2f \%.2f]\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{pX}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Marginal of Y: [\%.2f \%.2f]\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{pY}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 2: مصورسازی گاوسی دوبعدی}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Joint Gaussian PDF with Correlation}
+\VariableTok{mu} \OperatorTok{=}\NormalTok{ [}\FloatTok{0} \FloatTok{0}\NormalTok{]}\OperatorTok{;} \VariableTok{sigma\_x} \OperatorTok{=} \FloatTok{1}\OperatorTok{;} \VariableTok{sigma\_y} \OperatorTok{=} \FloatTok{1.5}\OperatorTok{;} \VariableTok{rho} \OperatorTok{=} \FloatTok{0.7}\OperatorTok{;}
+\VariableTok{Sigma} \OperatorTok{=}\NormalTok{ [}\VariableTok{sigma\_x}\OperatorTok{\^{}}\FloatTok{2}\OperatorTok{,} \VariableTok{rho}\OperatorTok{*}\VariableTok{sigma\_x}\OperatorTok{*}\VariableTok{sigma\_y}\OperatorTok{;} \VariableTok{rho}\OperatorTok{*}\VariableTok{sigma\_x}\OperatorTok{*}\VariableTok{sigma\_y}\OperatorTok{,} \VariableTok{sigma\_y}\OperatorTok{\^{}}\FloatTok{2}\NormalTok{]}\OperatorTok{;}
+
+\NormalTok{[}\VariableTok{X}\OperatorTok{,} \VariableTok{Y}\NormalTok{] }\OperatorTok{=} \VariableTok{meshgrid}\NormalTok{(}\VariableTok{linspace}\NormalTok{(}\OperatorTok{{-}}\FloatTok{4}\OperatorTok{,} \FloatTok{4}\OperatorTok{,} \FloatTok{100}\NormalTok{)}\OperatorTok{,} \VariableTok{linspace}\NormalTok{(}\OperatorTok{{-}}\FloatTok{5}\OperatorTok{,} \FloatTok{5}\OperatorTok{,} \FloatTok{100}\NormalTok{))}\OperatorTok{;}
+\VariableTok{XY} \OperatorTok{=}\NormalTok{ [}\VariableTok{X}\NormalTok{(}\OperatorTok{:}\NormalTok{) }\VariableTok{Y}\NormalTok{(}\OperatorTok{:}\NormalTok{)]}\OperatorTok{;}
+\VariableTok{Z} \OperatorTok{=} \VariableTok{mvnpdf}\NormalTok{(}\VariableTok{XY}\OperatorTok{,} \VariableTok{mu}\OperatorTok{,} \VariableTok{Sigma}\NormalTok{)}\OperatorTok{;}
+\VariableTok{Z} \OperatorTok{=} \VariableTok{reshape}\NormalTok{(}\VariableTok{Z}\OperatorTok{,} \VariableTok{size}\NormalTok{(}\VariableTok{X}\NormalTok{))}\OperatorTok{;}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{subplot}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\FloatTok{2}\OperatorTok{,}\FloatTok{1}\NormalTok{)}\OperatorTok{;}
+\VariableTok{surf}\NormalTok{(}\VariableTok{X}\OperatorTok{,} \VariableTok{Y}\OperatorTok{,} \VariableTok{Z}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}EdgeColor\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}none\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{view}\NormalTok{(}\FloatTok{30}\OperatorTok{,} \FloatTok{40}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}X\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Y\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{zlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}f\_\{X,Y\}(x,y)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\VariableTok{sprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Joint Gaussian (ρ = \%.1f)\textquotesingle{}}\OperatorTok{,} \VariableTok{rho}\NormalTok{))}\OperatorTok{;}
+
+\VariableTok{subplot}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\FloatTok{2}\OperatorTok{,}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{contour}\NormalTok{(}\VariableTok{X}\OperatorTok{,} \VariableTok{Y}\OperatorTok{,} \VariableTok{Z}\OperatorTok{,} \FloatTok{20}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}X\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Y\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Contour Plot\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{axis} \VariableTok{equal}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 3: آزمون استقلال}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Independence Check via Simulation}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+
+\CommentTok{\% Case 1: Independent (signal and noise)}
+\VariableTok{S} \OperatorTok{=} \VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}               \CommentTok{\% Signal}
+\VariableTok{Noise} \OperatorTok{=} \FloatTok{0.5}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}       \CommentTok{\% Independent noise}
+\VariableTok{R} \OperatorTok{=} \VariableTok{S} \OperatorTok{+} \VariableTok{Noise}\OperatorTok{;}                  \CommentTok{\% Received}
+
+\CommentTok{\% Case 2: Dependent (voltage and current through same resistor)}
+\VariableTok{V} \OperatorTok{=} \VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}               \CommentTok{\% Voltage}
+\VariableTok{I} \OperatorTok{=} \VariableTok{V} \OperatorTok{/} \FloatTok{50} \OperatorTok{+} \FloatTok{0.01}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\VariableTok{N}\NormalTok{)}\OperatorTok{;} \CommentTok{\% Current (dependent on V!)}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Independent (S, Noise): corr = \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{corr}\NormalTok{(}\VariableTok{S}\OperatorTok{\textquotesingle{},} \VariableTok{Noise}\OperatorTok{\textquotesingle{}}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Dependent (V, I): corr = \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{corr}\NormalTok{(}\VariableTok{V}\OperatorTok{\textquotesingle{},} \VariableTok{I}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 4: توزیع شرطی}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Conditional PDF: Slice of Bivariate Gaussian}
+\VariableTok{rho} \OperatorTok{=} \FloatTok{0.8}\OperatorTok{;} \VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+\VariableTok{X} \OperatorTok{=} \VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{Y} \OperatorTok{=} \VariableTok{rho}\OperatorTok{*}\VariableTok{X} \OperatorTok{+} \VariableTok{sqrt}\NormalTok{(}\FloatTok{1}\OperatorTok{{-}}\VariableTok{rho}\OperatorTok{\^{}}\FloatTok{2}\NormalTok{)}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}  \CommentTok{\% Y|X \textasciitilde{} N(rho*x, 1{-}rho\^{}2)}
+
+\CommentTok{\% Conditional: Y given X ≈ 1 (take samples where 0.9 \textless{} X \textless{} 1.1)}
+\VariableTok{mask} \OperatorTok{=}\NormalTok{ (}\VariableTok{X} \OperatorTok{\textgreater{}} \FloatTok{0.9}\NormalTok{) }\OperatorTok{\&}\NormalTok{ (}\VariableTok{X} \OperatorTok{\textless{}} \FloatTok{1.1}\NormalTok{)}\OperatorTok{;}
+\VariableTok{Y\_cond} \OperatorTok{=} \VariableTok{Y}\NormalTok{(}\VariableTok{mask}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{histogram}\NormalTok{(}\VariableTok{Y\_cond}\OperatorTok{,} \FloatTok{50}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Normalization\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}pdf\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+\VariableTok{y} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\OperatorTok{{-}}\FloatTok{3}\OperatorTok{,} \FloatTok{4}\OperatorTok{,} \FloatTok{200}\NormalTok{)}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{y}\OperatorTok{,} \VariableTok{normpdf}\NormalTok{(}\VariableTok{y}\OperatorTok{,} \VariableTok{rho}\OperatorTok{*}\FloatTok{1}\OperatorTok{,} \VariableTok{sqrt}\NormalTok{(}\FloatTok{1}\OperatorTok{{-}}\VariableTok{rho}\OperatorTok{\^{}}\FloatTok{2}\NormalTok{))}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Y\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}PDF\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}f\_\{Y|X\}(y|X≈1) for Bivariate Gaussian\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{legend}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Empirical\textquotesingle{}}\OperatorTok{,} \VariableTok{sprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}N(\%.1f, \%.2f)\textquotesingle{}}\OperatorTok{,} \VariableTok{rho}\OperatorTok{,} \FloatTok{1}\OperatorTok{{-}}\VariableTok{rho}\OperatorTok{\^{}}\FloatTok{2}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\PSsection{6.10}{مسایل تمرینی}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 1}
+
+\lr{\mbox{PDF}} مشترک: \lr{$f_{X,Y}(x,\,y) = 6(1-y)$} برای \lr{$0 \le x \le y \le 1$} و در جای دیگر صفر.
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  نرمال‌سازی را بررسی کنید. (ب) حاشیه‌ای‌ها را بیابید. (ج) آیا \lr{$X$} و \lr{$Y$} مستقل هستند؟ (د) \lr{$P(X < 0.5,\, Y < 0.5)$} را بیابید.
+\end{enumerate}
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  \lr{$\int_{0}^{1} \int_{0}^{y} 6(1-y)\,dx\,dy = \int_{0}^{1} 6y(1-y)\,dy = 6\left[\frac{y^{2}}{2} - \frac{y^{3}}{3}\right]_{0}^{1} = 6\left(\frac{1}{2} - \frac{1}{3}\right) = 1$ \PSyes{}}
+\item
+  \lr{$f_{X}(x) = \int_{x}^{1} 6(1-y)\,dy = 6\left[\left(1-\frac{y^{2}}{2}\right) - (y)\right]_{x}^{1} = 3(1-x)^{2}$}؛ \lr{$f_{Y}(y) = 6y(1-y)$}
+\item
+  \lr{\mbox{$f_{X,Y} \ne f_{X} \cdot f_{Y}$ \ensuremath{\to}}} مستقل نیستند (همچنین تکیه‌گاه مثلثی است، نه مستطیلی)
+\item
+  \lr{$\displaystyle P(X < 0.5,\, Y < 0.5) = \int_{0}^{0.5} \int_{0}^{y} 6(1-y)\,dx\,dy = \int_{0}^{0.5} 6y(1-y)\,dy = 6\left[\frac{y^{2}}{2} - \frac{y^{3}}{3}\right]_{0}^{0.5} = 0.500$}
+\end{enumerate}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 2}
+
+دو حسگر یک سیگنال را با نویز مستقل اندازه‌گیری می‌کنند. \lr{$X = S + N_{1}$}، \lr{$Y = S + N_{2}$} که در آن \lr{$S = 5\,\mathrm{V}$}، \lr{$N_{1} \sim N(0,\,1)$}، \lr{$N_{2} \sim N(0,\,4)$}. آیا \lr{$X$} و \lr{$Y$} مستقل هستند؟ \lr{$E[X]$}، \lr{$E[Y]$} را بیابید و توضیح دهید چرا \lr{$\operatorname{Cov}(X,\,Y) \ne 0$}.
+
+\PSsolution{} \lr{$X$} و \lr{$Y$} مستقل نیستند زیرا در \lr{$S$} مشترک‌اند (هرچند نویز مستقل است). \lr{$E[X] = E[Y] = 5$. $\operatorname{Cov}(X,\,Y) = \operatorname{Cov}(S+N_{1},\, S+N_{2}) = \operatorname{Var}(S) + \operatorname{Cov}(S,\,N_{1}) + \operatorname{Cov}(N_{2},\,S) + \operatorname{Cov}(N_{1},\,N_{2})$}. چون \lr{$S$} ثابت است، \lr{$\operatorname{Var}(S) = 0$}، بنابراین اگر \lr{$S$} تصادفی بود، آن‌ها همبسته می‌شدند. با \lr{$S$} ثابت، \lr{$X$} و \lr{$Y$} در این حالت در واقع مستقل هستند. اگر \lr{$S$} تصادفی با \lr{$\operatorname{Var}(S) = \sigma_{S}^{2}$} باشد، آنگاه \lr{$\operatorname{Cov}(X,\,Y) = \sigma_{S}^{2}$}.
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 3}
+
+با توجه به \lr{\mbox{PMF}} مشترک در جدول بخش \PSnum{6.2}، موارد زیر را بیابید: (الف) \lr{$P(X \le 1,\, Y = 2)$}، (ب) \lr{$f_{X \mid Y}(x \mid Y = 1)$}، (ج) \lr{$E[X \mid Y = 1]$}.
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  \lr{$P(X \le 1,\, Y = 2) = p(0,\,2) + p(1,\,2) = 0.10 + 0.20 = 0.30$}
+\item
+  \lr{$p_{X \mid Y}(x \mid 1) = \frac{p(x,\,1)}{p_{Y}(1)}$: $p(0 \mid 1) = \frac{0.30}{0.50} = 0.60$}، \lr{$p(1 \mid 1) = \frac{0.15}{0.50} = 0.30$}، \lr{$p(2 \mid 1) = \frac{0.05}{0.50} = 0.10$}
+\item
+  \lr{$E[X \mid Y = 1] = 0(0.60) + 1(0.30) + 2(0.10) = 0.50$}
+\end{enumerate}
+
+\emph{ماژول بعدی: {ماژول 7 \lr{—} توابع دو متغیر تصادفی}}
+
+\end{PSbox}

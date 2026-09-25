@@ -1,0 +1,1076 @@
+\begin{PSbox}[unbreakable]{obj}{اهداف یادگیری}
+
+پس از تکمیل این ماژول، دانشجویان قادر خواهند بود:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  آزمایش‌های تصادفی را تعریف کنند و فضای نمونه را برای سناریوهای مهندسی شناسایی کنند
+\item
+  عملیات مجموعه‌ای را برای تعریف رویدادهای پیچیده به کار ببرند
+\item
+  از اصول موضوعه احتمال برای استخراج قواعد احتمال استفاده کنند
+\item
+  احتمال‌های شرطی را محاسبه کنند
+\item
+  استقلال آماری را تعیین کنند
+\item
+  قضیه بیز را در مسایل استنباط مهندسی به کار ببرند
+\item
+  از قضیه احتمال کل برای تحلیل چندمسیری استفاده کنند
+\item
+  آزمایش‌های تصادفی را در \lr{\mbox{MATLAB}} شبیه‌سازی کنند
+\end{enumerate}
+
+\end{PSbox}
+
+\PSsection{1.1}{مقدمه: چرا احتمال در مهندسی؟}
+
+\PSsubsection{واقعیت مهندسی}
+
+هیچ سیستم مهندسی در یک دنیای کاملاً قطعی عمل نمی‌کند. موارد زیر را در نظر بگیرید:
+
+\begin{itemize}
+\tightlist
+\item
+  یک سیستم ارتباط دیجیتال بیت‌ها را ارسال می‌کند، اما \textbf{نویز} برخی بیت‌ها را به‌صورت تصادفی خراب می‌کند
+\item
+  یک خط تولید مقاومت‌ها را تولید می‌کند، اما مقادیر آن‌ها حول مقدار نامی \textbf{تغییر می‌کنند}
+\item
+  یک حسگر دما را اندازه‌گیری می‌کند، اما هر قرایت دارای \textbf{خطای تصادفی} است
+\item
+  یک سیگنال بی‌سیم به گیرنده می‌رسد، اما \textbf{محو‌شدگی} باعث تضعیف تصادفی می‌شود
+\end{itemize}
+
+\textbf{نظریه احتمال} چارچوب ریاضی لازم برای مدل‌سازی، تحلیل و طراحی سیستم‌هایی را فراهم می‌کند که تحت عدم‌قطعیت کار می‌کنند.
+
+\PSsubsection{پرسش مهندسی}
+
+\begin{PSquote}
+
+«اگر 1000 بیت را روی یک کانال نویزی ارسال کنم، انتظار دارم چند خطا رخ دهد؟ آیا می‌توانم کمتر از 5 خطا را تضمین کنم؟»
+
+\end{PSquote}
+
+برای پاسخ به این پرسش، به موارد زیر نیاز داریم:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  مدلی از پدیده تصادفی (خطاهای بیت)
+\item
+  ابزارهای ریاضی برای محاسبه احتمال‌ها
+\item
+  روش‌هایی برای اتخاذ تصمیم‌های مهندسی بر اساس این احتمال‌ها
+\end{enumerate}
+
+\PSsection{1.2}{آزمایش‌های تصادفی}
+
+\begin{PSbox}[unbreakable]{def}{تعریف}
+
+یک \textbf{آزمایش تصادفی} روشی است که:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  بتوان آن را تحت شرایط یکسان تکرار کرد
+\item
+  مجموعه‌ای کاملاً تعریف‌شده از خروجی‌های ممکن داشته باشد
+\item
+  خروجی آن پیش از انجام آزمایش با قطعیت قابل پیش‌بینی نباشد
+\end{enumerate}
+
+\end{PSbox}
+
+\PSsubsection{مثال‌های مهندسی}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}ccc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{آزمایش} & \PSth{زمینه} & \PSth{منبع عدم‌قطعیت} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+ارسال یک بیت روی یک کانال نویزی & ارتباطات & نویز حرارتی \\
+اندازه‌گیری مقدار یک مقاومت & الکترونیک & تغییرات ساخت \\
+شمارش بسته‌های واردشده در 1 ثانیه & شبکه & تصادفی‌بودن ترافیک \\
+اندازه‌گیری توان سیگنال دریافتی & ارتباطات بی‌سیم & محوشدگی، تداخل \\
+آزمون یک قطعه تا خرابی & قابلیت اطمینان & نقص مواد، فرسایش \\
+نمونه‌برداری از ولتاژ خروجی \lr{\mbox{ADC}} & پردازش سیگنال & کوانتیزه‌سازی + نویز \\
+\end{longtable}
+}
+
+\PSsubsection{تمایز کلیدی}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 2\tabcolsep) * \real{0.6364}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 2\tabcolsep) * \real{0.3636}}@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{قطعی} & \PSth{تصادفی} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+خروجی یک گیت منطقی با ورودی‌های معلوم & خروجی یک گیت منطقی با ورودی‌های نویزی \\
+مقاومت محاسبه‌شده از روی کد رنگی & مقاومت واقعی اندازه‌گیری‌شده \\
+تلفات مسیر در فضای آزاد در فاصله معلوم & توان دریافتی واقعی همراه با محوشدگی \\
+\end{longtable}
+}
+
+\PSsection{1.3}{فضاهای نمونه}
+
+\begin{PSbox}[unbreakable]{def}{تعریف}
+
+\textbf{فضای نمونه} \lr{$S$} (یا \lr{$\Omega$}) مجموعه تمام خروجی‌های ممکن یک آزمایش تصادفی است.
+
+\end{PSbox}
+
+\PSsubsection{انواع فضاهای نمونه}
+
+\textbf{گسسته (شمارا):}
+
+\begin{itemize}
+\tightlist
+\item
+  ارسال یک بیت: \lr{$S = \{0,\, 1\}$} (دریافت صحیح یا دریافت همراه با خطا)
+\item
+  تعداد خطاها در یک بسته \lr{$n$} بیتی: \lr{$S = \{0,\, 1,\, 2,\, \ldots,\, n\}$}
+\item
+  تعداد ورودها به یک سرور: \lr{$S = \{0,\, 1,\, 2,\, 3,\, \ldots \}$}
+\end{itemize}
+
+\textbf{پیوسته (ناشمارا):}
+
+\begin{itemize}
+\tightlist
+\item
+  ولتاژ اندازه‌گیری‌شده: \lr{$S = \mathbb{R}$} (یا یک بازه عملی مانند \lr{$[0,\, 5] V$})
+\item
+  زمان تا خرابی قطعه: \lr{$S = [0,\, \infty)$}
+\item
+  فاز سیگنال دریافتی: \lr{$S = [0,\, 2\pi)$}
+\end{itemize}
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی: سیستم ارتباطی}
+
+یک فرستنده یک بیت (0 یا 1) را روی یک کانال نویزی ارسال می‌کند. گیرنده تصمیم‌گیری می‌کند.
+
+\PSfigure{m01-sample-space}
+
+\end{PSbox}
+
+\PSsection{1.4}{رویدادها}
+
+\begin{PSbox}[unbreakable]{def}{تعریف}
+
+یک \textbf{رویداد} زیرمجموعه‌ای از فضای نمونه است. رویداد \textbf{رخ می‌دهد} اگر خروجی آزمایش به آن زیرمجموعه تعلق داشته باشد.
+
+\end{PSbox}
+
+\PSsubsection{انواع رویدادها}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{رویداد ساده}: دقیقاً شامل یک خروجی است. \lr{$E = \{(0,\,1)\}$}
+\item
+  \textbf{رویداد مرکب}: شامل چندین خروجی است. \lr{$E = \{(0,\,1),\, (1,\,0)\}$} (هر خطایی)
+\item
+  \textbf{رویداد قطعی}: کل فضای نمونه \lr{$S$} (همیشه رخ می‌دهد)
+\item
+  \textbf{رویداد ناممکن}: مجموعه تهی \lr{$\emptyset$} (هرگز رخ نمی‌دهد)
+\end{itemize}
+
+\PSsubsection{عملیات مجموعه‌ای روی رویدادها}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 6\tabcolsep) * \real{0.1930}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 6\tabcolsep) * \real{0.1754}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 6\tabcolsep) * \real{0.1579}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 6\tabcolsep) * \real{0.4737}}@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{عملیات} & \PSth{نمادگذاری} & \PSth{معنا} & \PSth{تفسیر مهندسی} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+اجتماع & \lr{$A \cup B$} & \lr{$A$} یا \lr{$B$} (یا هر دو) رخ می‌دهد & هر یک از حالت‌های خرابی \lr{$A$} یا \lr{$B$} موجب فعال‌شدن هشدار می‌شود \\
+اشتراک & \lr{$A \cap B$} & \lr{$A$} و \lr{$B$} هر دو رخ می‌دهند & هر دو حسگر سیگنال را تشخیص می‌دهند \\
+متمم & \lr{\mbox{$A^{c}$ or Ā}} & \lr{$A$} رخ نمی‌دهد & قطعه خراب نمی‌شود \\
+تفاضل & \lr{$A - B = A \cap B^{c}$} & \lr{$A$} رخ می‌دهد ولی \lr{$B$} رخ نمی‌دهد & حسگر \lr{$A$} فعال می‌شود ولی حسگر \lr{$B$} فعال نمی‌شود \\
+ناسازگار متقابل & \lr{$A \cap B = \emptyset$} & \lr{$A$} و \lr{$B$} نمی‌توانند هر دو رخ دهند & قطعه نمی‌تواند هم سالم و هم خراب باشد \\
+\end{longtable}
+}
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی: عیوب ساخت}
+
+بازرسی یک برد مدار سه نوع عیب را بررسی می‌کند:
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$A$} = عیب پل لحیم
+\item
+  \lr{$B$} = قطعه مفقود
+\item
+  \lr{$C$} = مقدار نادرست قطعه
+\end{itemize}
+
+رویدادها:
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$A \cup B \cup C$} = «برد دست‌کم یک عیب دارد»
+\item
+  \lr{$A \cap B$} = «برد هم عیب پل لحیم و هم یک قطعه مفقود دارد»
+\item
+  \lr{$(A \cup B \cup C)^{c}$} = «برد بدون عیب است»
+\end{itemize}
+
+\end{PSbox}
+
+\PSsection{1.5}{اصول موضوعه احتمال}
+
+\PSsubsection{اصول موضوعه کلموگروف}
+
+برای یک فضای نمونه \lr{$S$} که رویدادهایی روی آن تعریف شده‌اند، تابع احتمال \lr{$P$} شرایط زیر را برآورده می‌کند:
+
+\textbf{اصل موضوعه 1 (نامنفی‌بودن):}\PSdisplay{P(A) \geq 0 \quad \PSmtext{for any event } A}
+
+\textbf{اصل موضوعه 2 (نرمال‌سازی):}\PSdisplay{P(S) = 1}
+
+\textbf{اصل موضوعه 3 (جمع‌پذیری شمارا):}\PSbr{}برای رویدادهای ناسازگار متقابل \lr{$A_{1}$}، \lr{$A_{2}$}، \lr{$A_{3}$}، \lr{…}:\PSdisplay{P(A_1 \cup A_2 \cup A_3 \cup \cdots) = P(A_1) + P(A_2) + P(A_3) + \cdots}
+
+\PSsubsection{ویژگی‌های استخراج‌شده از اصول موضوعه}
+
+\textbf{ویژگی 1: قاعده متمم}\PSdisplay{P(A^c) = 1 - P(A)}
+
+\emph{اثبات:} \lr{$S = A \cup A^{c}$} و \lr{$A \cap A^{c} = \emptyset$}، بنابراین \lr{$P(S) = P(A) + P(A^{c}) = 1$}.
+
+\emph{معنای مهندسی:} \lr{$P(\text{\rl{عملکرد قطعه}}) = 1 - P(\text{\rl{خرابی قطعه}})$}
+
+\textbf{ویژگی 2: رویداد ناممکن}\PSdisplay{P(\emptyset) = 0}
+
+\textbf{ویژگی 3: یکنوایی}\PSbr{}اگر \lr{$A \subseteq B$}، آنگاه \lr{$P(A) \le P(B)$}
+
+\textbf{ویژگی 4: کران}\PSdisplay{0 \leq P(A) \leq 1}
+
+\textbf{ویژگی 5: شمول و عدم‌شمول (دو رویداد)}\PSdisplay{P(A \cup B) = P(A) + P(B) - P(A \cap B)}
+
+\emph{معنای مهندسی:} هنگام محاسبه احتمال «خرابی \lr{$A$} یا خرابی \lr{\mbox{B}}»، باید هم‌پوشانی‌ای را که در آن هر دو به‌طور هم‌زمان خراب می‌شوند، کم کنیم.
+
+\PSsection{1.6}{قواعد احتمال}
+
+\PSsubsection{قاعده جمع}
+
+برای هر دو رویداد:\PSdisplay{P(A \cup B) = P(A) + P(B) - P(A \cap B)}
+
+برای رویدادهای ناسازگار متقابل \lr{$(A \cap B = \emptyset)$}:\PSdisplay{P(A \cup B) = P(A) + P(B)}
+
+\PSsubsection{قاعده متمم}
+
+\PSdisplay{P(A) = 1 - P(A^c)}
+
+این قاعده اغلب ساده‌ترین روش برای محاسبه احتمال‌هاست:
+
+\begin{PSquote}
+
+\lr{$P(\text{\rl{دست‌کم یک خطا در 100 بیت}}) = 1 - P(\text{\rl{صفر خطا در 100 بیت}})$}
+
+\end{PSquote}
+
+\PSsubsection{شمول و عدم‌شمول (سه رویداد)}
+
+\PSdisplay{P(A \cup B \cup C) = P(A) + P(B) + P(C) - P(A \cap B) - P(A \cap C) - P(B \cap C) + P(A \cap B \cap C)}
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی: افزونگی شبکه}
+
+یک مرکز داده دارای سه پیوند شبکه مستقل است. هر پیوند با احتمال \PSnum{0.05} خراب می‌شود.
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$A$} = خرابی پیوند 1، \lr{$B$} = خرابی پیوند 2، \lr{$C$} = خرابی پیوند 3
+\item
+  \lr{$P(\text{\rl{دست‌کم یکی خراب می‌شود}}) = P(A \cup B \cup C)$}
+\item
+  با استفاده از شمول و عدم‌شمول:
+\end{itemize}
+
+\lr{$P(A \cup B \cup C) = 3(0.05) - 3(0.05)^{2} + (0.05)^{3} = 0.15 - 0.0075 + 0.000125 = 0.142625$}
+
+به‌صورت جایگزین: \lr{$P(\text{\rl{دست‌کم یکی خراب می‌شود}}) = 1 - P(\text{\rl{هیچ‌کدام خراب نمی‌شوند}}) = 1 - (0.95)^{3} = 0.142625$ \PSyes{}}
+
+\end{PSbox}
+
+\PSsection{1.7}{احتمال شرطی}
+
+\begin{PSbox}[unbreakable]{def}{تعریف}
+
+\textbf{احتمال شرطی} رویداد \lr{$A$} با توجه به اینکه رویداد \lr{$B$} رخ داده است:
+
+\PSdisplay{P(A|B) = \frac{P(A \cap B)}{P(B)}, \quad P(B) > 0}
+
+\end{PSbox}
+
+\PSsubsection{تفسیر}
+
+احتمال شرطی دانش ما را \textbf{به‌روزرسانی} می‌کند. هنگامی که می‌دانیم \lr{$B$} رخ داده است، فضای نمونه مؤثر از \lr{$S$} به \lr{$B$} کاهش می‌یابد و می‌پرسیم: «درون \lr{$B$}، احتمال \lr{$A$} چقدر است؟»
+
+\PSsubsection{تمایز کلیدی}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.3214}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.3571}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.3214}}@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{مفهوم} & \PSth{نمادگذاری} & \PSth{معنا} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+احتمال \lr{$A$} & \lr{$P(A)$} & احتمال \lr{$A$} بدون اطلاعات اضافی \\
+احتمال شرطی & \lr{$P(A \mid B)$} & احتمال \lr{$A$} \textbf{با توجه به اینکه} \lr{$B$} رخ داده است \\
+احتمال مشترک & \lr{$P(A \cap B)$} & احتمال اینکه \textbf{هر دو} \lr{$A$} و \lr{$B$} رخ دهند \\
+\end{longtable}
+}
+
+این کمیت‌ها با یکدیگر مرتبط‌اند: \lr{$P(A \cap B) = P(A \mid B) \cdot P(B) = P(B \mid A) \cdot P(A)$}
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی: نظریه آشکارسازی}
+
+یک سامانه راداری هواپیماها را آشکار می‌کند:
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$H_{1}$} = هواپیما وجود دارد (هدف)
+\item
+  \lr{$H_{0}$} = هواپیما وجود ندارد (بدون هدف)
+\item
+  \lr{$D$} = آشکارساز می‌گوید «هدف وجود دارد»
+\end{itemize}
+
+احتمال‌های شرطی مهم:
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$P(D \mid H_{1})$} = \textbf{احتمال آشکارسازی} (حساسیت)
+\item
+  \lr{$P(D \mid H_{0})$} = \textbf{احتمال هشدار کاذب}
+\item
+  \lr{$P(D^{c} \mid H_{1})$} = \textbf{احتمال عدم‌آشکارسازی} \lr{$= 1 - P(D \mid H_{1})$}
+\end{itemize}
+
+فرض کنید: \lr{$P(H_{1}) = 0.01$}، \lr{$P(D \mid H_{1}) = 0.95$}، \lr{$P(D \mid H_{0}) = 0.02$}
+
+\lr{$P(\text{\rl{هدف واقعاً وجود دارد}}\ \mid \text{\rl{آشکارساز وجود هدف را اعلام می‌کند}})$} چقدر است؟
+
+این مسیله به \textbf{قضیه بیز} نیاز دارد (بخش \PSnum{1.9).}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی: کانال ارتباطی}
+
+یک کانال متقارن دودویی دارای احتمال وارونگی \lr{$p = 0.01$} است:
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$P(\text{\rl{دریافت 1}}\ \mid \text{\rl{ارسال 0}}) = p = 0.01$}
+\item
+  \lr{$P(\text{\rl{دریافت 0}}\ \mid \text{\rl{ارسال 1}}) = p = 0.01$}
+\item
+  \lr{$P(\text{\rl{دریافت 0}}\ \mid \text{\rl{ارسال 0}}) = 1 - p = 0.99$}
+\item
+  \lr{$P(\text{\rl{دریافت 1}}\ \mid \text{\rl{ارسال 1}}) = 1 - p = 0.99$}
+\end{itemize}
+
+اگر بیت‌ها با احتمال مساوی 0 یا 1 باشند:
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$P(\text{\rl{ارسال 0}}\ \cap \text{\rl{دریافت 1}}) = P(\text{\rl{دریافت 1}}\ \mid \text{\rl{ارسال 0}}) \cdot P(\text{\rl{ارسال 0}}) = 0.01 \times 0.5 = 0.005$}
+\item
+  \lr{$P(\text{\rl{خطا}}) = P(\text{\rl{ارسال 0}}\ \cap \text{\rl{دریافت 1}}) + P(\text{\rl{ارسال 1}}\ \cap \text{\rl{دریافت 0}}) = 0.005 + 0.005 = 0.01$}
+\end{itemize}
+
+\end{PSbox}
+
+\PSsubsection{ویژگی‌های احتمال شرطی}
+
+احتمال شرطی خود یک معیار احتمال معتبر است:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \lr{$P(A \mid B) \ge 0$}
+\item
+  \lr{$P(S \mid B) = 1$}
+\item
+  \lr{$P(A_{1} \cup A_{2} \mid B) = P(A_{1} \mid B) + P(A_{2} \mid B)$} اگر \lr{$A_{1} \cap A_{2} = \emptyset$}
+\end{enumerate}
+
+\PSsubsection{قاعده ضرب (قاعده زنجیره‌ای)}
+
+\PSdisplay{P(A \cap B) = P(A|B) \cdot P(B) = P(B|A) \cdot P(A)}
+
+برای سه رویداد:\PSdisplay{P(A \cap B \cap C) = P(A) \cdot P(B|A) \cdot P(C|A \cap B)}
+
+\PSsection{1.8}{استقلال}
+
+\begin{PSbox}[unbreakable]{def}{تعریف}
+
+رویدادهای \lr{$A$} و \lr{$B$} از نظر \textbf{آماری مستقل} هستند اگر:
+
+\PSdisplay{P(A \cap B) = P(A) \cdot P(B)}
+
+به‌طور معادل: \lr{$P(A \mid B) = P(A)$} \lr{—} دانستن اینکه \lr{$B$} رخ داده است، هیچ اطلاعاتی درباره \lr{$A$} نمی‌دهد.
+
+\end{PSbox}
+
+\PSsubsection{اهمیت مهندسی}
+
+استقلال به این معناست که \textbf{یک رویداد هیچ اطلاعاتی درباره رویداد دیگر فراهم نمی‌کند}. این یک فرض مدل‌سازی است که اغلب به کار می‌بریم:
+
+\begin{itemize}
+\tightlist
+\item
+  نمونه‌های نویز در زمان‌های مختلف مستقل هستند
+\item
+  خطاهای بیت در شکاف‌های زمانی مختلف مستقل هستند (کانال بدون حافظه)
+\item
+  خرابی قطعات در زیرسامانه‌های مختلف مستقل است
+\end{itemize}
+
+\PSsubsection{استقلال زوجی در برابر استقلال متقابل}
+
+برای سه رویداد \lr{$A$}، \lr{$B$}، \lr{$C$}:
+
+\textbf{استقلال زوجی} (هر سه زوج):
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$P(A \cap B) = P(A)P(B)$}
+\item
+  \lr{$P(A \cap C) = P(A)P(C)$}
+\item
+  \lr{$P(B \cap C) = P(B)P(C)$}
+\end{itemize}
+
+\textbf{استقلال متقابل} (تمام ترکیب‌ها):
+
+\begin{itemize}
+\tightlist
+\item
+  تمام شرایط استقلال زوجی بالا، و
+\item
+  \lr{$P(A \cap B \cap C) = P(A)P(B)P(C)$}
+\end{itemize}
+
+\begin{PSquote}
+
+\lr{\mbox{\PSwarn{}}} استقلال زوجی، استقلال متقابل را نتیجه نمی‌دهد!
+
+\end{PSquote}
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی: خرابی مستقل قطعات}
+
+یک سیستم دارای سه ماژول مستقل است که احتمال خرابی هر یک \PSnum{0.1} است.
+
+\lr{$P(\text{\rl{هر سه خراب شوند}}) = P(A)P(B)P(C) = (0.1)^{3} = 0.001$}
+
+\lr{$P(\text{\rl{سیستم کار می‌کند}}) = P(\text{\rl{دست‌کم یکی کار می‌کند}}) = 1 - P(\text{\rl{همه خراب شوند}}) = 1 - 0.001 = 0.999$}
+
+این محاسبه فقط به این دلیل معتبر است که خرابی‌ها مستقل هستند.
+
+\end{PSbox}
+
+\PSsubsection{آزمون استقلال}
+
+برای بررسی استقلال از روی داده‌ها:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \lr{$P(A)$}، \lr{$P(B)$} و \lr{$P(A \cap B)$} را به‌صورت تجربی محاسبه کنید
+\item
+  بررسی کنید که آیا \lr{$P(A \cap B) \approx P(A) \cdot P(B)$} است
+\end{enumerate}
+
+اگر تقریباً برابر نباشند، رویدادها \textbf{وابسته} هستند.
+
+\PSsubsection{برداشت نادرست رایج}
+
+\begin{PSquote}
+
+\lr{\mbox{\PSno{}}} «رویدادهای ناسازگار متقابل مستقل هستند»
+
+\end{PSquote}
+
+این گزاره \textbf{نادرست} است. اگر \lr{$A \cap B = \emptyset$} و \lr{$P(A) > 0$}، \lr{$P(B) > 0$}، آنگاه:
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$P(A \cap B) = 0$}
+\item
+  \lr{$P(A)P(B) > 0$}
+\item
+  بنابراین \lr{$P(A \cap B) \ne P(A)P(B)$}
+\end{itemize}
+
+رویدادهای ناسازگار متقابل در واقع \textbf{به‌شدت وابسته} هستند \lr{—} اگر یکی رخ دهد، دیگری نمی‌تواند رخ دهد.
+
+\PSsection{1.9}{قضیه بیز}
+
+\PSsubsection{استخراج}
+
+از تعریف احتمال شرطی:
+
+\PSdisplay{P(A|B) = \frac{P(A \cap B)}{P(B)} = \frac{P(B|A) \cdot P(A)}{P(B)}}
+
+\PSsubsection{بیان کامل}
+
+اگر \lr{$B_{1}$}، \lr{$B_{2}$}، \lr{…}، \lr{$B_{n}$} فضای نمونه را افراز کنند (ناسازگار متقابل و جامع باشند):
+
+\PSdisplay{P(B_i|A) = \frac{P(A|B_i) \cdot P(B_i)}{\sum_{j=1}^{n} P(A|B_j) \cdot P(B_j)}}
+
+\PSsubsection{اصطلاحات}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.1818}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.1818}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.6364}}@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{اصطلاح} & \PSth{نام} & \PSth{معنای مهندسی} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\lr{$P(B_{i})$} & احتمال پیشین & آنچه پیش از مشاهده داده‌ها باور داشتیم \\
+\lr{$P(A \mid B_{i})$} & درست‌نمایی & با توجه به هر فرضیه، مشاهده با چه احتمالی رخ می‌دهد \\
+\lr{$P(B_{i} \mid A)$} & احتمال پسین & باور به‌روزشده پس از مشاهده داده‌ها \\
+\lr{$P(A)$} & شواهد & احتمال کل مشاهده \\
+\end{longtable}
+}
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی: تشخیص خطا}
+
+یک برد مدار می‌تواند در یکی از سه زیرسامانه دارای خطا باشد:
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$B_{1}$} = خطای منبع تغذیه، \lr{$P(B_{1}) = 0.3$}
+\item
+  \lr{$B_{2}$} = خطای پردازنده، \lr{$P(B_{2}) = 0.5$}
+\item
+  \lr{$B_{3}$} = خطای حافظه، \lr{$P(B_{3}) = 0.2$}
+\end{itemize}
+
+یک آزمون تشخیصی علامت \lr{$A$} (گرم‌شدن بیش از حد) را ایجاد می‌کند:
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$P(A \mid B_{1}) = 0.8$} (خطاهای منبع تغذیه معمولاً باعث گرم‌شدن بیش از حد می‌شوند)
+\item
+  \lr{$P(A \mid B_{2}) = 0.3$} (خطاهای پردازنده گاهی باعث گرم‌شدن بیش از حد می‌شوند)
+\item
+  \lr{$P(A \mid B_{3}) = 0.1$} (خطاهای حافظه به‌ندرت باعث گرم‌شدن بیش از حد می‌شوند)
+\end{itemize}
+
+\textbf{پرسش:} با توجه به مشاهده گرم‌شدن بیش از حد، محتمل‌ترین خطا کدام است؟
+
+\textbf{راه‌حل:}
+
+\lr{$P(A) = P(A \mid B_{1})P(B_{1}) + P(A \mid B_{2})P(B_{2}) + P(A \mid B_{3})P(B_{3})$}\PSbr{}\lr{$= (0.8)(0.3) + (0.3)(0.5) + (0.1)(0.2)$}\PSbr{}\lr{$= 0.24 + 0.15 + 0.02 = 0.41$}
+
+\lr{$P(B_{1} \mid A) = \frac{(0.8)(0.3)}{0.41} = 0.585$} (محتمل‌ترین!)\PSbr{}\lr{$\displaystyle P(B_{2} \mid A) = \frac{(0.3)(0.5)}{0.41} = 0.366$}\PSbr{}\lr{$\displaystyle P(B_{3} \mid A) = \frac{(0.1)(0.2)}{0.41} = 0.049$}
+
+\textbf{تصمیم مهندسی:} ابتدا منبع تغذیه را بررسی کنید.
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی: آشکارسازی با بیز}
+
+به مثال رادار از بخش \PSnum{1.7} بازمی‌گردیم:
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$P(H_{1}) = 0.01,\, P(D \mid H_{1}) = 0.95,\, P(D \mid H_{0}) = 0.02$}
+\end{itemize}
+
+\lr{$P(D) = P(D \mid H_{1})P(H_{1}) + P(D \mid H_{0})P(H_{0}) = (0.95)(0.01) + (0.02)(0.99) = 0.0095 + 0.0198 = 0.0293$}
+
+\lr{$\displaystyle P(H_{1} \mid D) = \frac{(0.95)(0.01)}{0.0293} = 0.324$}
+
+\textbf{تفسیر:} حتی با یک آشکارساز خوب (95\% آشکارسازی، 2\% هشدار کاذب)، هنگامی که اهداف نادر هستند (1\%)، بیشتر آشکارسازی‌ها هشدار کاذب‌اند! فقط \PSnum{32.4\%} از هشدارها با اهداف واقعی مطابقت دارند.
+
+\textbf{درس مهندسی:} طراحی سیستم باید \textbf{احتمال‌های پیشین} را در نظر بگیرد، نه فقط عملکرد آشکارساز را.
+
+\end{PSbox}
+
+\PSsection{1.10}{قضیه احتمال کل}
+
+\PSsubsection{بیان}
+
+اگر \lr{$B_{1}$}، \lr{$B_{2}$}، \lr{…}، \lr{$B_{n}$} یک \textbf{افراز} از \lr{$S$} تشکیل دهند (ناسازگار متقابل و جامع):
+
+\PSdisplay{P(A) = \sum_{i=1}^{n} P(A|B_i) \cdot P(B_i)}
+
+\PSsubsection{تفسیر}
+
+برای یافتن احتمال کل رویداد \lr{$A$}، آن را به تمام «مسیرهای» ممکن منتهی به \lr{$A$} از طریق افراز تجزیه کنید.
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی: ارتباط چندمسیری}
+
+یک بسته می‌تواند از طریق سه مسیر مختلف مسیریابی شود:
+
+\begin{itemize}
+\tightlist
+\item
+  مسیر 1: در 50\% مواقع انتخاب می‌شود، احتمال خطا \PSnum{0.01}
+\item
+  مسیر 2: در 30\% مواقع انتخاب می‌شود، احتمال خطا \PSnum{0.05}
+\item
+  مسیر 3: در 20\% مواقع انتخاب می‌شود، احتمال خطا \PSnum{0.10}
+\end{itemize}
+
+\lr{$P(\text{\rl{خطای بسته}}) = P(\PSmtext{error}\ \mid \PSmtext{path 1})P(\PSmtext{path 1}) + P(\PSmtext{error}\ \mid \PSmtext{path 2})P(\PSmtext{path 2}) + P(\PSmtext{error}\ \mid \PSmtext{path 3})P(\PSmtext{path 3})$}\PSbr{}\lr{$= (0.01)(0.50) + (0.05)(0.30) + (0.10)(0.20)$}\PSbr{}\lr{$= 0.005 + 0.015 + 0.020 = 0.040$}
+
+\textbf{نرخ خطای کلی: 4\%}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی: تولید با تأمین‌کنندگان متعدد}
+
+یک شرکت خازن‌ها را از دو تأمین‌کننده تهیه می‌کند:
+
+\begin{itemize}
+\tightlist
+\item
+  تأمین‌کننده \lr{\mbox{$A$: 60\%}} خازن‌ها را تأمین می‌کند، نرخ عیب 2\%
+\item
+  تأمین‌کننده \lr{\mbox{$B$: 40\%}} خازن‌ها را تأمین می‌کند، نرخ عیب 5\%
+\end{itemize}
+
+\lr{$P(\text{\rl{معیوب}}) = P(\text{\rl{معیوب}}\ \mid A)P(A) + P(\text{\rl{معیوب}}\ \mid B)P(B)$}\PSbr{}\lr{$= (0.02)(0.60) + (0.05)(0.40)$}\PSbr{}\lr{$= 0.012 + 0.020 = 0.032$}
+
+اگر یک خازن معیوب پیدا شود، کدام تأمین‌کننده احتمالاً آن را تولید کرده است؟
+
+\lr{$\displaystyle P(A \mid \text{\rl{معیوب}}) = \frac{(0.02)(0.60)}{0.032} = 0.375$}\PSbr{}\lr{$\displaystyle P(B \mid \text{\rl{معیوب}}) = \frac{(0.05)(0.40)}{0.032} = 0.625$}
+
+با وجود تأمین تعداد کمتری از واحدها، احتمال اینکه تأمین‌کننده \lr{$B$} مسیول یک عیب مشخص باشد بیشتر است.
+
+\end{PSbox}
+
+\PSsection{1.11}{مثال‌های \lr{\mbox{MATLAB}}}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 1: شبیه‌سازی پرتاب سکه (آزمایش تصادفی)}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Simulating a Random Experiment: Biased Coin}
+\CommentTok{\% A communication channel has bit error probability p = 0.1}
+\CommentTok{\% Simulate transmitting N bits and count errors}
+
+\VariableTok{p} \OperatorTok{=} \FloatTok{0.1}\OperatorTok{;}          \CommentTok{\% Bit error probability}
+\VariableTok{N} \OperatorTok{=} \FloatTok{10000}\OperatorTok{;}        \CommentTok{\% Number of bits transmitted}
+
+\CommentTok{\% Generate random outcomes: 1 = error, 0 = correct}
+\VariableTok{errors} \OperatorTok{=} \VariableTok{rand}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{) }\OperatorTok{\textless{}} \VariableTok{p}\OperatorTok{;}
+
+\CommentTok{\% Empirical probability of error}
+\VariableTok{p\_empirical} \OperatorTok{=} \VariableTok{sum}\NormalTok{(}\VariableTok{errors}\NormalTok{) }\OperatorTok{/} \VariableTok{N}\OperatorTok{;}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Theoretical P(error) = \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{p}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Empirical P(error)   = \%.4f (from \%d trials)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{p\_empirical}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Difference           = \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{abs}\NormalTok{(}\VariableTok{p} \OperatorTok{{-}} \VariableTok{p\_empirical}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 2: راستی‌آزمایی قاعده جمع}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Verifying Inclusion{-}Exclusion with Simulation}
+\CommentTok{\% Two independent failure modes:}
+\CommentTok{\% A = overheating (P = 0.05)}
+\CommentTok{\% B = power surge (P = 0.03)}
+
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}       \CommentTok{\% Number of trials}
+\VariableTok{pA} \OperatorTok{=} \FloatTok{0.05}\OperatorTok{;}
+\VariableTok{pB} \OperatorTok{=} \FloatTok{0.03}\OperatorTok{;}
+
+\CommentTok{\% Generate independent failures}
+\VariableTok{A} \OperatorTok{=} \VariableTok{rand}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{) }\OperatorTok{\textless{}} \VariableTok{pA}\OperatorTok{;}
+\VariableTok{B} \OperatorTok{=} \VariableTok{rand}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{) }\OperatorTok{\textless{}} \VariableTok{pB}\OperatorTok{;}
+
+\CommentTok{\% Empirical probabilities}
+\VariableTok{pA\_emp} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{A}\NormalTok{)}\OperatorTok{;}
+\VariableTok{pB\_emp} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{B}\NormalTok{)}\OperatorTok{;}
+\VariableTok{pAB\_emp} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{A} \OperatorTok{\&} \VariableTok{B}\NormalTok{)}\OperatorTok{;}           \CommentTok{\% Both occur}
+\VariableTok{pAuB\_emp} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{A} \OperatorTok{|} \VariableTok{B}\NormalTok{)}\OperatorTok{;}          \CommentTok{\% At least one occurs}
+
+\CommentTok{\% Theoretical (independent)}
+\VariableTok{pAB\_theory} \OperatorTok{=} \VariableTok{pA} \OperatorTok{*} \VariableTok{pB}\OperatorTok{;}
+\VariableTok{pAuB\_theory} \OperatorTok{=} \VariableTok{pA} \OperatorTok{+} \VariableTok{pB} \OperatorTok{{-}} \VariableTok{pA}\OperatorTok{*}\VariableTok{pB}\OperatorTok{;}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(A ∩ B): Theory = \%.5f, Empirical = \%.5f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{pAB\_theory}\OperatorTok{,} \VariableTok{pAB\_emp}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(A ∪ B): Theory = \%.5f, Empirical = \%.5f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{pAuB\_theory}\OperatorTok{,} \VariableTok{pAuB\_emp}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 3: شبیه‌سازی احتمال شرطی}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Conditional Probability: Binary Symmetric Channel}
+\CommentTok{\% P(error | sent 0) = P(error | sent 1) = p = 0.1}
+
+\VariableTok{p\_crossover} \OperatorTok{=} \FloatTok{0.1}\OperatorTok{;}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+
+\CommentTok{\% Randomly generate transmitted bits (equally likely 0 or 1)}
+\VariableTok{transmitted} \OperatorTok{=} \VariableTok{randi}\NormalTok{([}\FloatTok{0}\OperatorTok{,} \FloatTok{1}\NormalTok{]}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Channel: flip each bit with probability p\_crossover}
+\VariableTok{noise} \OperatorTok{=} \VariableTok{rand}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{) }\OperatorTok{\textless{}} \VariableTok{p\_crossover}\OperatorTok{;}
+\VariableTok{received} \OperatorTok{=} \VariableTok{xor}\NormalTok{(}\VariableTok{transmitted}\OperatorTok{,} \VariableTok{noise}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Compute conditional probabilities}
+\VariableTok{sent\_0\_idx} \OperatorTok{=}\NormalTok{ (}\VariableTok{transmitted} \OperatorTok{==} \FloatTok{0}\NormalTok{)}\OperatorTok{;}
+\VariableTok{sent\_1\_idx} \OperatorTok{=}\NormalTok{ (}\VariableTok{transmitted} \OperatorTok{==} \FloatTok{1}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% P(received = 1 | sent = 0)}
+\VariableTok{p\_1\_given\_sent0} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{received}\NormalTok{(}\VariableTok{sent\_0\_idx}\NormalTok{))}\OperatorTok{;}
+\CommentTok{\% P(received = 0 | sent = 1)  }
+\VariableTok{p\_0\_given\_sent1} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{received}\NormalTok{(}\VariableTok{sent\_1\_idx}\NormalTok{))}\OperatorTok{;}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(receive 1 | sent 0) = \%.4f (theory: \%.4f)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{p\_1\_given\_sent0}\OperatorTok{,} \VariableTok{p\_crossover}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(receive 0 | sent 1) = \%.4f (theory: \%.4f)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{p\_0\_given\_sent1}\OperatorTok{,} \VariableTok{p\_crossover}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\PSsubsection{مثال 4: شبیه‌سازی قضیه بیز}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Bayes\textquotesingle{} Theorem: Fault Diagnosis Simulation}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+
+\CommentTok{\% Prior probabilities of fault types}
+\VariableTok{p\_power} \OperatorTok{=} \FloatTok{0.3}\OperatorTok{;}   \VariableTok{p\_proc} \OperatorTok{=} \FloatTok{0.5}\OperatorTok{;}   \VariableTok{p\_mem} \OperatorTok{=} \FloatTok{0.2}\OperatorTok{;}
+
+\CommentTok{\% Likelihoods of symptom (overheating) given fault type}
+\VariableTok{p\_sym\_power} \OperatorTok{=} \FloatTok{0.8}\OperatorTok{;}  \VariableTok{p\_sym\_proc} \OperatorTok{=} \FloatTok{0.3}\OperatorTok{;}  \VariableTok{p\_sym\_mem} \OperatorTok{=} \FloatTok{0.1}\OperatorTok{;}
+
+\CommentTok{\% Simulate: generate fault type for each trial}
+\VariableTok{fault\_type} \OperatorTok{=} \VariableTok{zeros}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{r} \OperatorTok{=} \VariableTok{rand}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fault\_type}\NormalTok{(}\VariableTok{r} \OperatorTok{\textless{}} \VariableTok{p\_power}\NormalTok{) }\OperatorTok{=} \FloatTok{1}\OperatorTok{;}                          \CommentTok{\% Power supply}
+\VariableTok{fault\_type}\NormalTok{(}\VariableTok{r} \OperatorTok{\textgreater{}=} \VariableTok{p\_power} \OperatorTok{\&} \VariableTok{r} \OperatorTok{\textless{}} \VariableTok{p\_power} \OperatorTok{+} \VariableTok{p\_proc}\NormalTok{) }\OperatorTok{=} \FloatTok{2}\OperatorTok{;}  \CommentTok{\% Processor}
+\VariableTok{fault\_type}\NormalTok{(}\VariableTok{r} \OperatorTok{\textgreater{}=} \VariableTok{p\_power} \OperatorTok{+} \VariableTok{p\_proc}\NormalTok{) }\OperatorTok{=} \FloatTok{3}\OperatorTok{;}                \CommentTok{\% Memory}
+
+\CommentTok{\% Generate symptom based on fault type}
+\VariableTok{symptom} \OperatorTok{=} \VariableTok{zeros}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{symptom}\NormalTok{(}\VariableTok{fault\_type} \OperatorTok{==} \FloatTok{1}\NormalTok{) }\OperatorTok{=} \VariableTok{rand}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{sum}\NormalTok{(}\VariableTok{fault\_type}\OperatorTok{==}\FloatTok{1}\NormalTok{)) }\OperatorTok{\textless{}} \VariableTok{p\_sym\_power}\OperatorTok{;}
+\VariableTok{symptom}\NormalTok{(}\VariableTok{fault\_type} \OperatorTok{==} \FloatTok{2}\NormalTok{) }\OperatorTok{=} \VariableTok{rand}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{sum}\NormalTok{(}\VariableTok{fault\_type}\OperatorTok{==}\FloatTok{2}\NormalTok{)) }\OperatorTok{\textless{}} \VariableTok{p\_sym\_proc}\OperatorTok{;}
+\VariableTok{symptom}\NormalTok{(}\VariableTok{fault\_type} \OperatorTok{==} \FloatTok{3}\NormalTok{) }\OperatorTok{=} \VariableTok{rand}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{sum}\NormalTok{(}\VariableTok{fault\_type}\OperatorTok{==}\FloatTok{3}\NormalTok{)) }\OperatorTok{\textless{}} \VariableTok{p\_sym\_mem}\OperatorTok{;}
+
+\CommentTok{\% Compute posterior: P(fault\_type | symptom = 1)}
+\VariableTok{sym\_idx} \OperatorTok{=} \VariableTok{logical}\NormalTok{(}\VariableTok{symptom}\NormalTok{)}\OperatorTok{;}
+\VariableTok{p\_power\_given\_sym} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{fault\_type}\NormalTok{(}\VariableTok{sym\_idx}\NormalTok{) }\OperatorTok{==} \FloatTok{1}\NormalTok{)}\OperatorTok{;}
+\VariableTok{p\_proc\_given\_sym} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{fault\_type}\NormalTok{(}\VariableTok{sym\_idx}\NormalTok{) }\OperatorTok{==} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{p\_mem\_given\_sym} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{fault\_type}\NormalTok{(}\VariableTok{sym\_idx}\NormalTok{) }\OperatorTok{==} \FloatTok{3}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Theoretical values}
+\VariableTok{p\_sym} \OperatorTok{=} \VariableTok{p\_sym\_power}\OperatorTok{*}\VariableTok{p\_power} \OperatorTok{+} \VariableTok{p\_sym\_proc}\OperatorTok{*}\VariableTok{p\_proc} \OperatorTok{+} \VariableTok{p\_sym\_mem}\OperatorTok{*}\VariableTok{p\_mem}\OperatorTok{;}
+\VariableTok{theory\_power} \OperatorTok{=} \VariableTok{p\_sym\_power}\OperatorTok{*}\VariableTok{p\_power} \OperatorTok{/} \VariableTok{p\_sym}\OperatorTok{;}
+\VariableTok{theory\_proc} \OperatorTok{=} \VariableTok{p\_sym\_proc}\OperatorTok{*}\VariableTok{p\_proc} \OperatorTok{/} \VariableTok{p\_sym}\OperatorTok{;}
+\VariableTok{theory\_mem} \OperatorTok{=} \VariableTok{p\_sym\_mem}\OperatorTok{*}\VariableTok{p\_mem} \OperatorTok{/} \VariableTok{p\_sym}\OperatorTok{;}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(power fault | symptom): Empirical = \%.3f, Theory = \%.3f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{p\_power\_given\_sym}\OperatorTok{,} \VariableTok{theory\_power}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(proc fault  | symptom): Empirical = \%.3f, Theory = \%.3f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{p\_proc\_given\_sym}\OperatorTok{,} \VariableTok{theory\_proc}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(mem fault   | symptom): Empirical = \%.3f, Theory = \%.3f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{p\_mem\_given\_sym}\OperatorTok{,} \VariableTok{theory\_mem}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 5: آزمون استقلال}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Testing Independence vs. Dependence}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+
+\CommentTok{\% Case 1: Independent events}
+\VariableTok{A\_ind} \OperatorTok{=} \VariableTok{rand}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{) }\OperatorTok{\textless{}} \FloatTok{0.3}\OperatorTok{;}
+\VariableTok{B\_ind} \OperatorTok{=} \VariableTok{rand}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{) }\OperatorTok{\textless{}} \FloatTok{0.4}\OperatorTok{;}  \CommentTok{\% Generated independently}
+
+\VariableTok{pA} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{A\_ind}\NormalTok{)}\OperatorTok{;}
+\VariableTok{pB} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{B\_ind}\NormalTok{)}\OperatorTok{;}
+\VariableTok{pAB} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{A\_ind} \OperatorTok{\&} \VariableTok{B\_ind}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Independent case:\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}  P(A)*P(B) = \%.4f, P(A∩B) = \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{pA}\OperatorTok{*}\VariableTok{pB}\OperatorTok{,} \VariableTok{pAB}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Case 2: Dependent events (B depends on A)}
+\VariableTok{A\_dep} \OperatorTok{=} \VariableTok{rand}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{) }\OperatorTok{\textless{}} \FloatTok{0.3}\OperatorTok{;}
+\VariableTok{B\_dep} \OperatorTok{=} \VariableTok{zeros}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{B\_dep}\NormalTok{(}\VariableTok{A\_dep} \OperatorTok{==} \FloatTok{1}\NormalTok{) }\OperatorTok{=} \VariableTok{rand}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{sum}\NormalTok{(}\VariableTok{A\_dep}\NormalTok{)) }\OperatorTok{\textless{}} \FloatTok{0.7}\OperatorTok{;}   \CommentTok{\% P(B|A) = 0.7}
+\VariableTok{B\_dep}\NormalTok{(}\VariableTok{A\_dep} \OperatorTok{==} \FloatTok{0}\NormalTok{) }\OperatorTok{=} \VariableTok{rand}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{sum}\NormalTok{(}\OperatorTok{\textasciitilde{}}\VariableTok{A\_dep}\NormalTok{)) }\OperatorTok{\textless{}} \FloatTok{0.2}\OperatorTok{;}  \CommentTok{\% P(B|not A) = 0.2}
+
+\VariableTok{pA} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{A\_dep}\NormalTok{)}\OperatorTok{;}
+\VariableTok{pB} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{B\_dep}\NormalTok{)}\OperatorTok{;}
+\VariableTok{pAB} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{A\_dep} \OperatorTok{\&} \VariableTok{B\_dep}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Dependent case:\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}  P(A)*P(B) = \%.4f, P(A∩B) = \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{pA}\OperatorTok{*}\VariableTok{pB}\OperatorTok{,} \VariableTok{pAB}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}  These differ =\textgreater{} events are dependent\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\PSsection{1.12}{خلاصه: تمایزهای کلیدی}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.2195}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.2683}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.5122}}@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{مفهوم} & \PSth{تعریف} & \PSth{معنای مهندسی} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{رویداد} & زیرمجموعه‌ای از فضای نمونه & یک خروجی مشخص یا مجموعه‌ای از خروجی‌ها که مورد توجه ما هستند \\
+\textbf{احتمال} & \lr{$P(A)$} = معیار احتمال وقوع & فراوانی نسبی بلندمدت وقوع \\
+\textbf{احتمال شرطی} & \lr{$P(A \mid B)$} = احتمال به‌روزشده با توجه به \lr{$B$} & اینکه دانستن یک رویداد چگونه احتمال رویداد دیگر را تغییر می‌دهد \\
+\textbf{استقلال} & \lr{$P(A \cap B) = P(A)P(B)$} & دانستن یک رویداد هیچ اطلاعاتی درباره دیگری نمی‌دهد \\
+\end{longtable}
+}
+
+\PSsection{1.13}{مسایل تمرینی}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 1: قابلیت اطمینان قطعات}
+
+یک سیستم دارای دو پردازنده مستقل است. پردازنده 1 با احتمال \PSnum{0.02} و پردازنده 2 با احتمال \PSnum{0.03} خراب می‌شود. سیستم فقط در صورتی از کار می‌افتد که هر دو پردازنده خراب شوند.
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  احتمال خرابی سیستم چقدر است؟
+\item
+  احتمال اینکه دست‌کم یکی از پردازنده‌ها خراب شود چقدر است؟
+\item
+  با توجه به اینکه سیستم همچنان در حال کار است، احتمال اینکه پردازنده 1 خراب شده باشد چقدر است؟
+\end{enumerate}
+
+\textbf{راه‌حل:}
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\item
+  \lr{$P(\text{\rl{خرابی سیستم}}) = P(\text{\rl{هر دو خراب شوند}}) = (0.02)(0.03) = 0.0006$}
+\item
+  \lr{$P(\text{\rl{دست‌کم یکی خراب شود}}) = 1 - P(\text{\rl{هیچ‌کدام خراب نشوند}}) = 1 - (0.98)(0.97) = 1 - 0.9506 = 0.0494$}
+\item
+  سیستم در حال کار = \lr{\mbox{NOT(\rl{هر دو خراب شوند})}} = دست‌کم یکی کار می‌کند.\PSbr{}\lr{$\displaystyle P(P1\ \PSmtext{failed}\ \mid \PSmtext{system works}) = \frac{P(P1\ \PSmtext{failed}\ \cap P2\ \PSmtext{works})}{P(\PSmtext{system works})}$}\PSbr{}\lr{$\displaystyle = \frac{(0.02)(0.97)}{1 - 0.0006} = \frac{0.0194}{0.9994} \approx 0.0194$}
+\end{enumerate}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 2: آشکارسازی حسگر}
+
+یک سیستم آشکارسازی آتش دارای مقادیر زیر است: \lr{$P(\PSmtext{fire}) = 0.001$}، \lr{$P(\PSmtext{alarm}\ \mid \PSmtext{fire}) = 0.98$}، \lr{$P(\PSmtext{alarm}\ \mid \PSmtext{no fire}) = 0.01$}.
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  \lr{$P(\PSmtext{alarm})$} چقدر است؟
+\item
+  اگر هشدار به صدا درآید، \lr{$P(\PSmtext{fire}\ \mid \PSmtext{alarm})$} چقدر است؟
+\item
+  نتیجه را تفسیر کنید.
+\end{enumerate}
+
+\textbf{راه‌حل:}
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\item
+  \lr{$P(\PSmtext{alarm}) = P(\PSmtext{alarm}\ \mid \PSmtext{fire})P(\PSmtext{fire}) + P(\PSmtext{alarm}\ \mid \PSmtext{no fire})P(\PSmtext{no fire})$}\PSbr{}\lr{$= (0.98)(0.001) + (0.01)(0.999) = 0.000980 + 0.009990 = 0.010970$}
+\item
+  \lr{$\displaystyle P(\PSmtext{fire}\ \mid \PSmtext{alarm}) = \frac{P(\PSmtext{alarm}\ \mid \PSmtext{fire})P(\PSmtext{fire})}{P(\PSmtext{alarm})}$}\PSbr{}\lr{$\displaystyle = \frac{(0.98)(0.001)}{0.01097} = 0.0894$}
+\item
+  فقط حدود 9\% از هشدارها مربوط به آتش‌سوزی واقعی هستند! این همان مغالطه نرخ پایه است. حتی با وجود یک آشکارساز عالی، رویدادهای نادر هشدارهای کاذب زیادی ایجاد می‌کنند.
+\end{enumerate}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 3: خطای ارتباطی}
+
+یک بسته 8 بیتی ارسال می‌شود. هر بیت دارای احتمال خطای مستقل \PSnum{0.05} است.
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  \lr{$P(\text{\rl{عدم وجود خطا در بسته}})$} چقدر است؟
+\item
+  \lr{$P(\text{\rl{دقیقاً یک خطا}})$} چقدر است؟
+\item
+  \lr{$P(\text{\rl{دست‌کم یک خطا}})$} چقدر است؟
+\item
+  کد \lr{\mbox{MATLAB}} را برای راستی‌آزمایی از طریق شبیه‌سازی بنویسید.
+\end{enumerate}
+
+\textbf{راه‌حل:}
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\item
+  \lr{$P(\text{\rl{عدم وجود خطا}}) = (0.95)^{8} = 0.6634$}
+\item
+  \lr{$P(\text{\rl{دقیقاً یک خطا}}) = C(8,\,1)(0.05)^{1}(0.95)^{7} = 8 \times 0.05 \times 0.6983 = 0.2793$}
+\item
+  \lr{$P(\text{\rl{دست‌کم یک خطا}}) = 1 - P(\text{\rl{عدم وجود خطا}}) = 1 - 0.6634 = 0.3366$}
+\item
+  راستی‌آزمایی \lr{\mbox{MATLAB}}:
+\end{enumerate}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\VariableTok{p} \OperatorTok{=} \FloatTok{0.05}\OperatorTok{;} \VariableTok{n\_bits} \OperatorTok{=} \FloatTok{8}\OperatorTok{;} \VariableTok{N\_packets} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+\VariableTok{errors\_per\_packet} \OperatorTok{=} \VariableTok{sum}\NormalTok{(}\VariableTok{rand}\NormalTok{(}\VariableTok{n\_bits}\OperatorTok{,} \VariableTok{N\_packets}\NormalTok{) }\OperatorTok{\textless{}} \VariableTok{p}\OperatorTok{,} \FloatTok{1}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(0 errors) = \%.4f (theory: \%.4f)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{errors\_per\_packet}\OperatorTok{==}\FloatTok{0}\NormalTok{)}\OperatorTok{,} \FloatTok{0.95}\OperatorTok{\^{}}\FloatTok{8}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(1 error)  = \%.4f (theory: \%.4f)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{errors\_per\_packet}\OperatorTok{==}\FloatTok{1}\NormalTok{)}\OperatorTok{,} \FloatTok{8}\OperatorTok{*}\FloatTok{0.05}\OperatorTok{*}\FloatTok{0.95}\OperatorTok{\^{}}\FloatTok{7}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(\textgreater{}=1 error)= \%.4f (theory: \%.4f)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{errors\_per\_packet}\OperatorTok{\textgreater{}=}\FloatTok{1}\NormalTok{)}\OperatorTok{,} \FloatTok{1}\OperatorTok{{-}}\FloatTok{0.95}\OperatorTok{\^{}}\FloatTok{8}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 4: کاربرد احتمال کل}
+
+یک سیستم بی‌سیم در سه حالت کار می‌کند:
+
+\begin{itemize}
+\tightlist
+\item
+  حالت 1 (کانال خوب): 60\% از زمان، \lr{$P(\PSmtext{outage}) = 0.01$}
+\item
+  حالت 2 (کانال متوسط): 30\% از زمان، \lr{$P(\PSmtext{outage}) = 0.10$}
+\item
+  حالت 3 (کانال ضعیف): 10\% از زمان، \lr{$P(\PSmtext{outage}) = 0.50$}
+\end{itemize}
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  احتمال کلی قطعی چقدر است؟
+\item
+  با توجه به اینکه قطعی رخ داده است، احتمال اینکه سیستم در حالت 3 بوده باشد چقدر است؟
+\end{enumerate}
+
+\textbf{راه‌حل:}
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\item
+  \lr{$P(\PSmtext{outage}) = (0.01)(0.60) + (0.10)(0.30) + (0.50)(0.10) = 0.006 + 0.030 + 0.050 = 0.086$}
+\item
+  \lr{$\displaystyle P(\PSmtext{Mode 3}\ \mid \PSmtext{outage}) = \frac{(0.50)(0.10)}{0.086} = 0.581$}
+\end{enumerate}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 5: تحلیل استقلال}
+
+دو حسگر یک فرایند را پایش می‌کنند. حسگر \lr{$A$} دارای احتمال هشدار کاذب \PSnum{0.05} است. حسگر \lr{$B$} دارای احتمال هشدار کاذب \PSnum{0.03} است.
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  اگر حسگرها مستقل باشند، \lr{$P(\text{\rl{هر دو هشدار کاذب می‌دهند}})$} چقدر است؟
+\item
+  اگر حسگرها یک منبع نویز مشترک داشته باشند و \lr{$P(\text{\rl{هر دو هشدار کاذب}}) = 0.01$} باشد، آیا مستقل هستند؟
+\item
+  در حالت \lr{\mbox{(b)}}، \lr{$P(A\ \PSmtext{false alarm}\ \mid B\ \PSmtext{false alarm})$} چقدر است؟
+\end{enumerate}
+
+\textbf{راه‌حل:}
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\item
+  در صورت استقلال: \lr{$P(\text{\rl{هر دو}}) = (0.05)(0.03) = 0.0015$}
+\item
+  اگر \lr{$P(\text{\rl{هر دو}}) = 0.01 \ne 0.0015$}، آن‌ها مستقل نیستند. منبع نویز مشترک وابستگی ایجاد می‌کند.
+\item
+  \lr{$\displaystyle P(A \mid B) = \frac{P(A \cap B)}{P(B)} = \frac{0.01}{0.03} = 0.333$}
+\end{enumerate}
+
+این مقدار بسیار بیشتر از \lr{$P(A) = 0.05$} است و وابستگی شدید را تأیید می‌کند.
+
+\end{PSbox}
+
+\PSsection{1.14}{نکات کلیدی}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{احتمال عدم‌قطعیت را کمّی می‌کند} \lr{—} برای طراحی مهندسی تحت عدم‌قطعیت ضروری است
+\item
+  \textbf{احتمال شرطی باورها را به‌روزرسانی می‌کند} \lr{—} مبنای آشکارسازی، تخمین و تشخیص
+\item
+  \textbf{استقلال تحلیل را ساده می‌کند} \lr{—} اما باید توجیه شود، نه اینکه صرفاً فرض شود
+\item
+  \textbf{قضیه بیز احتمال‌های شرطی را معکوس می‌کند} \lr{—} از «احتمال شواهد با توجه به علت» به «احتمال علت با توجه به شواهد»
+\item
+  \textbf{نرخ‌های پایه اهمیت دارند} \lr{—} حتی آشکارسازهای خوب نیز هنگامی که رویدادها نادر هستند، هشدار کاذب تولید می‌کنند
+\item
+  \textbf{شبیه‌سازی تحلیل را اعتبارسنجی می‌کند} \lr{—} مونت‌کارلوی \lr{\mbox{MATLAB}} محاسبات نظری را تأیید می‌کند
+\end{enumerate}
+
+\emph{ماژول بعدی: {ماژول 2 \lr{—} یک متغیر تصادفی و توابع آن}}

@@ -1,0 +1,19 @@
+% Module 2 — CDF of a discrete RV: a staircase, jump at x = k equals p_X(k).
+% Levels taken from the labelled values of the original sketch (0.4, 0.8, 1.0).
+\begin{tikzpicture}
+\begin{axis}[PSplot, width=9.2cm, height=5.6cm,
+  xmin=-1.2, xmax=4.4, ymin=0, ymax=1.12,
+  xtick={0,1,2,3}, ytick={0,0.4,0.8,1.0},
+  yticklabel style={/pgf/number format/fixed, /pgf/number format/precision=1},
+  ymajorgrids, xlabel={$x$}, ylabel={$F_X(x)$}]
+  \addplot[PSnavy, line width=1.5pt] coordinates {(-1.2,0) (0,0)};
+  \foreach \a/\b/\v in {0/1/0.4, 1/2/0.6, 2/3/0.8}{
+    \edef\temp{\noexpand\addplot[PSnavy, line width=1.5pt] coordinates {(\a,\v) (\b,\v)};}\temp}
+  \addplot[PSnavy, line width=1.5pt] coordinates {(3,1.0) (4.3,1.0)};
+  % jumps (dotted) with closed dot at the new level, open dot at the old one
+  \foreach \x/\lo/\hi in {0/0/0.4, 1/0.4/0.6, 2/0.6/0.8, 3/0.8/1.0}{
+    \edef\temp{\noexpand\draw[PSnavy!45, densely dotted] (axis cs:\x,\lo) -- (axis cs:\x,\hi);
+      \noexpand\fill[PSteal] (axis cs:\x,\hi) circle (2.4pt);
+      \noexpand\draw[PSteal, fill=white, line width=0.9pt] (axis cs:\x,\lo) circle (2.4pt);}\temp}
+\end{axis}
+\end{tikzpicture}

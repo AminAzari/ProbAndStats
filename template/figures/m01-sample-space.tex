@@ -1,0 +1,19 @@
+% Module 1 — sample space of (transmitted, received) pairs for one bit
+\begin{tikzpicture}[font=\small, x=\ifPSrtl -1cm\else 1cm\fi,
+  cell/.style={rounded corners=3pt, minimum width=3.3cm, minimum height=1.25cm, align=center, line width=0.8pt},
+  ok/.style={cell, draw=PSteal, fill=PSteal!10},
+  bad/.style={cell, draw=PSrose, fill=PSrose!10},
+  hd/.style={font=\small\bfseries, text=PSnavy}]
+  \node[font=\normalsize] at (0,3.05) {\PSL{Sample space for (transmitted, received) pairs:}{فضای نمونه برای زوج‌های (ارسالی، دریافتی):}};
+  \node at (0,2.35) {$S=\{(0,0),\,(0,1),\,(1,0),\,(1,1)\}$};
+  % column / row headers
+  \node[hd] at (-1.8,1.45) {\PSL{received 0}{دریافت 0}};
+  \node[hd] at ( 1.8,1.45) {\PSL{received 1}{دریافت 1}};
+  \node[hd, anchor=\PSend] at (-3.75, 0.45) {\PSL{transmitted 0}{ارسال 0}};
+  \node[hd, anchor=\PSend] at (-3.75,-0.95) {\PSL{transmitted 1}{ارسال 1}};
+  % cells: (transmitted, received)
+  \node[ok]  at (-1.8, 0.45) {$(0,0)$\\[1pt]{\color{PSteal}\PSL{correct}{درست}}};
+  \node[bad] at ( 1.8, 0.45) {$(0,1)$\\[1pt]{\color{PSrose}\PSL{error}{خطا}}};
+  \node[bad] at (-1.8,-0.95) {$(1,0)$\\[1pt]{\color{PSrose}\PSL{error}{خطا}}};
+  \node[ok]  at ( 1.8,-0.95) {$(1,1)$\\[1pt]{\color{PSteal}\PSL{correct}{درست}}};
+\end{tikzpicture}

@@ -1,0 +1,13 @@
+% Module 2 — discrete probability as mass stored in numbered boxes
+\begin{tikzpicture}[font=\small]
+  \foreach \i/\m in {0/0.4, 1/0.3, 2/0.2, 3/0.1}{
+    \pgfmathsetmacro{\h}{\m*6}
+    \pgfmathsetmacro{\x}{\i*1.8}
+    \fill[PSteal!14, rounded corners=2pt] (\x,0) rectangle ++(1.35,\h);
+    \draw[PSteal, line width=0.9pt, rounded corners=2pt] (\x,0) rectangle ++(1.35,\h);
+    \node[font=\small\bfseries, text=PSnavy, anchor=north] at (\x+0.675,\h) {$\m$};
+    \node[text=PSnavy] at (\x+0.675,-0.35) {$x=\i$};
+  }
+  \draw[PSnavy!50] (-0.3,0) -- (7.0,0);
+  \node[text=PSnavy] at (3.35,-1.05) {\PSL{Total mass in all boxes $=1$}{جرم کل در همه جعبه‌ها $=1$}};
+\end{tikzpicture}

@@ -1,0 +1,1389 @@
+\begin{PSbox}[unbreakable]{obj}{اهداف یادگیری}
+
+پس از تکمیل این ماژول، دانشجویان قادر خواهند بود:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  تشخیص دهند که کدام توزیع احتمال یک سناریوی مهندسی معین را مدل می‌کند
+\item
+  \lr{$\frac{\mathrm{PMF}}{\mathrm{PDF}}$}، \lr{\mbox{CDF}}، میانگین و واریانس را برای تمام توزیع‌های اصلی بیان کنند
+\item
+  تفسیر فیزیکی و زمینه مهندسی هر توزیع را توضیح دهند
+\item
+  تعیین کنند چه زمانی از هر توزیع استفاده شود (و چه زمانی استفاده نشود)
+\item
+  توزیع‌ها را برای شبیه‌سازی در \lr{\mbox{MATLAB}} پیاده‌سازی کنند
+\item
+  الگوهای توزیع را از مشخصه‌های داده تشخیص دهند
+\end{enumerate}
+
+\end{PSbox}
+
+\PSsection{3.1}{مقدمه: انتخاب توزیع مناسب}
+
+\PSsubsection{چالش مهندسی}
+
+هنگام مدل‌سازی یک پدیده تصادفی، پرسش حیاتی این است:
+
+\begin{PSquote}
+
+«کدام توزیع احتمال این کمیت نامعین را بهتر توصیف می‌کند؟»
+
+\end{PSquote}
+
+انتخاب توزیع نادرست به پیش‌بینی‌های نادرست، طراحی‌های نامناسب و خرابی سیستم‌ها منجر می‌شود.
+
+\PSsubsection{چگونه انتخاب کنیم}
+
+توزیع باید با \textbf{سازوکار فیزیکی} تولید تصادفی‌بودن همخوانی داشته باشد:
+
+\begin{itemize}
+\tightlist
+\item
+  شمارش موفقیت‌ها \lr{\mbox{\ensuremath{\to}}} دوجمله‌ای
+\item
+  انتظار برای رویدادها \lr{\mbox{\ensuremath{\to}}} نمایی/هندسی
+\item
+  جمع بسیاری از اثرهای کوچک \lr{\mbox{\ensuremath{\to}}} گاوسی
+\item
+  پوش سیگنال در محوشدگی \lr{\mbox{\ensuremath{\to}}} رایلی
+\end{itemize}
+
+این ماژول ابزارهای لازم برای انجام درست این انتخاب را فراهم می‌کند.
+
+\PSsection{3.2}{توزیع برنولی}
+
+\PSsubsection{تفسیر فیزیکی}
+
+یک \textbf{آزمایش منفرد} با دو خروجی ممکن را مدل می‌کند: «موفقیت» (1) یا «شکست» (0).
+
+\PSsubsection{زمینه مهندسی}
+
+هر خروجی تصادفی دودویی:
+
+\begin{itemize}
+\tightlist
+\item
+  یک بیت ارسال‌شده: خطا یا درست
+\item
+  یک قطعه آزمایش‌شده: قبول یا رد
+\item
+  یک بسته ارسال‌شده: تحویل‌شده یا مفقود
+\item
+  یک تلاش آشکارسازی: هدف حاضر یا غایب
+\end{itemize}
+
+\begin{PSbox}[unbreakable]{def}{تعریف ریاضی}
+
+\lr{$X \sim \mathrm{Bernoulli}(p)$}، که در آن \lr{$p$} = احتمال موفقیت.
+
+\end{PSbox}
+
+\PSsubsection{\lr{\mbox{PMF}}}
+
+\PSdisplay{p_X(x) = \begin{cases} p & x = 1 \\ 1-p = q & x = 0 \end{cases}}
+
+شکل فشرده: \lr{$p_{X}(x) = p^{x}(1-p)^{1-x}$} برای \lr{$x \in \{0,\, 1\}$}
+
+\PSsubsection{\lr{\mbox{CDF}}}
+
+\PSdisplay{F_X(x) = \begin{cases} 0 & x < 0 \\ 1-p & 0 \leq x < 1 \\ 1 & x \geq 1 \end{cases}}
+
+\PSsubsection{میانگین}
+
+\PSdisplay{E[X] = p}
+
+\PSsubsection{واریانس}
+
+\PSdisplay{\PSmtext{Var}(X) = p(1-p)}
+
+بیشترین واریانس در \lr{$p = 0.5$} است (بیشترین عدم‌قطعیت).
+
+\PSsubsection{زمان استفاده}
+
+\lr{\mbox{\PSyes{}}} آزمایش دودویی منفرد با احتمال ثابت\PSbr{}\lr{\mbox{\PSyes{}}} بلوک سازنده برای توزیع‌های پیچیده‌تر\PSbr{}\lr{\mbox{\PSyes{}}} مدل‌سازی حالت‌های روشن/خاموش، خروجی‌های قبول/رد
+
+\PSsubsection{زمان عدم استفاده}
+
+\lr{\mbox{\PSno{}}} آزمایش‌های متعدد (از دوجمله‌ای استفاده کنید)\PSbr{}\lr{\mbox{\PSno{}}} خروجی دودویی نیست\PSbr{}\lr{\mbox{\PSno{}}} احتمال میان آزمایش‌ها تغییر می‌کند
+
+\PSsubsection{پیاده‌سازی در \lr{\mbox{MATLAB}}}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\% Generate Bernoulli random variables}
+\VariableTok{p} \OperatorTok{=} \FloatTok{0.1}\OperatorTok{;}          \CommentTok{\% Bit error probability}
+\VariableTok{N} \OperatorTok{=} \FloatTok{10000}\OperatorTok{;}
+\VariableTok{X} \OperatorTok{=} \VariableTok{binornd}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{p}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}  \CommentTok{\% or: X = rand(1,N) \textless{} p;}
+
+\CommentTok{\% Verify}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Mean: \%.4f (theory: \%.4f)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{X}\NormalTok{)}\OperatorTok{,} \VariableTok{p}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Var:  \%.4f (theory: \%.4f)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{var}\NormalTok{(}\VariableTok{X}\NormalTok{)}\OperatorTok{,} \VariableTok{p}\OperatorTok{*}\NormalTok{(}\FloatTok{1}\OperatorTok{{-}}\VariableTok{p}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\PSsection{3.3}{توزیع دوجمله‌ای}
+
+\PSsubsection{تفسیر فیزیکی}
+
+\textbf{تعداد موفقیت‌ها} را در \lr{$n$} آزمایش \textbf{مستقل} که هر یک همان احتمال موفقیت \lr{$p$} را دارند مدل می‌کند.
+
+\PSsubsection{زمینه مهندسی}
+
+\begin{itemize}
+\tightlist
+\item
+  تعداد خطاهای بیت در \lr{$n$} بیت ارسال‌شده
+\item
+  تعداد قطعات معیوب در یک دسته \lr{\mbox{n}}‌تایی
+\item
+  تعداد انتقال‌های موفق بسته از میان \lr{$n$} تلاش
+\item
+  تعداد حسگرهایی که یک سیگنال را آشکار می‌کنند (از میان \lr{$n$} حسگر)
+\end{itemize}
+
+\begin{PSbox}[unbreakable]{def}{تعریف ریاضی}
+
+\lr{$X \sim \mathrm{Binomial}(n,\, p)$}
+
+\end{PSbox}
+
+\PSsubsection{\lr{\mbox{PMF}}}
+
+\PSdisplay{p_X(k) = \binom{n}{k} p^k (1-p)^{n-k}, \quad k = 0, 1, 2, \ldots, n}
+
+که در آن \lr{$C(n,\,k) = \frac{n!}{k!(n-k)!}$}
+
+\PSsubsection{\lr{\mbox{CDF}}}
+
+\PSdisplay{F_X(k) = \sum_{i=0}^{\lfloor k \rfloor} \binom{n}{i} p^i (1-p)^{n-i}}
+
+فرم بسته ندارد \lr{—} از جدول‌ها یا \lr{\mbox{MATLAB}} استفاده کنید.
+
+\PSsubsection{میانگین}
+
+\PSdisplay{E[X] = np}
+
+\PSsubsection{واریانس}
+
+\PSdisplay{\PSmtext{Var}(X) = np(1-p)}
+
+\PSsubsection{زمان استفاده}
+
+\lr{\mbox{\PSyes{}}} تعداد ثابت آزمایش‌ها \lr{$n$}\PSbr{}\lr{\mbox{\PSyes{}}} هر آزمایش مستقل است\PSbr{}\lr{\mbox{\PSyes{}}} هر آزمایش همان احتمال \lr{$p$} را دارد\PSbr{}\lr{\mbox{\PSyes{}}} شمارش تعداد «موفقیت‌ها»
+
+\PSsubsection{زمان عدم استفاده}
+
+\lr{\mbox{\PSno{}}} آزمایش‌ها مستقل نیستند (خرابی‌های همبسته)\PSbr{}\lr{\mbox{\PSno{}}} احتمال میان آزمایش‌ها تغییر می‌کند\PSbr{}\lr{\mbox{\PSno{} $n$}} ثابت نیست (از دوجمله‌ای منفی یا پواسون استفاده کنید)\PSbr{}\lr{\mbox{\PSno{} $n$}} بسیار بزرگ با \lr{$p$} کوچک (از تقریب پواسون استفاده کنید)
+
+\PSsubsection{پیاده‌سازی در \lr{\mbox{MATLAB}}}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Binomial Distribution: Bit Errors in a Frame}
+\VariableTok{n} \OperatorTok{=} \FloatTok{100}\OperatorTok{;}         \CommentTok{\% bits per frame}
+\VariableTok{p} \OperatorTok{=} \FloatTok{0.05}\OperatorTok{;}        \CommentTok{\% bit error probability}
+\VariableTok{k} \OperatorTok{=} \FloatTok{0}\OperatorTok{:}\FloatTok{20}\OperatorTok{;}        \CommentTok{\% range of interest}
+
+\CommentTok{\% PMF and CDF}
+\VariableTok{pmf} \OperatorTok{=} \VariableTok{binopdf}\NormalTok{(}\VariableTok{k}\OperatorTok{,} \VariableTok{n}\OperatorTok{,} \VariableTok{p}\NormalTok{)}\OperatorTok{;}
+\VariableTok{cdf\_vals} \OperatorTok{=} \VariableTok{binocdf}\NormalTok{(}\VariableTok{k}\OperatorTok{,} \VariableTok{n}\OperatorTok{,} \VariableTok{p}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Plot PMF}
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{stem}\NormalTok{(}\VariableTok{k}\OperatorTok{,} \VariableTok{pmf}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}filled\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{1.5}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Number of Errors (k)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(X = k)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\VariableTok{sprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Binomial PMF: n=\%d, p=\%.2f\textquotesingle{}}\OperatorTok{,} \VariableTok{n}\OperatorTok{,} \VariableTok{p}\NormalTok{))}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;}
+
+\CommentTok{\% Simulation verification}
+\VariableTok{N\_sim} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+\VariableTok{X\_sim} \OperatorTok{=} \VariableTok{binornd}\NormalTok{(}\VariableTok{n}\OperatorTok{,} \VariableTok{p}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \VariableTok{N\_sim}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}E[X]: Theory = \%.2f, Simulation = \%.2f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{n}\OperatorTok{*}\VariableTok{p}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{X\_sim}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Var(X): Theory = \%.2f, Simulation = \%.2f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{n}\OperatorTok{*}\VariableTok{p}\OperatorTok{*}\NormalTok{(}\FloatTok{1}\OperatorTok{{-}}\VariableTok{p}\NormalTok{)}\OperatorTok{,} \VariableTok{var}\NormalTok{(}\VariableTok{X\_sim}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{PSbox}[unbreakable]{ex}{مثال شبیه‌سازی: نرخ خطای بسته}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Engineering Scenario: How many packets out of 50 have errors?}
+\CommentTok{\% Each packet has 1000 bits, BER = 1e{-}4}
+\CommentTok{\% A packet has an error if ANY bit is in error.}
+
+\VariableTok{BER} \OperatorTok{=} \FloatTok{1e{-}4}\OperatorTok{;}
+\VariableTok{bits\_per\_packet} \OperatorTok{=} \FloatTok{1000}\OperatorTok{;}
+\VariableTok{n\_packets} \OperatorTok{=} \FloatTok{50}\OperatorTok{;}
+
+\CommentTok{\% P(packet error) = 1 {-} P(all bits correct)}
+\VariableTok{p\_packet\_error} \OperatorTok{=} \FloatTok{1} \OperatorTok{{-}}\NormalTok{ (}\FloatTok{1} \OperatorTok{{-}} \VariableTok{BER}\NormalTok{)}\OperatorTok{\^{}}\VariableTok{bits\_per\_packet}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(packet error) = \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{p\_packet\_error}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Number of errored packets \textasciitilde{} Binomial(50, p\_packet\_error)}
+\VariableTok{k} \OperatorTok{=} \FloatTok{0}\OperatorTok{:}\FloatTok{10}\OperatorTok{;}
+\VariableTok{pmf\_packets} \OperatorTok{=} \VariableTok{binopdf}\NormalTok{(}\VariableTok{k}\OperatorTok{,} \VariableTok{n\_packets}\OperatorTok{,} \VariableTok{p\_packet\_error}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(0 packet errors) = \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{pmf\_packets}\NormalTok{(}\FloatTok{1}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(≤ 2 packet errors) = \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{sum}\NormalTok{(}\VariableTok{pmf\_packets}\NormalTok{(}\FloatTok{1}\OperatorTok{:}\FloatTok{3}\NormalTok{)))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\PSsection{3.4}{توزیع هندسی}
+
+\PSsubsection{تفسیر فیزیکی}
+
+\textbf{تعداد آزمایش‌ها تا نخستین موفقیت} را مدل می‌کند (یا به‌طور معادل، تعداد شکست‌ها پیش از نخستین موفقیت).
+
+\PSsubsection{زمینه مهندسی}
+
+\begin{itemize}
+\tightlist
+\item
+  تعداد انتقال‌ها تا تحویل موفق یک بسته
+\item
+  تعداد قطعات آزمایش‌شده تا یافتن یک قطعه معیوب
+\item
+  تعداد تلاش‌های ورود تا احراز هویت موفق
+\item
+  تعداد شکاف‌های زمانی تا در دسترس قرار گرفتن کانال
+\end{itemize}
+
+\begin{PSbox}[unbreakable]{def}{تعریف ریاضی}
+
+\lr{$X \sim \mathrm{Geometric}(p)$}
+
+قرارداد: \lr{$X$} = شماره آزمایشی که نخستین موفقیت در آن رخ می‌دهد \lr{$(X \in \{1,\, 2,\, 3,\, \ldots \})$}.
+
+\end{PSbox}
+
+\PSsubsection{\lr{\mbox{PMF}}}
+
+\PSdisplay{p_X(k) = (1-p)^{k-1} p, \quad k = 1, 2, 3, \ldots}
+
+(\lr{$k-1$} شکست، سپس یک موفقیت)
+
+\PSsubsection{\lr{\mbox{CDF}}}
+
+\PSdisplay{F_X(k) = 1 - (1-p)^k, \quad k = 1, 2, 3, \ldots}
+
+\PSsubsection{میانگین}
+
+\PSdisplay{E[X] = \frac{1}{p}}
+
+\PSsubsection{واریانس}
+
+\PSdisplay{\PSmtext{Var}(X) = \frac{1-p}{p^2}}
+
+\PSsubsection{خاصیت بی‌حافظه}
+
+توزیع هندسی تنها توزیع گسسته با خاصیت بی‌حافظه است:
+
+\PSdisplay{P(X > m + n \mid X > m) = P(X > n)}
+
+\textbf{معنای مهندسی:} اگر یک سیستم در \lr{$m$} تلاش موفق نشده باشد، احتمال نیاز به \lr{$n$} تلاش بیشتر همانند شروع از صفر است. «شکست‌های گذشته بر احتمال آینده اثر نمی‌گذارند.»
+
+\PSsubsection{زمان استفاده}
+
+\lr{\mbox{\PSyes{}}} آزمایش‌های مستقل مکرر تا نخستین موفقیت\PSbr{}\lr{\mbox{\PSyes{}}} هر آزمایش همان احتمال را دارد\PSbr{}\lr{\mbox{\PSyes{}}} فرض بی‌حافظه مناسب است (مثلاً ارسال‌های مجدد مستقل)
+
+\PSsubsection{زمان عدم استفاده}
+
+\lr{\mbox{\PSno{}}} احتمال موفقیت در طول زمان تغییر می‌کند (پیری، یادگیری)\PSbr{}\lr{\mbox{\PSno{}}} آزمایش‌ها مستقل نیستند\PSbr{}\lr{\mbox{\PSno{}}} به‌دنبال \lr{\mbox{r}}-امین موفقیت هستید (از دوجمله‌ای منفی استفاده کنید)
+
+\PSsubsection{پیاده‌سازی در \lr{\mbox{MATLAB}}}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Geometric Distribution: Retransmissions Until Success}
+\VariableTok{p\_success} \OperatorTok{=} \FloatTok{0.7}\OperatorTok{;}   \CommentTok{\% P(successful transmission)}
+\VariableTok{k} \OperatorTok{=} \FloatTok{1}\OperatorTok{:}\FloatTok{15}\OperatorTok{;}
+
+\CommentTok{\% PMF}
+\VariableTok{pmf\_geom} \OperatorTok{=} \VariableTok{geopdf}\NormalTok{(}\VariableTok{k}\OperatorTok{{-}}\FloatTok{1}\OperatorTok{,} \VariableTok{p\_success}\NormalTok{)}\OperatorTok{;}  \CommentTok{\% MATLAB counts failures (k{-}1)}
+
+\CommentTok{\% Simulation}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+\VariableTok{X\_sim} \OperatorTok{=} \VariableTok{geornd}\NormalTok{(}\VariableTok{p\_success}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{) }\OperatorTok{+} \FloatTok{1}\OperatorTok{;}  \CommentTok{\% +1 to count trial number}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{subplot}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\FloatTok{2}\OperatorTok{,}\FloatTok{1}\NormalTok{)}\OperatorTok{;}
+\VariableTok{stem}\NormalTok{(}\VariableTok{k}\OperatorTok{,} \VariableTok{pmf\_geom}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}filled\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Trial Number k\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(X = k)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\VariableTok{sprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Geometric PMF (p = \%.1f)\textquotesingle{}}\OperatorTok{,} \VariableTok{p\_success}\NormalTok{))}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;}
+
+\VariableTok{subplot}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\FloatTok{2}\OperatorTok{,}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{histogram}\NormalTok{(}\VariableTok{X\_sim}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Normalization\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}probability\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}BinMethod\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}integers\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Trial Number k\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Relative Frequency\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Simulation Histogram\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}E[X]: Theory = \%.2f, Simulation = \%.2f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \FloatTok{1}\OperatorTok{/}\VariableTok{p\_success}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{X\_sim}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\PSsection{3.5}{توزیع دوجمله‌ای منفی}
+
+\PSsubsection{تفسیر فیزیکی}
+
+\textbf{تعداد آزمایش‌ها تا \lr{\mbox{r}}-امین موفقیت} را مدل می‌کند (تعمیم هندسی).
+
+\PSsubsection{زمینه مهندسی}
+
+\begin{itemize}
+\tightlist
+\item
+  تعداد انتقال‌ها تا تحویل موفق \lr{$r$} بسته
+\item
+  تعداد قطعات بازرسی‌شده تا یافتن \lr{$r$} قطعه معیوب
+\item
+  تعداد شکاف‌های زمانی تا در دسترس قرار گرفتن \lr{$r$} کانال
+\end{itemize}
+
+\begin{PSbox}[unbreakable]{def}{تعریف ریاضی}
+
+\lr{$X \sim \mathrm{NegBin}(r,\, p)$} = تعداد آزمایش‌ها تا \lr{\mbox{r}}-امین موفقیت.
+
+\end{PSbox}
+
+\PSsubsection{\lr{\mbox{PMF}}}
+
+\PSdisplay{p_X(k) = \binom{k-1}{r-1} p^r (1-p)^{k-r}, \quad k = r, r+1, r+2, \ldots}
+
+(انتخاب این‌که کدام \lr{$r-1$} آزمایش از میان \lr{$k-1$} آزمایش نخست موفق بوده‌اند؛ آزمایش \lr{\mbox{k}}-ام همان \lr{\mbox{r}}-امین موفقیت است.)
+
+\PSsubsection{\lr{\mbox{CDF}}}
+
+فرم بسته ساده‌ای ندارد. با جمع‌بندی یا \lr{\mbox{MATLAB}} محاسبه می‌شود.
+
+\PSsubsection{میانگین}
+
+\PSdisplay{E[X] = \frac{r}{p}}
+
+\PSsubsection{واریانس}
+
+\PSdisplay{\PSmtext{Var}(X) = \frac{r(1-p)}{p^2}}
+
+\PSsubsection{رابطه با هندسی}
+
+وقتی \lr{$r = 1$}، توزیع دوجمله‌ای منفی به توزیع هندسی کاهش می‌یابد.
+
+\PSsubsection{زمان استفاده}
+
+\lr{\mbox{\PSyes{}}} آزمایش‌های مستقل مکرر تا \lr{\mbox{r}}-امین موفقیت\PSbr{}\lr{\mbox{\PSyes{}}} احتمال ثابت در هر آزمایش\PSbr{}\lr{\mbox{\PSyes{}}} تعمیم هندسی به چندین موفقیت موردنیاز
+
+\PSsubsection{زمان عدم استفاده}
+
+\lr{\mbox{\PSno{}}} فقط نخستین موفقیت لازم است (از هندسی استفاده کنید \lr{—} ساده‌تر)\PSbr{}\lr{\mbox{\PSno{}}} آزمایش‌ها مستقل نیستند\PSbr{}\lr{\mbox{\PSno{}}} تعداد آزمایش‌ها ثابت است (از دوجمله‌ای استفاده کنید)
+
+\PSsubsection{پیاده‌سازی در \lr{\mbox{MATLAB}}}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Negative Binomial: Transmissions Until r Successes}
+\VariableTok{r} \OperatorTok{=} \FloatTok{5}\OperatorTok{;}             \CommentTok{\% Need 5 successful deliveries}
+\VariableTok{p\_success} \OperatorTok{=} \FloatTok{0.8}\OperatorTok{;}   \CommentTok{\% P(success per trial)}
+
+\CommentTok{\% MATLAB\textquotesingle{}s nbinpdf counts FAILURES before r{-}th success}
+\CommentTok{\% X\_matlab = number of failures, so total trials = X\_matlab + r}
+\VariableTok{k\_failures} \OperatorTok{=} \FloatTok{0}\OperatorTok{:}\FloatTok{20}\OperatorTok{;}
+
+\VariableTok{pmf\_nb} \OperatorTok{=} \VariableTok{nbinpdf}\NormalTok{(}\VariableTok{k\_failures}\OperatorTok{,} \VariableTok{r}\OperatorTok{,} \VariableTok{p\_success}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{stem}\NormalTok{(}\VariableTok{k\_failures} \OperatorTok{+} \VariableTok{r}\OperatorTok{,} \VariableTok{pmf\_nb}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}filled\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Total Trials Until 5th Success\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Probability\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\VariableTok{sprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Negative Binomial: r=\%d, p=\%.1f\textquotesingle{}}\OperatorTok{,} \VariableTok{r}\OperatorTok{,} \VariableTok{p\_success}\NormalTok{))}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;}
+
+\CommentTok{\% Simulation}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+\VariableTok{X\_sim} \OperatorTok{=} \VariableTok{nbinrnd}\NormalTok{(}\VariableTok{r}\OperatorTok{,} \VariableTok{p\_success}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{) }\OperatorTok{+} \VariableTok{r}\OperatorTok{;}  \CommentTok{\% total trials}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}E[trials]: Theory = \%.2f, Simulation = \%.2f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{r}\OperatorTok{/}\VariableTok{p\_success}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{X\_sim}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\PSsection{3.6}{توزیع پواسون}
+
+\PSsubsection{تفسیر فیزیکی}
+
+\textbf{تعداد رویدادهای رخ‌داده در یک بازه ثابت} (زمان، فضا، مساحت) را مدل می‌کند، هنگامی که رویدادها به‌طور مستقل و با نرخ میانگین ثابت رخ می‌دهند.
+
+\PSsubsection{زمینه مهندسی}
+
+\begin{itemize}
+\tightlist
+\item
+  تعداد فوتون‌های برخوردکننده با یک آشکارساز در \lr{$1 \mu s$}
+\item
+  تعداد بسته‌های واردشده به یک مسیریاب در 1 ثانیه
+\item
+  تعداد نقص‌ها در هر \lr{$cm^{2}$} روی یک ویفر سیلیکونی
+\item
+  تعداد رویدادهای پرتو کیهانی در یک حسگر در هر ساعت
+\item
+  تعداد جهش‌های تداخل در یک پنجره اندازه‌گیری
+\end{itemize}
+
+\begin{PSbox}[unbreakable]{def}{تعریف ریاضی}
+
+\lr{$X \sim \mathrm{Poisson}(\lambda)$}، که در آن \lr{$\lambda$} = میانگین تعداد رویدادها در هر بازه.
+
+\end{PSbox}
+
+\PSsubsection{\lr{\mbox{PMF}}}
+
+\PSdisplay{p_X(k) = \frac{\lambda^k e^{-\lambda}}{k!}, \quad k = 0, 1, 2, \ldots}
+
+\PSsubsection{\lr{\mbox{CDF}}}
+
+\PSdisplay{F_X(k) = e^{-\lambda} \sum_{i=0}^{\lfloor k \rfloor} \frac{\lambda^i}{i!}}
+
+\PSsubsection{میانگین}
+
+\PSdisplay{E[X] = \lambda}
+
+\PSsubsection{واریانس}
+
+\PSdisplay{\PSmtext{Var}(X) = \lambda}
+
+\textbf{ویژگی منحصربه‌فرد:} میانگین برابر واریانس است! این یک بررسی سریع است \lr{—} اگر میانگین نمونه \lr{\mbox{\ensuremath{\approx}}} واریانس نمونه باشد، داده ممکن است پواسون باشد.
+
+\PSsubsection{پواسون به‌عنوان تقریب دوجمله‌ای}
+
+وقتی \lr{$n$} بزرگ و \lr{$p$} کوچک باشد، با \lr{\mbox{$\lambda$ = np}}:
+
+\PSdisplay{\PSmtext{Binomial}(n, p) \approx \PSmtext{Poisson}(\lambda = np)}
+
+قاعده سرانگشتی: \lr{$n \ge 20$} و \lr{$p \le 0.05$}.
+
+\PSsubsection{زمان استفاده}
+
+\lr{\mbox{\PSyes{}}} شمارش رویدادها در یک بازه ثابت\PSbr{}\lr{\mbox{\PSyes{}}} رویدادها مستقل رخ می‌دهند\PSbr{}\lr{\mbox{\PSyes{}}} رویدادها با نرخ میانگین ثابت رخ می‌دهند\PSbr{}\lr{\mbox{\PSyes{}}} رویدادهای نادر با فرصت‌های فراوان (\lr{$n$} بزرگ، \lr{$p$} کوچک)\PSbr{}\lr{\mbox{\PSyes{}}} میانگین \lr{\mbox{\ensuremath{\approx}}} واریانس در داده
+
+\PSsubsection{زمان عدم استفاده}
+
+\lr{\mbox{\PSno{}}} رویدادها مستقل نیستند (ورودهای خوشه‌ای)\PSbr{}\lr{\mbox{\PSno{}}} نرخ با زمان تغییر می‌کند (فرایند ناهمگن)\PSbr{}\lr{\mbox{\PSno{}}} رویدادها نادر نیستند (\lr{$p$} کوچک نیست) \lr{—} از دوجمله‌ای استفاده کنید\PSbr{}\lr{\mbox{\PSno{}}} میانگین \lr{\mbox{\ensuremath{\neq}}} واریانس (به بیش‌پراکندگی/کم‌پراکندگی توجه کنید)
+
+\PSsubsection{پیاده‌سازی در \lr{\mbox{MATLAB}}}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Poisson Distribution: Network Packet Arrivals}
+\VariableTok{lambda} \OperatorTok{=} \FloatTok{4.5}\OperatorTok{;}     \CommentTok{\% Average packets per millisecond}
+\VariableTok{k} \OperatorTok{=} \FloatTok{0}\OperatorTok{:}\FloatTok{15}\OperatorTok{;}
+
+\VariableTok{pmf\_pois} \OperatorTok{=} \VariableTok{poisspdf}\NormalTok{(}\VariableTok{k}\OperatorTok{,} \VariableTok{lambda}\NormalTok{)}\OperatorTok{;}
+\VariableTok{cdf\_pois} \OperatorTok{=} \VariableTok{poisscdf}\NormalTok{(}\VariableTok{k}\OperatorTok{,} \VariableTok{lambda}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{subplot}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\FloatTok{2}\OperatorTok{,}\FloatTok{1}\NormalTok{)}\OperatorTok{;}
+\VariableTok{stem}\NormalTok{(}\VariableTok{k}\OperatorTok{,} \VariableTok{pmf\_pois}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}filled\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{1.5}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Number of Arrivals (k)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(X = k)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\VariableTok{sprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Poisson PMF (λ = \%.1f)\textquotesingle{}}\OperatorTok{,} \VariableTok{lambda}\NormalTok{))}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;}
+
+\VariableTok{subplot}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\FloatTok{2}\OperatorTok{,}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{stairs}\NormalTok{(}\VariableTok{k}\OperatorTok{,} \VariableTok{cdf\_pois}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}k\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(X ≤ k)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Poisson CDF\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{PSbox}[unbreakable]{ex}{مثال شبیه‌سازی: شمارش فوتون}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Engineering Scenario: Photon Detection}
+\CommentTok{\% An optical receiver detects photons. Average rate: 10 photons/μs.}
+\CommentTok{\% What is P(detecting fewer than 5 photons in one μs)?}
+
+\VariableTok{lambda} \OperatorTok{=} \FloatTok{10}\OperatorTok{;}   \CommentTok{\% average photons per μs}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+
+\CommentTok{\% Analytical}
+\VariableTok{p\_fewer\_5} \OperatorTok{=} \VariableTok{poisscdf}\NormalTok{(}\FloatTok{4}\OperatorTok{,} \VariableTok{lambda}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(X \textless{} 5): Analytical = \%.6f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{p\_fewer\_5}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Simulation}
+\VariableTok{X\_sim} \OperatorTok{=} \VariableTok{poissrnd}\NormalTok{(}\VariableTok{lambda}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{p\_fewer\_5\_sim} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{X\_sim} \OperatorTok{\textless{}} \FloatTok{5}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(X \textless{} 5): Simulation = \%.6f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{p\_fewer\_5\_sim}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Verify mean = variance (Poisson signature)}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Sample Mean = \%.3f, Sample Variance = \%.3f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{X\_sim}\NormalTok{)}\OperatorTok{,} \VariableTok{var}\NormalTok{(}\VariableTok{X\_sim}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\PSsection{3.7}{توزیع یکنواخت (پیوسته)}
+
+\PSsubsection{تفسیر فیزیکی}
+
+کمیتی را مدل می‌کند که \textbf{احتمال برابر} برای اختیار کردن هر مقدار در بازه \lr{$[a,\, b]$} دارد. نماینده \textbf{بیشترین عدم‌قطعیت} در یک محدوده معلوم است.
+
+\PSsubsection{زمینه مهندسی}
+
+\begin{itemize}
+\tightlist
+\item
+  فاز یک سیگنال دریافتی (نامعلوم، با احتمال برابر در \lr{$[0,\, 2\pi)$})
+\item
+  خطای گِردکردن در یک مبدل آنالوگ به دیجیتال (یکنواخت در \lr{$\left[-\frac{\Delta}{2},\, \frac{\Delta}{2}\right]$} که \lr{$\Delta$} = گام کوانتیزاسیون)
+\item
+  زمان ورود در یک شکاف زمانی (موقعیت نامعلوم)
+\item
+  پروتکل دسترسی تصادفی: انتخاب یک زمان عقب‌نشینی تصادفی
+\end{itemize}
+
+\begin{PSbox}[unbreakable]{def}{تعریف ریاضی}
+
+\lr{$X \sim \mathrm{Uniform}(a,\, b)$} یا \lr{$X \sim U(a,\, b)$}
+
+\end{PSbox}
+
+\PSsubsection{\lr{\mbox{PDF}}}
+
+\PSdisplay{f_X(x) = \begin{cases} \frac{1}{b-a} & a \leq x \leq b \\ 0 & \PSmtext{otherwise} \end{cases}}
+
+\PSsubsection{\lr{\mbox{CDF}}}
+
+\PSdisplay{F_X(x) = \begin{cases} 0 & x < a \\ \frac{x-a}{b-a} & a \leq x \leq b \\ 1 & x > b \end{cases}}
+
+\PSsubsection{میانگین}
+
+\PSdisplay{E[X] = \frac{a+b}{2}}
+
+\PSsubsection{واریانس}
+
+\PSdisplay{\PSmtext{Var}(X) = \frac{(b-a)^2}{12}}
+
+\PSsubsection{زمان استفاده}
+
+\lr{\mbox{\PSyes{}}} تمام مقادیر در یک محدوده احتمال برابر دارند\PSbr{}\lr{\mbox{\PSyes{}}} هیچ اطلاعاتی به نفع مقدار خاصی نیست\PSbr{}\lr{\mbox{\PSyes{}}} مدل‌سازی خطای کوانتیزاسیون\PSbr{}\lr{\mbox{\PSyes{}}} فاز حامل بدون مدولاسیون
+
+\PSsubsection{زمان عدم استفاده}
+
+\lr{\mbox{\PSno{}}} مقادیر نزدیک به مرکز محتمل‌تر هستند (از گاوسی استفاده کنید)\PSbr{}\lr{\mbox{\PSno{}}} مقادیر نامنفی با کاهش نمایی هستند (از نمایی استفاده کنید)\PSbr{}\lr{\mbox{\PSno{}}} محدوده کران‌دار نیست
+
+\PSsubsection{پیاده‌سازی در \lr{\mbox{MATLAB}}}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Uniform Distribution: Quantization Error}
+\VariableTok{a} \OperatorTok{=} \OperatorTok{{-}}\FloatTok{0.5}\OperatorTok{;}  \VariableTok{b} \OperatorTok{=} \FloatTok{0.5}\OperatorTok{;}  \CommentTok{\% Quantization step = 1 LSB}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+
+\VariableTok{X} \OperatorTok{=} \VariableTok{a} \OperatorTok{+}\NormalTok{ (}\VariableTok{b}\OperatorTok{{-}}\VariableTok{a}\NormalTok{)}\OperatorTok{*}\VariableTok{rand}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}  \CommentTok{\% or: unifrnd(a, b, 1, N)}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{histogram}\NormalTok{(}\VariableTok{X}\OperatorTok{,} \FloatTok{50}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Normalization\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}pdf\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{([}\VariableTok{a} \VariableTok{a} \VariableTok{b} \VariableTok{b}\NormalTok{]}\OperatorTok{,}\NormalTok{ [}\FloatTok{0} \FloatTok{1}\OperatorTok{/}\NormalTok{(}\VariableTok{b}\OperatorTok{{-}}\VariableTok{a}\NormalTok{) }\FloatTok{1}\OperatorTok{/}\NormalTok{(}\VariableTok{b}\OperatorTok{{-}}\VariableTok{a}\NormalTok{) }\FloatTok{0}\NormalTok{]}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r{-}\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Quantization Error\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}f\_X(x)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Uniform PDF: Quantization Error\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{legend}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Simulated\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Theoretical\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Mean: Theory=\%.3f, Sim=\%.3f\textbackslash{}n\textquotesingle{}}\OperatorTok{,}\NormalTok{ (}\VariableTok{a}\OperatorTok{+}\VariableTok{b}\NormalTok{)}\OperatorTok{/}\FloatTok{2}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{X}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Var:  Theory=\%.4f, Sim=\%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,}\NormalTok{ (}\VariableTok{b}\OperatorTok{{-}}\VariableTok{a}\NormalTok{)}\OperatorTok{\^{}}\FloatTok{2}\OperatorTok{/}\FloatTok{12}\OperatorTok{,} \VariableTok{var}\NormalTok{(}\VariableTok{X}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\PSsection{3.8}{توزیع نمایی}
+
+\PSsubsection{تفسیر فیزیکی}
+
+\textbf{زمان میان رویدادها} در یک فرایند پواسون، یا \textbf{عمر} یک قطعه بی‌حافظه را مدل می‌کند.
+
+\PSsubsection{زمینه مهندسی}
+
+\begin{itemize}
+\tightlist
+\item
+  زمان میان ورود بسته‌ها
+\item
+  زمان تا خرابی قطعه (نرخ خرابی ثابت)
+\item
+  زمان میان رویدادهای پرتو کیهانی در یک آشکارساز
+\item
+  زمان بین‌ورودی تماس‌ها در یک مرکز سوییچ
+\item
+  مدت یک فروافت محوشدگی در یک کانال بی‌سیم
+\end{itemize}
+
+\begin{PSbox}[unbreakable]{def}{تعریف ریاضی}
+
+\lr{$X \sim \mathrm{Exponential}(\lambda)$} که در آن \lr{$\lambda$} = پارامتر نرخ (رویداد در واحد زمان).
+
+پارامتربندی جایگزین: \lr{$X \sim \mathrm{Exp}(\beta)$} که در آن \lr{$\beta = \frac{1}{\lambda}$} = میانگین.
+
+\end{PSbox}
+
+\PSsubsection{\lr{\mbox{PDF}}}
+
+\PSdisplay{f_X(x) = \lambda e^{-\lambda x}, \quad x \geq 0}
+
+یا با میانگین \lr{\mbox{$\beta$: $f_{X}(x) = \frac{1}{\beta}e^{-x/\beta}$}}
+
+\PSsubsection{\lr{\mbox{CDF}}}
+
+\PSdisplay{F_X(x) = 1 - e^{-\lambda x}, \quad x \geq 0}
+
+\PSsubsection{میانگین}
+
+\PSdisplay{E[X] = \frac{1}{\lambda} = \beta}
+
+\PSsubsection{واریانس}
+
+\PSdisplay{\PSmtext{Var}(X) = \frac{1}{\lambda^2} = \beta^2}
+
+\textbf{توجه:} برای توزیع نمایی، انحراف معیار برابر میانگین است.
+
+\PSsubsection{خاصیت بی‌حافظه}
+
+\PSdisplay{P(X > s + t \mid X > s) = P(X > t)}
+
+توزیع نمایی تنها توزیع پیوسته با این خاصیت است.
+
+\textbf{معنای مهندسی:} قطعه‌ای که \lr{$s$} ساعت کار کرده است، از نظر آماری «به‌خوبی نو» است. عمر باقی‌مانده آن همان توزیع یک قطعه کاملاً نو را دارد.
+
+\PSsubsection{رابطه با پواسون}
+
+اگر رویدادها به‌صورت یک فرایند پواسون با نرخ \lr{$\lambda$} وارد شوند:
+
+\begin{itemize}
+\tightlist
+\item
+  تعداد رویدادها در زمان \lr{$T \sim \mathrm{Poisson}(\lambda T)$}
+\item
+  زمان میان رویدادها \lr{$\sim \mathrm{Exponential}(\lambda)$}
+\end{itemize}
+
+\PSsubsection{زمان استفاده}
+
+\lr{\mbox{\PSyes{}}} مدل‌سازی زمان میان رویدادها در یک فرایند پواسون\PSbr{}\lr{\mbox{\PSyes{}}} عمر قطعه با نرخ خرابی ثابت\PSbr{}\lr{\mbox{\PSyes{}}} فرض بی‌حافظه معقول است
+
+\PSsubsection{زمان عدم استفاده}
+
+\lr{\mbox{\PSno{}}} نرخ خرابی با سن افزایش می‌یابد (فرسودگی) \lr{—} از وایبول یا گاما استفاده کنید\PSbr{}\lr{\mbox{\PSno{}}} نرخ خرابی با سن کاهش می‌یابد (سوختگی اولیه) \lr{—} از وایبول استفاده کنید\PSbr{}\lr{\mbox{\PSno{}}} داده افزایش خطر را نشان می‌دهد \lr{—} بی‌حافظه نیست
+
+\PSsubsection{پیاده‌سازی در \lr{\mbox{MATLAB}}}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Exponential Distribution: Component Lifetime}
+\VariableTok{lambda} \OperatorTok{=} \FloatTok{0.001}\OperatorTok{;}          \CommentTok{\% Failure rate: 0.001 per hour}
+\VariableTok{beta} \OperatorTok{=} \FloatTok{1}\OperatorTok{/}\VariableTok{lambda}\OperatorTok{;}         \CommentTok{\% Mean lifetime: 1000 hours}
+
+\VariableTok{x} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\FloatTok{0}\OperatorTok{,} \FloatTok{5000}\OperatorTok{,} \FloatTok{1000}\NormalTok{)}\OperatorTok{;}
+\VariableTok{pdf\_exp} \OperatorTok{=} \VariableTok{exppdf}\NormalTok{(}\VariableTok{x}\OperatorTok{,} \VariableTok{beta}\NormalTok{)}\OperatorTok{;}
+\VariableTok{cdf\_exp} \OperatorTok{=} \VariableTok{expcdf}\NormalTok{(}\VariableTok{x}\OperatorTok{,} \VariableTok{beta}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{subplot}\NormalTok{(}\FloatTok{2}\OperatorTok{,}\FloatTok{1}\OperatorTok{,}\FloatTok{1}\NormalTok{)}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{x}\OperatorTok{,} \VariableTok{pdf\_exp}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}b{-}\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Time (hours)\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}f\_X(x)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\VariableTok{sprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Exponential PDF: Mean Lifetime = \%d hours\textquotesingle{}}\OperatorTok{,} \VariableTok{beta}\NormalTok{))}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;}
+
+\VariableTok{subplot}\NormalTok{(}\FloatTok{2}\OperatorTok{,}\FloatTok{1}\OperatorTok{,}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{x}\OperatorTok{,} \VariableTok{cdf\_exp}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r{-}\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Time (hours)\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}F\_X(x) = P(failure by time x)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Exponential CDF\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;}
+
+\CommentTok{\% P(component lasts more than 2000 hours)}
+\VariableTok{p\_survive\_2000} \OperatorTok{=} \FloatTok{1} \OperatorTok{{-}} \VariableTok{expcdf}\NormalTok{(}\FloatTok{2000}\OperatorTok{,} \VariableTok{beta}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(T \textgreater{} 2000 hours) = \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{p\_survive\_2000}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{PSbox}[unbreakable]{ex}{مثال شبیه‌سازی: بررسی خاصیت بی‌حافظه}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Verify Memoryless Property}
+\VariableTok{beta} \OperatorTok{=} \FloatTok{100}\OperatorTok{;}   \CommentTok{\% Mean lifetime = 100 hours}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+
+\VariableTok{X} \OperatorTok{=} \VariableTok{exprnd}\NormalTok{(}\VariableTok{beta}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Conditional: given X \textgreater{} 50, what is distribution of (X {-} 50)?}
+\VariableTok{survivors} \OperatorTok{=} \VariableTok{X}\NormalTok{(}\VariableTok{X} \OperatorTok{\textgreater{}} \FloatTok{50}\NormalTok{)}\OperatorTok{;}
+\VariableTok{remaining\_life} \OperatorTok{=} \VariableTok{survivors} \OperatorTok{{-}} \FloatTok{50}\OperatorTok{;}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Mean of X: \%.1f (should be \%.1f)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{X}\NormalTok{)}\OperatorTok{,} \VariableTok{beta}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Mean of remaining life given survival past 50: \%.1f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{remaining\_life}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Should also be \%.1f (memoryless!)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{beta}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\PSsection{3.9}{توزیع گاوسی (نرمال)}
+
+\PSsubsection{تفسیر فیزیکی}
+
+کمیت‌هایی را مدل می‌کند که از \textbf{جمع بسیاری از اثرهای تصادفی کوچک و مستقل} پدید می‌آیند. به‌دلیل قضیه حد مرکزی، مهم‌ترین توزیع در مهندسی است.
+
+\PSsubsection{زمینه مهندسی}
+
+\begin{itemize}
+\tightlist
+\item
+  ولتاژ نویز حرارتی (جمع سهم‌های بسیاری از الکترون‌ها)
+\item
+  خطاهای اندازه‌گیری (جمع بسیاری از منابع خطای کوچک)
+\item
+  تغییرات ساخت (بسیاری از تغییرات مستقل فرایند)
+\item
+  تداخل تجمعی در مخابرات
+\item
+  هر کمیتی که به‌خوبی با \lr{\mbox{CLT}} مدل می‌شود
+\end{itemize}
+
+\begin{PSbox}[unbreakable]{def}{تعریف ریاضی}
+
+\lr{$X \sim N(\mu,\, \sigma^{2})$} که در آن \lr{$\mu$} = میانگین و \lr{$\sigma^{2}$} = واریانس.
+
+\end{PSbox}
+
+\PSsubsection{\lr{\mbox{PDF}}}
+
+\PSdisplay{f_X(x) = \frac{1}{\sigma\sqrt{2\pi}} \exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right), \quad -\infty < x < \infty}
+
+\PSsubsection{\lr{\mbox{CDF}}}
+
+\PSdisplay{F_X(x) = \Phi\left(\frac{x-\mu}{\sigma}\right) = \frac{1}{2}\left[1 + \PSmtext{erf}\left(\frac{x-\mu}{\sigma\sqrt{2}}\right)\right]}
+
+فرم بسته ندارد \lr{—} به‌صورت عددی یا با جدول‌ها محاسبه می‌شود.
+
+\PSsubsection{میانگین}
+
+\PSdisplay{E[X] = \mu}
+
+\PSsubsection{واریانس}
+
+\PSdisplay{\PSmtext{Var}(X) = \sigma^2}
+
+\PSsubsection{نرمال استاندارد}
+
+\lr{$Z \sim N(0,\, 1)$}: شکل استانداردشده.
+
+هر توزیع نرمال را می‌توان استانداردسازی کرد: \lr{$Z = \frac{X - \mu}{\sigma}$}
+
+\PSsubsection{قواعد کلیدی احتمال (قواعد \lr{$\sigma$})}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}cc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{محدوده} & \PSth{احتمال} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\lr{$\mu \pm 1\sigma$} & \PSnum{68.27\%} \\
+\lr{$\mu \pm 2\sigma$} & \PSnum{95.45\%} \\
+\lr{$\mu \pm 3\sigma$} & \PSnum{99.73\%} \\
+\lr{$\mu \pm 4\sigma$} & \PSnum{99.9937\%} \\
+\end{longtable}
+}
+
+\PSsubsection{ویژگی‌ها}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{متقارن} حول \lr{$\mu$}
+\item
+  \textbf{تبدیل خطی:} اگر \lr{$X \sim N(\mu,\, \sigma^{2})$}، آنگاه \lr{\mbox{aX $+ b \sim N(a\mu + b,\, a^{2}\sigma^{2})$}}
+\item
+  \textbf{جمع گاوسی‌ها:} اگر \lr{$X \sim N(\mu_{1},\, \sigma_{1}^{2})$} و \lr{$Y \sim N(\mu_{2},\, \sigma_{2}^{2})$} مستقل باشند، آنگاه \lr{$X + Y \sim N(\mu_{1}+\mu_{2},\, \sigma_{1}^{2}+\sigma_{2}^{2})$}
+\item
+  \textbf{کاملاً مشخص‌شده} با میانگین و واریانس (تمام گشتاورهای مراتب بالاتر تعیین می‌شوند)
+\end{enumerate}
+
+\PSsubsection{زمان استفاده}
+
+\lr{\mbox{\PSyes{}}} نویز حرارتی در مدارها\PSbr{}\lr{\mbox{\PSyes{}}} خطاهای اندازه‌گیری\PSbr{}\lr{\mbox{\PSyes{}}} هر جمعی از بسیاری از اثرهای تصادفی مستقل \lr{\mbox{(CLT)}}\PSbr{}\lr{\mbox{\PSyes{}}} تغییرات ساخت\PSbr{}\lr{\mbox{\PSyes{}}} هنگامی که هیستوگرام داده زنگوله‌ای و متقارن است
+
+\PSsubsection{زمان عدم استفاده}
+
+\lr{\mbox{\PSno{}}} کمیت‌های اکیداً مثبت (گاوسی مقادیر منفی را مجاز می‌داند)\PSbr{}\lr{\mbox{\PSno{}}} داده‌های به‌شدت چوله\PSbr{}\lr{\mbox{\PSno{}}} کمیت‌های کران‌دار (گاوسی تکیه‌گاه نامتناهی دارد)\PSbr{}\lr{\mbox{\PSno{}}} شمارش‌های گسسته\PSbr{}\lr{\mbox{\PSno{}}} پدیده‌های سنگین‌دنباله (از توزیع \lr{$t$} یا کوشی استفاده کنید)
+
+\PSsubsection{پیاده‌سازی در \lr{\mbox{MATLAB}}}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Gaussian Distribution: Thermal Noise}
+\VariableTok{mu} \OperatorTok{=} \FloatTok{0}\OperatorTok{;}           \CommentTok{\% Zero{-}mean noise}
+\VariableTok{sigma} \OperatorTok{=} \FloatTok{0.1}\OperatorTok{;}      \CommentTok{\% RMS noise = 100 mV}
+
+\VariableTok{x} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\VariableTok{mu} \OperatorTok{{-}} \FloatTok{4}\OperatorTok{*}\VariableTok{sigma}\OperatorTok{,} \VariableTok{mu} \OperatorTok{+} \FloatTok{4}\OperatorTok{*}\VariableTok{sigma}\OperatorTok{,} \FloatTok{1000}\NormalTok{)}\OperatorTok{;}
+\VariableTok{pdf\_norm} \OperatorTok{=} \VariableTok{normpdf}\NormalTok{(}\VariableTok{x}\OperatorTok{,} \VariableTok{mu}\OperatorTok{,} \VariableTok{sigma}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{x}\OperatorTok{,} \VariableTok{pdf\_norm}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}b{-}\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+\CommentTok{\% Shade the ±2σ region}
+\VariableTok{x\_fill} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\VariableTok{mu}\OperatorTok{{-}}\FloatTok{2}\OperatorTok{*}\VariableTok{sigma}\OperatorTok{,} \VariableTok{mu}\OperatorTok{+}\FloatTok{2}\OperatorTok{*}\VariableTok{sigma}\OperatorTok{,} \FloatTok{200}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fill}\NormalTok{([}\VariableTok{x\_fill}\OperatorTok{,} \VariableTok{fliplr}\NormalTok{(}\VariableTok{x\_fill}\NormalTok{)]}\OperatorTok{,}\NormalTok{ [}\VariableTok{normpdf}\NormalTok{(}\VariableTok{x\_fill}\OperatorTok{,}\VariableTok{mu}\OperatorTok{,}\VariableTok{sigma}\NormalTok{)}\OperatorTok{,} \VariableTok{zeros}\NormalTok{(}\VariableTok{size}\NormalTok{(}\VariableTok{x\_fill}\NormalTok{))]}\OperatorTok{,} \OperatorTok{...}
+     \SpecialStringTok{\textquotesingle{}b\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}FaceAlpha\textquotesingle{}}\OperatorTok{,} \FloatTok{0.3}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Noise Voltage (V)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}f\_X(x)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\VariableTok{sprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Gaussian PDF: μ=\%.1f, σ=\%.3f V\textquotesingle{}}\OperatorTok{,} \VariableTok{mu}\OperatorTok{,} \VariableTok{sigma}\NormalTok{))}\OperatorTok{;}
+\VariableTok{legend}\NormalTok{(}\SpecialStringTok{\textquotesingle{}PDF\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}±2σ region (95.45\%)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;}
+
+\CommentTok{\% Probability computations}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(|noise| \textgreater{} 0.2V) = \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\OperatorTok{*}\NormalTok{(}\FloatTok{1}\OperatorTok{{-}}\VariableTok{normcdf}\NormalTok{(}\FloatTok{0.2}\OperatorTok{,} \FloatTok{0}\OperatorTok{,} \VariableTok{sigma}\NormalTok{)))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(|noise| \textgreater{} 0.3V) = \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\OperatorTok{*}\NormalTok{(}\FloatTok{1}\OperatorTok{{-}}\VariableTok{normcdf}\NormalTok{(}\FloatTok{0.3}\OperatorTok{,} \FloatTok{0}\OperatorTok{,} \VariableTok{sigma}\NormalTok{)))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{PSbox}[breakable]{ex}{مثال شبیه‌سازی: تابع \lr{$Q$} و \lr{\mbox{BER}}}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Engineering Application: Binary Communication BER}
+\CommentTok{\% In BPSK with AWGN: BER = Q(sqrt(2*Eb/N0))}
+\CommentTok{\% Q(x) = 1 {-} Phi(x) = probability that N(0,1) \textgreater{} x}
+
+\VariableTok{EbN0\_dB} \OperatorTok{=} \FloatTok{0}\OperatorTok{:}\FloatTok{0.5}\OperatorTok{:}\FloatTok{12}\OperatorTok{;}
+\VariableTok{EbN0} \OperatorTok{=} \FloatTok{10}\OperatorTok{.\^{}}\NormalTok{(}\VariableTok{EbN0\_dB}\OperatorTok{/}\FloatTok{10}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Theoretical BER}
+\VariableTok{BER\_theory} \OperatorTok{=} \VariableTok{qfunc}\NormalTok{(}\VariableTok{sqrt}\NormalTok{(}\FloatTok{2}\OperatorTok{*}\VariableTok{EbN0}\NormalTok{))}\OperatorTok{;}
+
+\CommentTok{\% Simulated BER}
+\VariableTok{N\_bits} \OperatorTok{=} \FloatTok{1e6}\OperatorTok{;}
+\VariableTok{BER\_sim} \OperatorTok{=} \VariableTok{zeros}\NormalTok{(}\VariableTok{size}\NormalTok{(}\VariableTok{EbN0\_dB}\NormalTok{))}\OperatorTok{;}
+\KeywordTok{for} \VariableTok{idx} \OperatorTok{=} \FloatTok{1}\OperatorTok{:}\VariableTok{length}\NormalTok{(}\VariableTok{EbN0}\NormalTok{)}
+    \CommentTok{\% BPSK: transmit ±1}
+    \VariableTok{bits} \OperatorTok{=} \FloatTok{2}\OperatorTok{*}\VariableTok{randi}\NormalTok{([}\FloatTok{0}\OperatorTok{,}\FloatTok{1}\NormalTok{]}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \VariableTok{N\_bits}\NormalTok{) }\OperatorTok{{-}} \FloatTok{1}\OperatorTok{;}
+    \VariableTok{noise\_std} \OperatorTok{=} \FloatTok{1}\OperatorTok{/}\VariableTok{sqrt}\NormalTok{(}\FloatTok{2}\OperatorTok{*}\VariableTok{EbN0}\NormalTok{(}\VariableTok{idx}\NormalTok{))}\OperatorTok{;}
+    \VariableTok{received} \OperatorTok{=} \VariableTok{bits} \OperatorTok{+} \VariableTok{noise\_std} \OperatorTok{*} \VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N\_bits}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{decisions} \OperatorTok{=} \VariableTok{sign}\NormalTok{(}\VariableTok{received}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{BER\_sim}\NormalTok{(}\VariableTok{idx}\NormalTok{) }\OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{decisions} \OperatorTok{\textasciitilde{}=} \VariableTok{bits}\NormalTok{)}\OperatorTok{;}
+\KeywordTok{end}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{semilogy}\NormalTok{(}\VariableTok{EbN0\_dB}\OperatorTok{,} \VariableTok{BER\_theory}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}b{-}\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+\VariableTok{semilogy}\NormalTok{(}\VariableTok{EbN0\_dB}\OperatorTok{,} \VariableTok{BER\_sim}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}ro\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}MarkerSize\textquotesingle{}}\OperatorTok{,} \FloatTok{6}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}E\_b/N\_0 (dB)\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Bit Error Rate\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}BPSK BER: Theory vs Simulation\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{legend}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Theory: Q(√(2E\_b/N\_0))\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Simulation\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\PSsection{3.10}{توزیع گاما}
+
+\PSsubsection{تفسیر فیزیکی}
+
+\textbf{کل زمان انتظار تا \lr{\mbox{k}}-امین رویداد} در یک فرایند پواسون، یا هر جمعی از \lr{$k$} متغیر تصادفی نمایی مستقل را مدل می‌کند.
+
+\PSsubsection{زمینه مهندسی}
+
+\begin{itemize}
+\tightlist
+\item
+  کل زمان تعمیر برای \lr{$k$} قطعه (هر یک با زمان تعمیر نمایی)
+\item
+  زمان تا \lr{\mbox{k}}-امین ورود بسته
+\item
+  زمان سرویس تجمعی برای \lr{$k$} کار صف‌بندی‌شده
+\item
+  مدل‌سازی مقدار بارش
+\end{itemize}
+
+\begin{PSbox}[unbreakable]{def}{تعریف ریاضی}
+
+\lr{$X \sim \mathrm{Gamma}(\alpha,\, \beta)$} که در آن \lr{$\alpha$} = پارامتر شکل و \lr{$\beta$} = پارامتر مقیاس (یا نرخ \lr{$\lambda = \frac{1}{\beta}$}).
+
+\end{PSbox}
+
+\PSsubsection{\lr{\mbox{PDF}}}
+
+\PSdisplay{f_X(x) = \frac{x^{\alpha-1} e^{-x/\beta}}{\beta^\alpha \Gamma(\alpha)}, \quad x \geq 0}
+
+که در آن برای \lr{$\alpha$} صحیح \lr{$\Gamma (\alpha) = (\alpha -1)$}!، و در حالت کلی \lr{$\Gamma (\alpha) = \int_{0}^{\infty} t^{\alpha -1}e^{-t}dt$}.
+
+\PSsubsection{\lr{\mbox{CDF}}}
+
+برای \lr{$\alpha$} کلی فرم بسته ندارد. از طریق تابع گامای ناقص در دسترس است.
+
+\PSsubsection{میانگین}
+
+\PSdisplay{E[X] = \alpha\beta}
+
+\PSsubsection{واریانس}
+
+\PSdisplay{\PSmtext{Var}(X) = \alpha\beta^2}
+
+\PSsubsection{حالت‌های خاص}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}cc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{پارامترها} & \PSth{توزیع} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\lr{$\alpha = 1$} & \lr{$\mathrm{Exponential}(\beta)$} \\
+\lr{$\alpha = \frac{n}{2},\, \beta = 2$} & \lr{\mbox{Chi-square(n)}} \\
+\lr{\mbox{$\alpha$ = integer $k$}} & \lr{$\mathrm{Erlang}(k,\, \beta)$} \\
+\end{longtable}
+}
+
+\PSsubsection{زمان استفاده}
+
+\lr{\mbox{\PSyes{}}} جمع عمرهای نمایی مستقل\PSbr{}\lr{\mbox{\PSyes{}}} زمان انتظار برای \lr{\mbox{k}}-امین رویداد پواسون\PSbr{}\lr{\mbox{\PSyes{}}} داده‌های چوله و نامنفی\PSbr{}\lr{\mbox{\PSyes{}}} شکل انعطاف‌پذیر (چولگی قابل تنظیم)
+
+\PSsubsection{زمان عدم استفاده}
+
+\lr{\mbox{\PSno{}}} داده می‌تواند منفی باشد\PSbr{}\lr{\mbox{\PSno{}}} داده متقارن است (از گاوسی استفاده کنید)\PSbr{}\lr{\mbox{\PSno{}}} توزیع ساده‌تری برازش می‌شود (نمایی برای \lr{$k = 1$})
+
+\PSsubsection{پیاده‌سازی در \lr{\mbox{MATLAB}}}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Gamma Distribution: Total Repair Time}
+\CommentTok{\% 3 components must be repaired sequentially}
+\CommentTok{\% Each repair time \textasciitilde{} Exp(mean = 2 hours)}
+\VariableTok{alpha} \OperatorTok{=} \FloatTok{3}\OperatorTok{;}         \CommentTok{\% shape (number of stages)}
+\VariableTok{beta} \OperatorTok{=} \FloatTok{2}\OperatorTok{;}          \CommentTok{\% scale (mean per stage)}
+
+\VariableTok{x} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\FloatTok{0}\OperatorTok{,} \FloatTok{20}\OperatorTok{,} \FloatTok{500}\NormalTok{)}\OperatorTok{;}
+\VariableTok{pdf\_gamma} \OperatorTok{=} \VariableTok{gampdf}\NormalTok{(}\VariableTok{x}\OperatorTok{,} \VariableTok{alpha}\OperatorTok{,} \VariableTok{beta}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{x}\OperatorTok{,} \VariableTok{pdf\_gamma}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}b{-}\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Total Repair Time (hours)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}f\_X(x)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\VariableTok{sprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Gamma PDF: α=\%d, β=\%d\textquotesingle{}}\OperatorTok{,} \VariableTok{alpha}\OperatorTok{,} \VariableTok{beta}\NormalTok{))}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;}
+
+\CommentTok{\% Verify by summing exponentials}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+\VariableTok{X\_sim} \OperatorTok{=} \VariableTok{sum}\NormalTok{(}\VariableTok{exprnd}\NormalTok{(}\VariableTok{beta}\OperatorTok{,} \VariableTok{alpha}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{,} \FloatTok{1}\NormalTok{)}\OperatorTok{;}  \CommentTok{\% Sum of 3 exponentials}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Mean: Theory=\%.2f, Sim=\%.2f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{alpha}\OperatorTok{*}\VariableTok{beta}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{X\_sim}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Var:  Theory=\%.2f, Sim=\%.2f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{alpha}\OperatorTok{*}\VariableTok{beta}\OperatorTok{\^{}}\FloatTok{2}\OperatorTok{,} \VariableTok{var}\NormalTok{(}\VariableTok{X\_sim}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\PSsection{3.11}{توزیع رایلی}
+
+\PSsubsection{تفسیر فیزیکی}
+
+\textbf{اندازه (پوش)} یک بردار تصادفی گاوسی دوبعدی را مدل می‌کند. هنگامی که \lr{$X$} و \lr{$Y$} مستقل و \lr{$N(0,\, \sigma^{2})$} باشند، آنگاه \lr{$R = \sqrt{X^{2} + Y^{2}}$} از توزیع رایلی پیروی می‌کند.
+
+\PSsubsection{زمینه مهندسی}
+
+\begin{itemize}
+\tightlist
+\item
+  پوش نویز باریک‌باند (هم‌فاز + مربعی)
+\item
+  اندازه ضریب کانال محوشدگی بی‌سیم (محوشدگی رایلی)
+\item
+  مدل‌سازی سرعت باد
+\item
+  خطای فاصله در مکان‌یابی دوبعدی (هنگامی که خطاها در \lr{$x$} و \lr{$y$} گاوسی هستند)
+\end{itemize}
+
+\begin{PSbox}[unbreakable]{def}{تعریف ریاضی}
+
+\lr{$R \sim \mathrm{Rayleigh}(\sigma)$}، که در آن \lr{$\sigma$} پارامتر است (نه انحراف معیار \lr{$R$}).
+
+\end{PSbox}
+
+\PSsubsection{\lr{\mbox{PDF}}}
+
+\PSdisplay{f_R(r) = \frac{r}{\sigma^2} e^{-r^2/(2\sigma^2)}, \quad r \geq 0}
+
+\PSsubsection{\lr{\mbox{CDF}}}
+
+\PSdisplay{F_R(r) = 1 - e^{-r^2/(2\sigma^2)}, \quad r \geq 0}
+
+\PSsubsection{میانگین}
+
+\PSdisplay{E[R] = \sigma\sqrt{\frac{\pi}{2}} \approx 1.2533\sigma}
+
+\PSsubsection{واریانس}
+
+\PSdisplay{\PSmtext{Var}(R) = \frac{4-\pi}{2}\sigma^2 \approx 0.4292\sigma^2}
+
+\PSsubsection{رابطه با سایر توزیع‌ها}
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$R^{2} \sim \mathrm{Exponential}(2\sigma^{2})$} \lr{—} توان به‌صورت نمایی توزیع شده است
+\item
+  اگر \lr{$X,\, Y \sim N(0,\, \sigma^{2})$} مستقل باشند، آنگاه \lr{$\sqrt{X^{2}+Y^{2}} \sim \mathrm{Rayleigh}(\sigma)$}
+\end{itemize}
+
+\PSsubsection{زمان استفاده}
+
+\lr{\mbox{\PSyes{}}} پوش/اندازه یک سیگنال گاوسی مختلط\PSbr{}\lr{\mbox{\PSyes{}}} مدل‌سازی کانال محوشدگی رایلی (بدون خط دید)\PSbr{}\lr{\mbox{\PSyes{}}} فاصله دوبعدی با خطاهای گاوسی در هر بُعد\PSbr{}\lr{\mbox{\PSyes{} RSS}} (جذر مجموع مربعات) دو مؤلفه گاوسی مستقل
+
+\PSsubsection{زمان عدم استفاده}
+
+\lr{\mbox{\PSno{}}} مؤلفه خط دید قوی موجود است (از رایسی استفاده کنید)\PSbr{}\lr{\mbox{\PSno{}}} اندازه/پوش را مدل نمی‌کنید\PSbr{}\lr{\mbox{\PSno{}}} مؤلفه‌ها گاوسی نیستند یا واریانس برابر ندارند
+
+\PSsubsection{پیاده‌سازی در \lr{\mbox{MATLAB}}}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Rayleigh Distribution: Wireless Fading Channel}
+\VariableTok{sigma} \OperatorTok{=} \FloatTok{1}\OperatorTok{;}   \CommentTok{\% Rayleigh parameter}
+\VariableTok{r} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\FloatTok{0}\OperatorTok{,} \FloatTok{5}\OperatorTok{,} \FloatTok{500}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{pdf\_ray} \OperatorTok{=} \VariableTok{raylpdf}\NormalTok{(}\VariableTok{r}\OperatorTok{,} \VariableTok{sigma}\NormalTok{)}\OperatorTok{;}
+\VariableTok{cdf\_ray} \OperatorTok{=} \VariableTok{raylcdf}\NormalTok{(}\VariableTok{r}\OperatorTok{,} \VariableTok{sigma}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{subplot}\NormalTok{(}\FloatTok{2}\OperatorTok{,}\FloatTok{1}\OperatorTok{,}\FloatTok{1}\NormalTok{)}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{r}\OperatorTok{,} \VariableTok{pdf\_ray}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}b{-}\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Channel Gain |h|\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}f\_R(r)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\VariableTok{sprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Rayleigh PDF (σ = \%d)\textquotesingle{}}\OperatorTok{,} \VariableTok{sigma}\NormalTok{))}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;}
+
+\VariableTok{subplot}\NormalTok{(}\FloatTok{2}\OperatorTok{,}\FloatTok{1}\OperatorTok{,}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{r}\OperatorTok{,} \VariableTok{cdf\_ray}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r{-}\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}r\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(R ≤ r)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Rayleigh CDF = Outage Probability\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;}
+
+\CommentTok{\% Outage probability: P(|h| \textless{} threshold)}
+\VariableTok{threshold} \OperatorTok{=} \FloatTok{0.5}\OperatorTok{;}
+\VariableTok{p\_outage} \OperatorTok{=} \VariableTok{raylcdf}\NormalTok{(}\VariableTok{threshold}\OperatorTok{,} \VariableTok{sigma}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(outage, |h| \textless{} \%.1f) = \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{threshold}\OperatorTok{,} \VariableTok{p\_outage}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{PSbox}[unbreakable]{ex}{مثال شبیه‌سازی: محوشدگی رایلی}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Generate Rayleigh Fading from Complex Gaussian}
+\VariableTok{sigma} \OperatorTok{=} \FloatTok{1}\OperatorTok{;}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+
+\CommentTok{\% Complex Gaussian channel coefficient}
+\VariableTok{h} \OperatorTok{=} \VariableTok{sigma}\OperatorTok{/}\VariableTok{sqrt}\NormalTok{(}\FloatTok{2}\NormalTok{) }\OperatorTok{*}\NormalTok{ (}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\VariableTok{N}\NormalTok{) }\OperatorTok{+} \FloatTok{1j}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\VariableTok{N}\NormalTok{))}\OperatorTok{;}
+
+\CommentTok{\% Magnitude is Rayleigh distributed}
+\VariableTok{R} \OperatorTok{=} \VariableTok{abs}\NormalTok{(}\VariableTok{h}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{histogram}\NormalTok{(}\VariableTok{R}\OperatorTok{,} \FloatTok{100}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Normalization\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}pdf\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+\VariableTok{r} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\FloatTok{0}\OperatorTok{,} \FloatTok{5}\OperatorTok{,} \FloatTok{300}\NormalTok{)}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{r}\OperatorTok{,} \VariableTok{raylpdf}\NormalTok{(}\VariableTok{r}\OperatorTok{,} \VariableTok{sigma}\OperatorTok{/}\VariableTok{sqrt}\NormalTok{(}\FloatTok{2}\NormalTok{))}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r{-}\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}|h|\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}PDF\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Rayleigh Fading: Simulated vs Theory\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{legend}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Simulation\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Theory\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\PSsection{3.12}{توزیع کای‌دو}
+
+\PSsubsection{تفسیر فیزیکی}
+
+\textbf{جمع مربعات} متغیرهای تصادفی نرمال استاندارد مستقل را مدل می‌کند. به‌طور طبیعی در برآورد واریانس و آزمون نیکویی برازش ظاهر می‌شود.
+
+\PSsubsection{زمینه مهندسی}
+
+\begin{itemize}
+\tightlist
+\item
+  توزیع واریانس نمونه (برای داده‌های گاوسی)
+\item
+  توان نویز گاوسی (جمع مؤلفه‌های مربع‌شده)
+\item
+  آماره آزمون نیکویی برازش
+\item
+  بازه‌های اطمینان برای واریانس
+\item
+  آشکارسازی انرژی در سنجش طیف
+\end{itemize}
+
+\begin{PSbox}[unbreakable]{def}{تعریف ریاضی}
+
+اگر \lr{$Z_{1},\, Z_{2},\, \ldots,\, Z_{n}$} مستقل و \lr{$N(0,\,1)$} باشند، آنگاه:\PSdisplay{\chi^2 = Z_1^2 + Z_2^2 + \cdots + Z_n^2 \sim \chi^2(n)}
+
+\lr{$n$} = درجات آزادی.
+
+\end{PSbox}
+
+\PSsubsection{\lr{\mbox{PDF}}}
+
+\PSdisplay{f_X(x) = \frac{x^{n/2-1} e^{-x/2}}{2^{n/2}\Gamma(n/2)}, \quad x \geq 0}
+
+\PSsubsection{\lr{\mbox{CDF}}}
+
+برای \lr{$n$} کلی فرم بسته ندارد. از طریق تابع گامای ناقص محاسبه می‌شود.
+
+\PSsubsection{میانگین}
+
+\PSdisplay{E[X] = n}
+
+\PSsubsection{واریانس}
+
+\PSdisplay{\PSmtext{Var}(X) = 2n}
+
+\PSsubsection{رابطه با سایر توزیع‌ها}
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{Chi-square(n) $= \mathrm{Gamma}\left(\frac{n}{2},\, 2\right)$}
+\item
+  \lr{\mbox{Chi-square(1)}} = مربع \lr{$N(0,\,1)$}
+\item
+  \lr{Chi-square(2) $= \mathrm{Exponential}\left(\frac{1}{2}\right)$}
+\item
+  برای \lr{$n$} بزرگ: \lr{$\chi^{2}(n) \approx N(n,\, 2n)$} بر اساس \lr{\mbox{CLT}}
+\end{itemize}
+
+\PSsubsection{زمان استفاده}
+
+\lr{\mbox{\PSyes{}}} جمع مربعات متغیرهای تصادفی گاوسی\PSbr{}\lr{\mbox{\PSyes{}}} آزمون واریانس و بازه‌های اطمینان\PSbr{}\lr{\mbox{\PSyes{}}} آزمون‌های نیکویی برازش\PSbr{}\lr{\mbox{\PSyes{}}} آشکارسازی انرژی در \lr{$N$} بُعد
+
+\PSsubsection{زمان عدم استفاده}
+
+\lr{\mbox{\PSno{}}} متغیرها گاوسی نیستند\PSbr{}\lr{\mbox{\PSno{}}} متغیرها مستقل نیستند\PSbr{}\lr{\mbox{\PSno{}}} متغیرها نرمال استاندارد نیستند (نیاز به مقیاس‌بندی دارند)
+
+\PSsubsection{پیاده‌سازی در \lr{\mbox{MATLAB}}}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Chi{-}Square Distribution: Noise Power}
+\CommentTok{\% Noise power from N complex dimensions = sum of 2N squared Gaussians}
+
+\VariableTok{n\_dof} \OperatorTok{=} \FloatTok{10}\OperatorTok{;}        \CommentTok{\% degrees of freedom}
+\VariableTok{x} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\FloatTok{0}\OperatorTok{,} \FloatTok{30}\OperatorTok{,} \FloatTok{500}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{pdf\_chi2} \OperatorTok{=} \VariableTok{chi2pdf}\NormalTok{(}\VariableTok{x}\OperatorTok{,} \VariableTok{n\_dof}\NormalTok{)}\OperatorTok{;}
+\VariableTok{cdf\_chi2} \OperatorTok{=} \VariableTok{chi2cdf}\NormalTok{(}\VariableTok{x}\OperatorTok{,} \VariableTok{n\_dof}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{x}\OperatorTok{,} \VariableTok{pdf\_chi2}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}b{-}\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}χ² Value (Noise Power)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}f\_X(x)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\VariableTok{sprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Chi{-}Square PDF: \%d degrees of freedom\textquotesingle{}}\OperatorTok{,} \VariableTok{n\_dof}\NormalTok{))}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;}
+
+\CommentTok{\% Simulation: sum of squared standard normals}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+\VariableTok{Z} \OperatorTok{=} \VariableTok{randn}\NormalTok{(}\VariableTok{n\_dof}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{X\_sim} \OperatorTok{=} \VariableTok{sum}\NormalTok{(}\VariableTok{Z}\OperatorTok{.\^{}}\FloatTok{2}\OperatorTok{,} \FloatTok{1}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Mean: Theory=\%d, Sim=\%.2f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{n\_dof}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{X\_sim}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Var:  Theory=\%d, Sim=\%.2f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\OperatorTok{*}\VariableTok{n\_dof}\OperatorTok{,} \VariableTok{var}\NormalTok{(}\VariableTok{X\_sim}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\PSsection{3.13}{راهنمای انتخاب توزیع}
+
+\PSsubsection{درخت تصمیم: توزیع‌های گسسته}
+
+\PSfigure{m03-tree-discrete}
+
+\PSsubsection{درخت تصمیم: توزیع‌های پیوسته}
+
+\PSfigure{m03-tree-continuous}
+
+\PSsubsection{الگوهای تشخیص سریع}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}cc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{اگر ببینید\lr{…}} & \PSth{فکر کنید\lr{…}} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+خروجی دودویی & برنولی \\
+«\lr{$n$} آزمایش، \lr{$k$} موفقیت» & دوجمله‌ای \\
+«چند تا تا نخستین\lr{…}» & هندسی \\
+«رویداد در هر بازه» & پواسون \\
+«شانس برابر در هر جای \lr{$[a,\,b]$}» & یکنواخت \\
+«زمان تا رویداد بعدی» & نمایی \\
+«جمع بسیاری از اثرها» یا «نویز» & گاوسی \\
+«کل زمان انتظار برای \lr{$k$} رویداد» & گاما \\
+«پوش سیگنال» یا «محوشدگی» & رایلی \\
+«جمع مربعات نرمال‌ها» & کای‌دو \\
+\end{longtable}
+}
+
+\PSsection{3.14}{جدول خلاصه}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 10\tabcolsep) * \real{0.2407}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 10\tabcolsep) * \real{0.1111}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 10\tabcolsep) * \real{0.2037}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 10\tabcolsep) * \real{0.1111}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 10\tabcolsep) * \real{0.1852}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 10\tabcolsep) * \real{0.1481}}@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{توزیع} & \PSth{نوع} & \PSth{پارامترها} & \PSth{میانگین} & \PSth{واریانس} & \PSth{\lr{\mbox{MATLAB}}} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+برنولی & گسسته & \lr{$p$} & \lr{$p$} & \lr{$p(1-p)$} & \lr{\mbox{\PScode{binornd(1,p)}}} \\
+دوجمله‌ای & گسسته & \lr{$n,\, p$} & \lr{$np$} & \lr{$np(1-p)$} & \lr{\mbox{\PScode{binornd(n,p)}}} \\
+هندسی & گسسته & \lr{$p$} & \lr{$\frac{1}{p}$} & \lr{$\frac{1-p}{p^{2}}$} & \lr{\mbox{\PScode{geornd(p)+1}}} \\
+دوجمله‌ای منفی & گسسته & \lr{$r,\, p$} & \lr{$\frac{r}{p}$} & \lr{$\frac{r(1-p)}{p^{2}}$} & \lr{\mbox{\PScode{nbinrnd(r,p)+r}}} \\
+پواسون & گسسته & \lr{$\lambda$} & \lr{$\lambda$} & \lr{$\lambda$} & \lr{\mbox{\PScode{poissrnd(λ)}}} \\
+یکنواخت & پیوسته & \lr{$a,\, b$} & \lr{$\frac{a+b}{2}$} & \lr{$\frac{(b-a)^{2}}{12}$} & \lr{\mbox{\PScode{unifrnd(a,b)}}} \\
+نمایی & پیوسته & \lr{$\lambda$} (یا \lr{$\beta = \frac{1}{\lambda}$}) & \lr{$\frac{1}{\lambda}$} & \lr{$\frac{1}{\lambda^{2}}$} & \lr{\mbox{\PScode{exprnd(β)}}} \\
+گاوسی & پیوسته & \lr{$\mu,\, \sigma^{2}$} & \lr{$\mu$} & \lr{$\sigma^{2}$} & \lr{\mbox{\PScode{normrnd(μ,σ)}}} \\
+گاما & پیوسته & \lr{$\alpha,\, \beta$} & \lr{$\alpha \beta$} & \lr{$\alpha \beta^{2}$} & \lr{\mbox{\PScode{gamrnd(α,β)}}} \\
+رایلی & پیوسته & \lr{$\sigma$} & \lr{$\sigma \sqrt{\frac{\pi}{2}}$} & \lr{$\frac{(4-\pi)\sigma^{2}}{2}$} & \lr{\mbox{\PScode{raylrnd(σ)}}} \\
+کای‌دو & پیوسته & \lr{$n$} & \lr{$n$} & \lr{$2n$} & \lr{\mbox{\PScode{chi2rnd(n)}}} \\
+\end{longtable}
+}
+
+\PSsection{3.15}{مسایل تمرینی}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 1: تشخیص توزیع}
+
+توزیع مناسب را برای هر سناریو تشخیص دهید:
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  تعداد تماس‌های قطع‌شده در یک پنجره 10 دقیقه‌ای (میانگین: 2 در هر 10 دقیقه)
+\item
+  ولتاژ نویز حرارتی در دو سر یک مقاومت
+\item
+  زمان تا از کار افتادن یک سرور (نرخ خرابی ثابت)
+\item
+  تعداد مدارهای مجتمع معیوب از میان یک دسته 100 تایی (نرخ نقص 3\%)
+\item
+  پوش سیگنال دریافتی از مسیر چندگانه بدون \lr{\mbox{LOS}}
+\end{enumerate}
+
+\PSsolution{} (الف) \lr{$\mathrm{Poisson}(\lambda = 2)$}، (ب) \lr{$\mathrm{Gaussian}(0,\, \sigma^{2})$}، (ج) \lr{$\mathrm{Exponential}(\lambda)$}، (د) \lr{$\mathrm{Binomial}(100,\, 0.03)$}، (ه) \lr{$\mathrm{Rayleigh}(\sigma)$}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 2: نمایی در برابر پواسون}
+
+بسته‌ها به‌صورت یک فرایند پواسون با نرخ \lr{$\lambda = 5$} بسته بر ثانیه به یک مسیریاب می‌رسند.
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  \lr{$P(\text{\rl{بیش از 8 بسته در 1 ثانیه}})$} چقدر است؟
+\item
+  \lr{$P(\text{\rl{هیچ بسته‌ای در 0.5 ثانیه بعدی نرسد}})$} چقدر است؟
+\item
+  چه توزیعی زمان بین‌ورودی را توصیف می‌کند؟
+\item
+  میانگین زمان بین‌ورودی چقدر است؟
+\end{enumerate}
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  \lr{$X \sim \mathrm{Poisson}(5)$: $P(X > 8) = 1 - \texttt{poisscdf}(8,\, 5) = 0.0681$}
+\item
+  \lr{$T \sim \mathrm{Exp}(5)$: $P(T > 0.5) = e^{-5 \times 0.5} = e^{-2.5} = 0.0821$}
+\item
+  نمایی با نرخ \lr{$\lambda = 5$}
+\item
+  میانگین \lr{$= \frac{1}{\lambda} = 0.2$} ثانیه
+\end{enumerate}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 3: احتمال گاوسی}
+
+یک مقاومت مقدار نامی \lr{\mbox{1000\ensuremath{\Omega}}} با تغییرات ساخت مدل‌شده به‌صورت \lr{$N(1000,\, 25)$} دارد \lr{$(\sigma = 5\,\Omega)$}.
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  چه کسری از مقاومت‌ها در محدوده \lr{$\pm 10\,\Omega$} حول مقدار نامی هستند (مشخصه: \lr{$990-1010\,\Omega$})؟
+\item
+  چه کسری در آزمون رواداری \lr{$\pm 1\%$} رد می‌شوند؟
+\item
+  کدام بازه رواداری شامل \PSnum{99.7\%} مقاومت‌ها است؟
+\end{enumerate}
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  \lr{$P(990 \le X \le 1010) = P(-2 \le Z \le 2) = 0.9545 \to 95.45\%$}
+\item
+  \lr{\mbox{$\pm 1\% = \pm 10\,\Omega$ \ensuremath{\to}}} همانند \lr{\mbox{(a)}}، نرخ رد \lr{$= 1 - 0.9545 = 4.55\%$}
+\item
+  \lr{\mbox{$\pm 3\sigma = \pm 15\,\Omega$ \ensuremath{\to}}} محدوده \lr{$[985,\, 1015]\Omega$}
+\end{enumerate}
+
+\emph{ماژول بعدی: {ماژول 4 \lr{—} امید ریاضی و گشتاورها}}
+
+\end{PSbox}

@@ -1,0 +1,42 @@
+% ============================================================
+%  ProbAndStats — Persian (RTL) preamble
+%  Compile with XeLaTeX (or tectonic).  \PSroot must point to template/
+% ============================================================
+\input{\PSroot/probstats-packages}
+\usepackage{xepersian}
+
+\settextfont[Path=\PSroot/fonts/, Extension=.ttf, AutoFakeBold=1.6, Scale=1.08]{BNazanin}
+\setlatintextfont{Times New Roman}
+\setlatinmonofont[Scale=0.84]{Menlo}
+\defpersianfont\PSfaDisplay[Path=\PSroot/fonts/, Extension=.ttf, AutoFakeBold=2.6]{BNazanin}
+
+\linespread{1.22}
+% inline formulas inside right-to-left text: avoid splitting them across lines
+\relpenalty=9999 \binoppenalty=9999
+\newif\ifPSrtl \PSrtltrue
+
+% language strings
+\def\PSlangCourse{آمار و احتمال مهندسی}
+\def\PSlangCourseOther{Engineering Probability \& Statistics}
+\def\PSyearfa{\lr{\persianfont 1405-1406}}
+\def\PSlangTerm{نیمسال پاییز \PSyearfa}
+\def\PSlangTermOther{Fall 2026-2027}
+\def\PSlangUni{دانشگاه فردوسی مشهد}
+\def\PSlangUniOther{Ferdowsi University of Mashhad}
+\def\PSlangNotes{جزوه درسی}
+\def\PSlangNotesOther{Lecture Notes}
+\def\PSlangModule{ماژول}
+\def\PSlangSolution{حل}
+\def\PSlangPage{صفحه}
+\def\PSlangContents{فهرست مطالب}
+\def\PSlangModuleContents{فهرست مطالب این ماژول}
+\def\PSlangSyllabus{طرح درس}
+\def\PSlangFaculty{دانشکده مهندسی}
+\def\PSlangInstructorLabel{استاد:}
+\def\PSlangInstructor{امین آذری}
+\def\PSlangInstructorOther{Instructor: Amin Azari}
+\def\PSinstructorURL{https://github.com/AminAzari}
+\def\PSlangCompiler{گردآوری شده توسط: آیدین شکاری}
+\def\PScompilerURL{https://shekari.me}
+
+\input{\PSroot/probstats-style}

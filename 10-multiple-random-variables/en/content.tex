@@ -1,0 +1,379 @@
+\begin{PSbox}[unbreakable]{obj}{Learning Objectives}
+
+After completing this module, students will be able to:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Extend joint distributions to $N$ random variables
+\item
+  Define and work with random vectors
+\item
+  Compute mean vectors and covariance matrices
+\item
+  Apply the multivariate Gaussian distribution
+\item
+  Perform linear transformations of random vectors
+\end{enumerate}
+
+\end{PSbox}
+
+\PSsection{10.1}{Introduction: From 2 to $N$ Variables}
+
+Real systems often involve many uncertain quantities simultaneously:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Sensor array:} $N$ sensors each producing a noisy measurement
+\item
+  \textbf{MIMO system:} $M \times N$ channel coefficients
+\item
+  \textbf{Parameter estimation:} $p$ unknown parameters
+\item
+  \textbf{Signal samples:} $N$ consecutive noise samples
+\end{itemize}
+
+We need a framework for \textbf{N-dimensional} random vectors.
+
+\PSsection{10.2}{Joint Distributions for $N$ Random Variables}
+
+\PSsubsection{Joint PDF}
+
+For $X_{1},\, X_{2},\, \ldots,\, X_{n}$:\PSdisplay{f_{X_1,...,X_n}(x_1,...,x_n) \geq 0, \quad \int\cdots\int f_{X_1,...,X_n} \, dx_1 \cdots dx_n = 1}
+
+\PSsubsection{Marginal Distributions}
+
+Integrate (or sum) out unwanted variables:\PSdisplay{f_{X_1}(x_1) = \int\cdots\int f_{X_1,...,X_n}(x_1,...,x_n) \, dx_2 \cdots dx_n}
+
+\PSsubsection{Conditional Distributions}
+
+\PSdisplay{f_{X_1|X_2,...,X_n}(x_1|x_2,...,x_n) = \frac{f_{X_1,...,X_n}(x_1,...,x_n)}{f_{X_2,...,X_n}(x_2,...,x_n)}}
+
+\PSsubsection{Mutual Independence}
+
+$X_{1},\, \ldots,\, X_{n}$ are mutually independent if:\PSdisplay{f_{X_1,...,X_n}(x_1,...,x_n) = \prod_{i=1}^n f_{X_i}(x_i)}
+
+\PSsection{10.3}{Random Vectors}
+
+\begin{PSbox}[unbreakable]{def}{Definition}
+
+A \textbf{random vector} is an ordered collection of random variables:
+
+\PSdisplay{\mathbf{X} = \begin{bmatrix} X_1 \\ X_2 \\ \vdots \\ X_n \end{bmatrix}}
+
+\end{PSbox}
+
+\PSsubsection{Engineering Examples}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.4118}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.3235}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.2647}}@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{Random Vector} & \PSth{Components} & \PSth{Context} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Sensor array output & $X_{1},\,\ldots,\,X_{n}$ = sensor readings & Array processing \\
+MIMO channel & $h_{1},\,\ldots,\,h_{n}$ = channel gains & Wireless communications \\
+Noise vector & $N_{1},\,\ldots,\,N_{n}$ = noise samples & Signal processing \\
+State vector & Position, velocity, acceleration & Kalman filtering \\
+Feature vector & Extracted measurements & Pattern recognition \\
+\end{longtable}
+}
+
+\PSsection{10.4}{Mean Vector}
+
+\begin{PSbox}[unbreakable]{def}{Definition}
+
+\PSdisplay{\boldsymbol{\mu} = E[\mathbf{X}] = \begin{bmatrix} E[X_1] \\ E[X_2] \\ \vdots \\ E[X_n] \end{bmatrix} = \begin{bmatrix} \mu_1 \\ \mu_2 \\ \vdots \\ \mu_n \end{bmatrix}}
+
+\end{PSbox}
+
+\PSsubsection{Properties}
+
+\begin{itemize}
+\tightlist
+\item
+  $E[AX + b]$ = AE[X] $+ b = A\mu + b$
+\item
+  Linearity extends to vectors and matrices
+\end{itemize}
+
+\PSsection{10.5}{Covariance Matrix}
+
+\begin{PSbox}[unbreakable]{def}{Definition}
+
+\PSdisplay{\boldsymbol{\Sigma} = E[(\mathbf{X} - \boldsymbol{\mu})(\mathbf{X} - \boldsymbol{\mu})^T]}
+
+Element $(i,\,j)$: $\Sigma_{ij} = \operatorname{Cov}(X_{i},\, X_{j})$
+
+\PSdisplay{\boldsymbol{\Sigma} = \begin{bmatrix} \sigma_1^2 & \text{Cov}(X_1,X_2) & \cdots & \text{Cov}(X_1,X_n) \\ \text{Cov}(X_2,X_1) & \sigma_2^2 & \cdots & \text{Cov}(X_2,X_n) \\ \vdots & & \ddots & \vdots \\ \text{Cov}(X_n,X_1) & \cdots & \cdots & \sigma_n^2 \end{bmatrix}}
+
+\end{PSbox}
+
+\PSsubsection{Properties}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Symmetric:} $\Sigma = \Sigma^{T}$
+\item
+  \textbf{Positive semi-definite:} $v^{T}\Sigma v \ge 0$ for all $v$
+\item
+  \textbf{Diagonal = variances:} $\Sigma_{ii} = \operatorname{Var}(X_{i})$
+\item
+  \textbf{Off-diagonal = covariances:} $\Sigma_{ij} = \operatorname{Cov}(X_{i},\, X_{j})$
+\item
+  \textbf{Independent components \ensuremath{\to} diagonal $\Sigma$}
+\end{enumerate}
+
+\PSsubsection{Alternative Formula}
+
+\PSdisplay{\boldsymbol{\Sigma} = E[\mathbf{X}\mathbf{X}^T] - \boldsymbol{\mu}\boldsymbol{\mu}^T}
+
+\PSsection{10.6}{Multivariate Gaussian Distribution}
+
+\begin{PSbox}[unbreakable]{def}{Definition}
+
+$X \sim N(\mu,\, \Sigma)$ has PDF:
+
+\PSdisplay{f_\mathbf{X}(\mathbf{x}) = \frac{1}{(2\pi)^{n/2}|\boldsymbol{\Sigma}|^{1/2}} \exp\left(-\frac{1}{2}(\mathbf{x}-\boldsymbol{\mu})^T \boldsymbol{\Sigma}^{-1}(\mathbf{x}-\boldsymbol{\mu})\right)}
+
+where $\lvert \Sigma\rvert$ = determinant of $\Sigma$.
+
+\end{PSbox}
+
+\PSsubsection{Key Properties}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Marginals are Gaussian:} Any subset of components is jointly Gaussian
+\item
+  \textbf{Conditionals are Gaussian:} $X_{1} \mid X_{2} = x_{2}$ is Gaussian
+\item
+  \textbf{Linear transformations:} $Y$ = AX $+ b \sim N(A\mu +b,\, A\Sigma A^{T})$
+\item
+  \textbf{Uncorrelated = Independent} (unique to Gaussian!)
+\item
+  \textbf{Fully specified} by $\mu$ and $\Sigma$ (only 2 parameters needed per variable plus correlations)
+\end{enumerate}
+
+\PSsubsection{Why So Important?}
+
+\begin{itemize}
+\tightlist
+\item
+  Central Limit Theorem: sums of many RVs \ensuremath{\to} multivariate Gaussian
+\item
+  Thermal noise vectors are multivariate Gaussian
+\item
+  Analytically tractable (closed-form marginals, conditionals)
+\item
+  Optimal filters (Kalman, Wiener) assume Gaussian
+\end{itemize}
+
+\PSsubsection{$2D$ Case (Bivariate Gaussian)}
+
+For $n = 2$ with $\mu = [0,\,0]^{T},\, \sigma_{1} = \sigma_{2} = 1$:
+
+\PSdisplay{f(x,y) = \frac{1}{2\pi\sqrt{1-\rho^2}} \exp\left(-\frac{x^2 - 2\rho xy + y^2}{2(1-\rho^2)}\right)}
+
+Contours are \textbf{ellipses} (tilted when $\rho \ne 0$).
+
+\PSsection{10.7}{Linear Transformations of Random Vectors}
+
+\PSsubsection{Transformation $Y$ = AX $+ b$}
+
+If $X$ is a random vector with mean $\mu_{X}$ and covariance $\Sigma_{X}$:
+
+\PSdisplay{E[\mathbf{Y}] = A\boldsymbol{\mu}_X + \mathbf{b}}\PSdisplay{\boldsymbol{\Sigma}_Y = A\boldsymbol{\Sigma}_X A^T}
+
+\PSsubsection{Engineering Applications}
+
+\textbf{Beamforming:} Output $y = w^{T}X$ (weight vector applied to sensor array)
+
+\begin{itemize}
+\tightlist
+\item
+  $E[y] = w^{T}\mu$
+\item
+  $\operatorname{Var}(y) = w^{T}\Sigma w$
+\end{itemize}
+
+\textbf{Whitening:} Find matrix $W$ such that $W\Sigma W^{T}$ = I (decorrelates data)
+
+\begin{itemize}
+\tightlist
+\item
+  $W = \Sigma^{-1/2}$
+\end{itemize}
+
+\textbf{Principal Component Analysis:} Rotate to diagonalize $\Sigma$
+
+\PSsection{10.8}{MATLAB Examples}
+
+\begin{PSbox}[unbreakable]{ex}{Example 1: Generating Multivariate Gaussian}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Generate and Visualize 2D Gaussian Random Vector}
+\VariableTok{mu} \OperatorTok{=}\NormalTok{ [}\FloatTok{1}\OperatorTok{;} \FloatTok{2}\NormalTok{]}\OperatorTok{;}
+\VariableTok{Sigma} \OperatorTok{=}\NormalTok{ [}\FloatTok{4}\OperatorTok{,} \FloatTok{2}\OperatorTok{;} \FloatTok{2}\OperatorTok{,} \FloatTok{3}\NormalTok{]}\OperatorTok{;}  \CommentTok{\% Covariance matrix}
+
+\VariableTok{N} \OperatorTok{=} \FloatTok{5000}\OperatorTok{;}
+\VariableTok{X} \OperatorTok{=} \VariableTok{mvnrnd}\NormalTok{(}\VariableTok{mu}\OperatorTok{\textquotesingle{},} \VariableTok{Sigma}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{scatter}\NormalTok{(}\VariableTok{X}\NormalTok{(}\OperatorTok{:,}\FloatTok{1}\NormalTok{)}\OperatorTok{,} \VariableTok{X}\NormalTok{(}\OperatorTok{:,}\FloatTok{2}\NormalTok{)}\OperatorTok{,} \FloatTok{5}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}b\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}.\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{mu}\NormalTok{(}\FloatTok{1}\NormalTok{)}\OperatorTok{,} \VariableTok{mu}\NormalTok{(}\FloatTok{2}\NormalTok{)}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r+\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}MarkerSize\textquotesingle{}}\OperatorTok{,} \FloatTok{15}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{3}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}X\_1\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}X\_2\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Bivariate Gaussian Samples\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{axis} \VariableTok{equal}\OperatorTok{;} \VariableTok{grid} \VariableTok{on}\OperatorTok{;}
+
+\CommentTok{\% Verify statistics}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Mean: [\%.2f, \%.2f] (theory: [\%.1f, \%.1f])\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{X}\NormalTok{)}\OperatorTok{,} \VariableTok{mu}\OperatorTok{\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Cov matrix:\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{disp}\NormalTok{(}\VariableTok{cov}\NormalTok{(}\VariableTok{X}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{Example 2: Linear Transformation}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Transform: Y = AX + b}
+\VariableTok{mu\_x} \OperatorTok{=}\NormalTok{ [}\FloatTok{0}\OperatorTok{;} \FloatTok{0}\NormalTok{]}\OperatorTok{;} \VariableTok{Sigma\_x} \OperatorTok{=} \VariableTok{eye}\NormalTok{(}\FloatTok{2}\NormalTok{)}\OperatorTok{;}   \CommentTok{\% Standard normal}
+\VariableTok{A} \OperatorTok{=}\NormalTok{ [}\FloatTok{2}\OperatorTok{,} \FloatTok{1}\OperatorTok{;} \OperatorTok{{-}}\FloatTok{1}\OperatorTok{,} \FloatTok{3}\NormalTok{]}\OperatorTok{;}  \VariableTok{b} \OperatorTok{=}\NormalTok{ [}\FloatTok{1}\OperatorTok{;} \OperatorTok{{-}}\FloatTok{2}\NormalTok{]}\OperatorTok{;}
+
+\VariableTok{N} \OperatorTok{=} \FloatTok{10000}\OperatorTok{;}
+\VariableTok{X} \OperatorTok{=} \VariableTok{mvnrnd}\NormalTok{(}\VariableTok{mu\_x}\OperatorTok{\textquotesingle{},} \VariableTok{Sigma\_x}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{\textquotesingle{};}
+\VariableTok{Y} \OperatorTok{=} \VariableTok{A}\OperatorTok{*}\VariableTok{X} \OperatorTok{+} \VariableTok{b}\OperatorTok{;}
+
+\CommentTok{\% Theoretical}
+\VariableTok{mu\_y\_theory} \OperatorTok{=} \VariableTok{A}\OperatorTok{*}\VariableTok{mu\_x} \OperatorTok{+} \VariableTok{b}\OperatorTok{;}
+\VariableTok{Sigma\_y\_theory} \OperatorTok{=} \VariableTok{A}\OperatorTok{*}\VariableTok{Sigma\_x}\OperatorTok{*}\VariableTok{A}\OperatorTok{\textquotesingle{};}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}E[Y] theory: [\%.1f; \%.1f], sim: [\%.2f; \%.2f]\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \OperatorTok{...}
+    \VariableTok{mu\_y\_theory}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{Y}\OperatorTok{,}\FloatTok{2}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Σ\_Y theory:\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{disp}\NormalTok{(}\VariableTok{Sigma\_y\_theory}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Σ\_Y simulated:\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{disp}\NormalTok{(}\VariableTok{cov}\NormalTok{(}\VariableTok{Y}\OperatorTok{\textquotesingle{}}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[breakable]{ex}{Example 3: Sensor Array with Correlated Noise}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% 4{-}Element Sensor Array with Spatially Correlated Noise}
+\VariableTok{n\_sensors} \OperatorTok{=} \FloatTok{4}\OperatorTok{;}
+\VariableTok{sigma2} \OperatorTok{=} \FloatTok{1}\OperatorTok{;}      \CommentTok{\% Noise power per sensor}
+\VariableTok{rho} \OperatorTok{=} \FloatTok{0.6}\OperatorTok{;}       \CommentTok{\% Adjacent sensor correlation}
+
+\CommentTok{\% Build covariance matrix (exponential decay model)}
+\VariableTok{Sigma} \OperatorTok{=} \VariableTok{zeros}\NormalTok{(}\VariableTok{n\_sensors}\NormalTok{)}\OperatorTok{;}
+\KeywordTok{for} \VariableTok{i} \OperatorTok{=} \FloatTok{1}\OperatorTok{:}\VariableTok{n\_sensors}
+    \KeywordTok{for} \VariableTok{j} \OperatorTok{=} \FloatTok{1}\OperatorTok{:}\VariableTok{n\_sensors}
+        \VariableTok{Sigma}\NormalTok{(}\VariableTok{i}\OperatorTok{,}\VariableTok{j}\NormalTok{) }\OperatorTok{=} \VariableTok{sigma2} \OperatorTok{*} \VariableTok{rho}\OperatorTok{\^{}}\VariableTok{abs}\NormalTok{(}\VariableTok{i}\OperatorTok{{-}}\VariableTok{j}\NormalTok{)}\OperatorTok{;}
+    \KeywordTok{end}
+\KeywordTok{end}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Noise covariance matrix:\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{disp}\NormalTok{(}\VariableTok{Sigma}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Generate noise samples}
+\VariableTok{N\_samp} \OperatorTok{=} \FloatTok{10000}\OperatorTok{;}
+\VariableTok{L} \OperatorTok{=} \VariableTok{chol}\NormalTok{(}\VariableTok{Sigma}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}lower\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{noise} \OperatorTok{=} \VariableTok{L} \OperatorTok{*} \VariableTok{randn}\NormalTok{(}\VariableTok{n\_sensors}\OperatorTok{,} \VariableTok{N\_samp}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Signal present in direction: s = [1; 1; 1; 1] (broadside)}
+\VariableTok{signal} \OperatorTok{=} \FloatTok{3}\OperatorTok{;}
+\VariableTok{s} \OperatorTok{=} \VariableTok{ones}\NormalTok{(}\VariableTok{n\_sensors}\OperatorTok{,} \FloatTok{1}\NormalTok{) }\OperatorTok{/} \VariableTok{sqrt}\NormalTok{(}\VariableTok{n\_sensors}\NormalTok{)}\OperatorTok{;}
+\VariableTok{received} \OperatorTok{=} \VariableTok{signal} \OperatorTok{*} \VariableTok{s} \OperatorTok{+} \VariableTok{noise}\OperatorTok{;}  \CommentTok{\% N\_sensors x N\_samp}
+
+\CommentTok{\% Beamformer output: y = w\textquotesingle{}*received (w = s for matched filter)}
+\VariableTok{w} \OperatorTok{=} \VariableTok{s}\OperatorTok{;}
+\VariableTok{y} \OperatorTok{=} \VariableTok{w}\OperatorTok{\textquotesingle{}} \OperatorTok{*} \VariableTok{received}\OperatorTok{;}
+\VariableTok{SNR\_out} \OperatorTok{=} \VariableTok{signal}\OperatorTok{\^{}}\FloatTok{2} \OperatorTok{/}\NormalTok{ (}\VariableTok{w}\OperatorTok{\textquotesingle{}*}\VariableTok{Sigma}\OperatorTok{*}\VariableTok{w}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Output SNR = \%.2f (\%.1f dB)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{SNR\_out}\OperatorTok{,} \FloatTok{10}\OperatorTok{*}\VariableTok{log10}\NormalTok{(}\VariableTok{SNR\_out}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\PSsection{10.9}{Practice Problems}
+
+\begin{PSbox}[unbreakable]{prob}{Problem 1}
+
+Random vector $X = [X_{1},\, X_{2},\, X_{3}]^{T}$ with $\mu = [1,\, 0,\, -1]^{T}$, and covariance matrix $\Sigma = \begin{bmatrix} 4 & 1 & 0 \\ 1 & 2 & -1 \\ 0 & -1 & 3 \end{bmatrix}$.
+
+\begin{enumerate}
+\def\labelenumi{(\alph{enumi})}
+\tightlist
+\item
+  Find $\operatorname{Var}(X_{1} + X_{2} + X_{3})$. (b) Find $\operatorname{Cov}(X_{1},\, X_{2}+X_{3})$. (c) Are $X_{1}$ and $X_{3}$ uncorrelated?
+\end{enumerate}
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\alph{enumi})}
+\tightlist
+\item
+  $\operatorname{Var}(X_{1}+X_{2}+X_{3}) = 1^{T}\Sigma 1 = 4+2+3 + 2(1) + 2(0) + 2(-1) = 9 + 0 = 9$\PSbr{}Wait: $= \sum_{ij}$ all entries $= 4+1+0+1+2+(-1)+0+(-1)+3 = 9$
+\item
+  $\operatorname{Cov}(X_{1},\, X_{2}+X_{3}) = \operatorname{Cov}(X_{1},\,X_{2}) + \operatorname{Cov}(X_{1},\,X_{3}) = 1 + 0 = 1$
+\item
+  $\operatorname{Cov}(X_{1},\,X_{3}) = 0$, so yes, $X_{1}$ and $X_{3}$ are uncorrelated.
+\end{enumerate}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{Problem 2}
+
+$X \sim N(0,\, \Sigma)$ with $\Sigma = \begin{bmatrix} 1 & \rho \\ \rho & 1 \end{bmatrix}$. Find the conditional distribution of $X_{1} \mid X_{2} = x_{2}$.
+
+\PSsolution{} For bivariate Gaussian:\PSbr{}$\displaystyle X_{1} \mid X_{2} = x_{2} \sim N\left(\mu_{1} + \rho \left(\frac{\sigma_{1}}{\sigma_{2}}\right)(x_{2}-\mu_{2}),\, \sigma_{1}^{2}(1-\rho^{2})\right)$\PSbr{}$= N(\rho x_{2},\, 1-\rho^{2})$
+
+The conditional mean is a linear function of $x_{2}$, and conditional variance is reduced by factor $(1-\rho^{2})$.
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{Problem 3}
+
+Write MATLAB code to generate a $3D$ Gaussian vector with given $\mu$ and $\Sigma$, compute the sample covariance, and verify.
+
+\PSsolution{} 
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\VariableTok{mu} \OperatorTok{=}\NormalTok{ [}\FloatTok{1}\OperatorTok{;} \FloatTok{0}\OperatorTok{;} \OperatorTok{{-}}\FloatTok{1}\NormalTok{]}\OperatorTok{;}
+\VariableTok{Sigma} \OperatorTok{=}\NormalTok{ [}\FloatTok{4} \FloatTok{1} \FloatTok{0}\OperatorTok{;} \FloatTok{1} \FloatTok{2} \OperatorTok{{-}}\FloatTok{1}\OperatorTok{;} \FloatTok{0} \OperatorTok{{-}}\FloatTok{1} \FloatTok{3}\NormalTok{]}\OperatorTok{;}
+\VariableTok{N} \OperatorTok{=} \FloatTok{50000}\OperatorTok{;}
+\VariableTok{X} \OperatorTok{=} \VariableTok{mvnrnd}\NormalTok{(}\VariableTok{mu}\OperatorTok{\textquotesingle{},} \VariableTok{Sigma}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Sample mean: \textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{disp}\NormalTok{(}\VariableTok{mean}\NormalTok{(}\VariableTok{X}\NormalTok{)}\OperatorTok{\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Sample cov:\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{disp}\NormalTok{(}\VariableTok{cov}\NormalTok{(}\VariableTok{X}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{Next Module: {Module 11 — Central Limit Theorem}}
+
+\end{PSbox}

@@ -1,0 +1,456 @@
+\begin{PSbox}[unbreakable]{obj}{اهداف یادگیری}
+
+پس از تکمیل این ماژول، دانشجویان قادر خواهند بود:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  میان برآوردگر (قاعده) و برآورد (عدد) تمایز قایل شوند
+\item
+  ویژگی‌های برآوردگر را ارزیابی کنند: اریبی، سازگاری، کارایی، \lr{\mbox{MSE}}
+\item
+  روش گشتاورها را به کار ببرند
+\item
+  برآورد بیشینه درست‌نمایی \lr{\mbox{(MLE)}} را به کار ببرند
+\item
+  برآوردگرها را با استفاده از \lr{\mbox{MSE}} و توازن اریبی-واریانس مقایسه کنند
+\end{enumerate}
+
+\end{PSbox}
+
+\PSsection{13.1}{مقدمه}
+
+داده \lr{$X_{1},\, \ldots,\, X_{n}$} را از توزیعی با پارامتر نامعلوم \lr{$\theta$} مشاهده می‌کنیم. \textbf{برآورد پارامتر} روشی برای استنباط \lr{$\theta$} از داده به ما می‌دهد.
+
+مثال‌های مهندسی:
+
+\begin{itemize}
+\tightlist
+\item
+  برآورد واریانس نویز \lr{$\sigma^{2}$} از نمونه‌های ثبت‌شده
+\item
+  برآورد نرخ خرابی \lr{$\lambda$} از عمر قطعات
+\item
+  برآورد بهره کانال از قدرت سیگنال دریافتی
+\item
+  برآورد سطح میانگین سیگنال از اندازه‌گیری‌ها
+\end{itemize}
+
+\PSsection{13.2}{برآوردگر در برابر برآورد}
+
+\PSsubsection{تعاریف}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 6\tabcolsep) * \real{0.1875}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 6\tabcolsep) * \real{0.1875}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 6\tabcolsep) * \real{0.3438}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 6\tabcolsep) * \real{0.2812}}@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{اصطلاح} & \PSth{نوع} & \PSth{تعریف} & \PSth{مثال} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{برآوردگر} \lr{$\hat{\theta}$} & متغیر تصادفی (تابع داده) & قاعده اعمال‌شده به داده & \lr{$\hat{\theta} = \bar{X} = \frac{1}{n}\sum X_{i}$} \\
+\textbf{برآورد} & عدد & مقدار حاصل از یک نمونه مشخص & \lr{$\hat{\theta} = 3.47$} (از یک مجموعه داده) \\
+\end{longtable}
+}
+
+\PSsubsection{نکته کلیدی}
+
+\textbf{برآوردگر} یک متغیر تصادفی است \lr{—} توزیع نمونه‌گیری دارد.\PSbr{}\textbf{برآورد} یک تحقق از آن متغیر تصادفی است.
+
+\textbf{قیاس:} «میانگین بگیر» برآوردگر است (قاعده). «میانگین برابر \PSnum{3.47} بود» برآورد است (نتیجه).
+
+\PSsection{13.3}{ویژگی‌های برآوردگرها}
+
+\PSsubsection{اریبی}
+
+\PSdisplay{B(\hat{\theta}) = E[\hat{\theta}] - \theta}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{نااریب:} \lr{$B(\hat{\theta}) = 0$}، یعنی \lr{$E[\hat{\theta}] = \theta$} (به‌طور میانگین درست)
+\item
+  \textbf{اریب:} \lr{$E[\hat{\theta}] \ne \theta$} (خطای نظام‌مند)
+\end{itemize}
+
+مثال‌ها:
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$\bar{X}$} برای \lr{$\mu$} نااریب است: \lr{\mbox{$E[\bar{X}] = \mu$ \PSyes{}}}
+\item
+  \lr{$S^{2}$} (با \lr{$n-1$}) برای \lr{$\sigma^{2}$} نااریب است: \lr{\mbox{$E[S^{2}] = \sigma^{2}$ \PSyes{}}}
+\item
+  \lr{$S$} (انحراف معیار نمونه) برای \lr{$\sigma$} اریب است: \lr{$E[S] \ne \sigma$} (اریبی اندک به سمت پایین)
+\end{itemize}
+
+\PSsubsection{سازگاری}
+
+\lr{$\hat{\theta}_{n}$} \textbf{سازگار} است اگر \lr{$\hat{\theta}_{n} \to \theta$} در احتمال وقتی \lr{$n \to \infty$}.
+
+معنای عملی: با داده کافی، برآوردگر به‌طور دلخواه به مقدار واقعی نزدیک می‌شود.
+
+شرط کافی: اگر اریبی \lr{\mbox{\ensuremath{\to} 0}} و واریانس \lr{\mbox{\ensuremath{\to} 0}} وقتی \lr{$n \to \infty$}، آنگاه سازگار است.
+
+\PSsubsection{کارایی}
+
+در میان تمام برآوردگرهای نااریب، برآوردگر \textbf{کارا} کمترین واریانس را دارد.
+
+\textbf{کران پایین کرامر-رایو} \lr{\mbox{(CRLB)}} کمترین واریانس ممکن را می‌دهد:\PSdisplay{\PSmtext{Var}(\hat{\theta}) \geq \frac{1}{nI(\theta)}}
+
+که در آن \lr{$I(\theta)$} = اطلاعات فیشر \lr{$= -E\left[\frac{\partial^{2}\ln f(X; \theta)}{\partial \theta^{2}}\right]$}.
+
+برآوردگری که به \lr{\mbox{CRLB}} برسد \textbf{کارا} یا \textbf{کم‌واریانس نااریب \lr{\mbox{(MVU)}}} نامیده می‌شود.
+
+\PSsubsection{میانگین مربعات خطا \lr{\mbox{(MSE)}}}
+
+\PSdisplay{\PSmtext{MSE}(\hat{\theta}) = E[(\hat{\theta} - \theta)^2] = \PSmtext{Var}(\hat{\theta}) + [B(\hat{\theta})]^2}
+
+\lr{\textbf{\lr{$\operatorname{MSE} = \text{\rl{واریانس}} + \text{\rl{اریبی}}^{2}$}}}
+
+این همان \textbf{توازن اریبی-واریانس} است: گاهی یک برآوردگر کمی اریب با واریانس بسیار کمتر، \lr{\mbox{MSE}} کوچک‌تری از یک برآوردگر نااریب دارد.
+
+\PSsection{13.4}{روش گشتاورها \lr{\mbox{(MoM)}}}
+
+\PSsubsection{اصل}
+
+گشتاورهای جامعه را برابر گشتاورهای نمونه قرار دهید، سپس برای پارامترها حل کنید.
+
+\begin{itemize}
+\tightlist
+\item
+  گشتاور مرتبه \lr{$k$} جامعه: \lr{$\mu 'k = E[X^{k}]$}
+\item
+  گشتاور مرتبه \lr{$k$} نمونه: \lr{$m'k = \frac{1}{n}\sum X_{i}^{k}$}
+\end{itemize}
+
+\PSsubsection{رویه}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  پارامترها را بر حسب گشتاورهای جامعه بیان کنید
+\item
+  گشتاورهای جامعه را با گشتاورهای نمونه جایگزین کنید
+\item
+  برای برآوردهای پارامتر حل کنید
+\end{enumerate}
+
+\begin{PSbox}[unbreakable]{ex}{مثال: توزیع نمایی}
+
+داده از \lr{$\mathrm{Exp}(\lambda)$}. گشتاور جامعه: \lr{$E[X] = \frac{1}{\lambda}$}.\PSbr{}برابر قرار دهید: \lr{$\frac{1}{n}\sum X_{i} = \frac{1}{\hat{\lambda}} \to \hat{\lambda}_{\mathrm{MoM}} = \frac{1}{\bar{X}}$}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{مثال: توزیع گاوسی}
+
+داده از \lr{$N(\mu,\, \sigma^{2})$}:
+
+\begin{itemize}
+\tightlist
+\item
+  گشتاور اول: \lr{$\hat{\mu} = \bar{X}$}
+\item
+  گشتاور مرکزی دوم: \lr{$\hat{\sigma}^{2} = \frac{1}{n}\sum (X_{i} - \bar{X})^{2}$} (توجه: اریب، از \lr{$n$} استفاده می‌کند نه \lr{$n-1$})
+\end{itemize}
+
+\end{PSbox}
+
+\PSsubsection{مزایا/معایب}
+
+\lr{\mbox{\PSyes{}}} ساده، همیشه قابل اعمال، جواب‌های فرم بسته اغلب در دسترس\PSbr{}\lr{\mbox{\PSno{}}} همیشه کارا نیست، می‌تواند برآوردهای اریب تولید کند، ممکن است مقادیر نامعتبر پارامتر بدهد
+
+\PSsection{13.5}{برآورد بیشینه درست‌نمایی \lr{\mbox{(MLE)}}}
+
+\PSsubsection{اصل}
+
+مقدار پارامتری را انتخاب کنید که داده مشاهده‌شده را \textbf{محتمل‌ترین} می‌کند.
+
+\PSsubsection{تابع درست‌نمایی}
+
+با داده \lr{$x_{1},\, \ldots,\, x_{n}$} از \lr{$f(x; \theta)$}:
+
+\PSdisplay{L(\theta) = \prod_{i=1}^n f(x_i; \theta)}
+
+\PSsubsection{لگاریتم درست‌نمایی (معمولاً آسان‌تر)}
+
+\PSdisplay{\ell(\theta) = \ln L(\theta) = \sum_{i=1}^n \ln f(x_i; \theta)}
+
+\PSsubsection{رویه \lr{\mbox{MLE}}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  لگاریتم درست‌نمایی \lr{$\ell (\theta)$} را بنویسید
+\item
+  مشتق بگیرید: \lr{$\frac{d\ell}{d\theta} = 0$}
+\item
+  برای \lr{$\hat{\theta}_{\mathrm{MLE}}$} حل کنید
+\item
+  بررسی کنید که بیشینه است \lr{$\left(\frac{d^{2}\ell}{d\theta^{2}} < 0\right)$}
+\end{enumerate}
+
+\PSsubsection{ویژگی‌های \lr{\mbox{MLE}}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{سازگار} (به مقدار واقعی همگرا می‌شود)
+\item
+  \textbf{به‌طور مجانبی نااریب} (اریبی \lr{\mbox{\ensuremath{\to} 0}} وقتی \lr{$n \to \infty$})
+\item
+  \textbf{به‌طور مجانبی کارا} (برای \lr{$n$} بزرگ به \lr{\mbox{CRLB}} می‌رسد)
+\item
+  \textbf{ناوردا:} اگر \lr{$\hat{\theta}$} برآوردگر \lr{\mbox{MLE}} برای \lr{$\theta$} باشد، آنگاه \lr{$g(\hat{\theta})$} برآوردگر \lr{\mbox{MLE}} برای \lr{$g(\theta)$} است
+\end{enumerate}
+
+\begin{PSbox}[unbreakable]{ex}{مثال: \lr{\mbox{MLE}} برای میانگین گاوسی}
+
+داده \lr{$X_{1},\, \ldots,\, X_{n} \sim N(\mu,\, \sigma^{2})$} با \lr{$\sigma^{2}$} معلوم.
+
+\lr{$\displaystyle \ell (\mu) = -\frac{n}{2}\ln (2\pi \sigma^{2}) - \frac{1}{2\sigma^{2}}\sum (x_{i} - \mu)^{2}$}
+
+\lr{$\displaystyle \frac{d\ell}{d\mu} = \frac{1}{\sigma^{2}}\sum (x_{i} - \mu) = 0 \to \hat{\mu}_{\mathrm{MLE}} = \bar{X}$}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{مثال: \lr{\mbox{MLE}} برای نرخ نمایی}
+
+داده \lr{$X_{1},\, \ldots,\, X_{n} \sim \mathrm{Exp}(\lambda)$}.
+
+\lr{$\ell (\lambda) = n \cdot \ln (\lambda) - \lambda \cdot \sum x_{i}$}
+
+\lr{$\displaystyle \frac{d\ell}{d\lambda} = \frac{n}{\lambda} - \sum x_{i} = 0 \to \hat{\lambda}_{\mathrm{MLE}} = \frac{n}{\sum x_{i}} = \frac{1}{\bar{X}}$}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{مثال: \lr{\mbox{MLE}} برای واریانس گاوسی}
+
+داده \lr{$X_{1},\, \ldots,\, X_{n} \sim N(\mu,\, \sigma^{2})$}، \lr{$\mu$} معلوم.
+
+\lr{$\displaystyle \ell (\sigma^{2}) = -\frac{n}{2}\ln (2\pi \sigma^{2}) - \frac{1}{2\sigma^{2}}\sum (x_{i} - \mu)^{2}$}
+
+\lr{$\displaystyle \frac{d\ell}{d(\sigma^{2})} = -\frac{n}{2\sigma^{2}} + \frac{1}{2\sigma^{4}}\sum (x_{i} - \mu)^{2} = 0$}
+
+\lr{$\displaystyle \hat{\sigma}^{2}_{\mathrm{MLE}} = \frac{1}{n}\sum (x_{i} - \mu)^{2}$}
+
+توجه: با \lr{$\mu$} نامعلوم، \lr{$\hat{\sigma}^{2}_{\mathrm{MLE}} = \frac{1}{n}\sum (x_{i} - \bar{x})^{2}$} \lr{—} اریب! (از \lr{$n$} استفاده می‌کند، نه \lr{$n-1$})
+
+\end{PSbox}
+
+\PSsection{13.6}{مثال‌های مهندسی}
+
+\PSsubsection{برآورد واریانس نویز}
+
+\textbf{مسیله:} \lr{$n$} نمونه نویز اندازه‌گیری کنید. توان نویز \lr{$\sigma^{2}$} را برآورد کنید.
+
+\textbf{داده:} \lr{$x_{1},\, \ldots,\, x_{n}$} (نمونه‌های ولتاژ نویز، با فرض میانگین صفر)
+
+\lr{\textbf{\lr{\mbox{MLE:}}} $\hat{\sigma}^{2} = \frac{1}{n}\sum x_{i}^{2}$} (اریب با ضریب \lr{$\frac{n-1}{n}$})\PSbr{}\textbf{نااریب:} \lr{$S^{2} = \frac{1}{n-1}\sum (x_{i} - \bar{x})^{2}$} یا اگر \lr{$\mu = 0$} معلوم باشد: \lr{$\frac{1}{n}\sum x_{i}^{2}$} در واقع برای \lr{$E[X^{2}] = \sigma^{2}$} نااریب است
+
+\PSsubsection{برآورد نرخ خرابی}
+
+\textbf{مسیله:} 20 قطعه تا خرابی آزمایش می‌شوند. عمرها: \lr{$t_{1},\, \ldots,\, t_{20}$}.
+
+\textbf{مدل:} \lr{$T \sim \mathrm{Exp}(\lambda)$}، پارامتر \lr{$\lambda$} (نرخ خرابی).
+
+\lr{\textbf{\lr{\mbox{MLE:}}} $\hat{\lambda} = \frac{20}{\sum t_{i}} = \frac{1}{\bar{T}}$}
+
+اگر \lr{$\bar{T} = 500$} ساعت باشد: \lr{$\hat{\lambda} = \frac{1}{500} = 0.002$} خرابی در ساعت.
+
+\PSsubsection{برآورد پارامتر کانال}
+
+\textbf{مسیله:} کانال محوشدگی رایلی. نمونه‌های توان مشاهده‌شده: \lr{$p_{1},\, \ldots,\, p_{n}$}.
+
+\textbf{مدل:} توان \lr{$P \sim \mathrm{Exp}\left(\frac{1}{\Omega}\right)$}، که در آن \lr{$\Omega = E[P]$} = توان میانگین.
+
+\lr{\textbf{\lr{\mbox{MLE:}}} $\hat{\Omega} = \bar{P} = \frac{1}{n}\sum p_{i}$}
+
+\PSsection{13.7}{مقایسه برآوردگرها}
+
+\PSsubsection{توازن اریبی-واریانس}
+
+دو برآوردگر برای \lr{$\sigma^{2}$}:
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$\hat{\theta}_{1} = S^{2}$} (نااریب، واریانس \lr{$= \frac{2\sigma^{4}}{n-1}$})
+\item
+  \lr{$\hat{\theta}_{2} = \frac{1}{n}\sum (X_{i}-\bar{X})^{2}$} (اریب با \lr{$-\frac{\sigma^{2}}{n}$}، واریانس \lr{$= \frac{2\sigma^{4}(n-1)}{n^{2}}$})
+\end{itemize}
+
+\lr{$\displaystyle \operatorname{MSE}(\hat{\theta}_{1}) = \frac{2\sigma^{4}}{n-1}$}\PSbr{}\lr{$\displaystyle \operatorname{MSE}(\hat{\theta}_{2}) = \frac{2\sigma^{4}(n-1)}{n^{2}} + \frac{\sigma^{4}}{n^{2}} = \frac{\sigma^{4}(2n-1)}{n^{2}}$}
+
+برای هر \lr{$n \ge 2$: $\operatorname{MSE}(\hat{\theta}_{2}) < \operatorname{MSE}(\hat{\theta}_{1})$}! برآوردگر اریب \lr{\mbox{MLE}} در واقع خطای کل کوچک‌تری دارد.
+
+\PSsection{13.8}{مثال‌های \lr{\mbox{MATLAB}}}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 1: \lr{\mbox{MLE}} برای توزیع نمایی}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% MLE for Exponential: Estimate failure rate}
+\VariableTok{lambda\_true} \OperatorTok{=} \FloatTok{0.005}\OperatorTok{;}  \CommentTok{\% True failure rate}
+\VariableTok{n} \OperatorTok{=} \FloatTok{30}\OperatorTok{;}
+
+\CommentTok{\% Simulate data}
+\VariableTok{data} \OperatorTok{=} \VariableTok{exprnd}\NormalTok{(}\FloatTok{1}\OperatorTok{/}\VariableTok{lambda\_true}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \VariableTok{n}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% MLE}
+\VariableTok{lambda\_hat} \OperatorTok{=} \FloatTok{1} \OperatorTok{/} \VariableTok{mean}\NormalTok{(}\VariableTok{data}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}True λ = \%.4f, MLE λ̂ = \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{lambda\_true}\OperatorTok{,} \VariableTok{lambda\_hat}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Repeated experiments to see variability}
+\VariableTok{N\_exp} \OperatorTok{=} \FloatTok{10000}\OperatorTok{;}
+\VariableTok{lambda\_estimates} \OperatorTok{=} \VariableTok{zeros}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N\_exp}\NormalTok{)}\OperatorTok{;}
+\KeywordTok{for} \VariableTok{i} \OperatorTok{=} \FloatTok{1}\OperatorTok{:}\VariableTok{N\_exp}
+    \VariableTok{d} \OperatorTok{=} \VariableTok{exprnd}\NormalTok{(}\FloatTok{1}\OperatorTok{/}\VariableTok{lambda\_true}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \VariableTok{n}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{lambda\_estimates}\NormalTok{(}\VariableTok{i}\NormalTok{) }\OperatorTok{=} \FloatTok{1}\OperatorTok{/}\VariableTok{mean}\NormalTok{(}\VariableTok{d}\NormalTok{)}\OperatorTok{;}
+\KeywordTok{end}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}E[λ̂] = \%.5f (biased: true is \%.5f)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{lambda\_estimates}\NormalTok{)}\OperatorTok{,} \VariableTok{lambda\_true}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Std(λ̂) = \%.5f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{std}\NormalTok{(}\VariableTok{lambda\_estimates}\NormalTok{))}\OperatorTok{;}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{histogram}\NormalTok{(}\VariableTok{lambda\_estimates}\OperatorTok{,} \FloatTok{80}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Normalization\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}pdf\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}λ̂\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}PDF\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Sampling Distribution of MLE λ̂\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 2: \lr{\mbox{MLE}} در برابر روش گشتاورها}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Compare MLE and MoM for Uniform(0, θ)}
+\CommentTok{\% MLE: θ̂ = max(X₁,...,X\_n)}
+\CommentTok{\% MoM: θ̂ = 2*X̄}
+\VariableTok{theta\_true} \OperatorTok{=} \FloatTok{10}\OperatorTok{;}  \VariableTok{n} \OperatorTok{=} \FloatTok{20}\OperatorTok{;}
+\VariableTok{N\_exp} \OperatorTok{=} \FloatTok{50000}\OperatorTok{;}
+
+\VariableTok{MLE\_est} \OperatorTok{=} \VariableTok{zeros}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N\_exp}\NormalTok{)}\OperatorTok{;}
+\VariableTok{MoM\_est} \OperatorTok{=} \VariableTok{zeros}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N\_exp}\NormalTok{)}\OperatorTok{;}
+
+\KeywordTok{for} \VariableTok{i} \OperatorTok{=} \FloatTok{1}\OperatorTok{:}\VariableTok{N\_exp}
+    \VariableTok{data} \OperatorTok{=} \VariableTok{theta\_true} \OperatorTok{*} \VariableTok{rand}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{n}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{MLE\_est}\NormalTok{(}\VariableTok{i}\NormalTok{) }\OperatorTok{=} \VariableTok{max}\NormalTok{(}\VariableTok{data}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{MoM\_est}\NormalTok{(}\VariableTok{i}\NormalTok{) }\OperatorTok{=} \FloatTok{2} \OperatorTok{*} \VariableTok{mean}\NormalTok{(}\VariableTok{data}\NormalTok{)}\OperatorTok{;}
+\KeywordTok{end}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Method      | E[θ̂]  | Bias   | Var    | MSE\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}MLE (max)   | \%.3f | \%.3f | \%.3f | \%.3f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \OperatorTok{...}
+    \VariableTok{mean}\NormalTok{(}\VariableTok{MLE\_est}\NormalTok{)}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{MLE\_est}\NormalTok{)}\OperatorTok{{-}}\VariableTok{theta\_true}\OperatorTok{,} \VariableTok{var}\NormalTok{(}\VariableTok{MLE\_est}\NormalTok{)}\OperatorTok{,} \OperatorTok{...}
+    \VariableTok{var}\NormalTok{(}\VariableTok{MLE\_est}\NormalTok{)}\OperatorTok{+}\NormalTok{(}\VariableTok{mean}\NormalTok{(}\VariableTok{MLE\_est}\NormalTok{)}\OperatorTok{{-}}\VariableTok{theta\_true}\NormalTok{)}\OperatorTok{\^{}}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}MoM (2*mean)| \%.3f | \%.3f | \%.3f | \%.3f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \OperatorTok{...}
+    \VariableTok{mean}\NormalTok{(}\VariableTok{MoM\_est}\NormalTok{)}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{MoM\_est}\NormalTok{)}\OperatorTok{{-}}\VariableTok{theta\_true}\OperatorTok{,} \VariableTok{var}\NormalTok{(}\VariableTok{MoM\_est}\NormalTok{)}\OperatorTok{,} \OperatorTok{...}
+    \VariableTok{var}\NormalTok{(}\VariableTok{MoM\_est}\NormalTok{)}\OperatorTok{+}\NormalTok{(}\VariableTok{mean}\NormalTok{(}\VariableTok{MoM\_est}\NormalTok{)}\OperatorTok{{-}}\VariableTok{theta\_true}\NormalTok{)}\OperatorTok{\^{}}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 3: \lr{\mbox{MLE}} برای پارامترهای گاوسی}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% MLE for Gaussian: Estimate both μ and σ²}
+\VariableTok{mu\_true} \OperatorTok{=} \FloatTok{5}\OperatorTok{;}  \VariableTok{sigma2\_true} \OperatorTok{=} \FloatTok{4}\OperatorTok{;}  \VariableTok{n} \OperatorTok{=} \FloatTok{50}\OperatorTok{;}
+\VariableTok{N\_exp} \OperatorTok{=} \FloatTok{10000}\OperatorTok{;}
+
+\VariableTok{mu\_hat} \OperatorTok{=} \VariableTok{zeros}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N\_exp}\NormalTok{)}\OperatorTok{;}
+\VariableTok{sigma2\_MLE} \OperatorTok{=} \VariableTok{zeros}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N\_exp}\NormalTok{)}\OperatorTok{;}
+\VariableTok{sigma2\_unbiased} \OperatorTok{=} \VariableTok{zeros}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N\_exp}\NormalTok{)}\OperatorTok{;}
+
+\KeywordTok{for} \VariableTok{i} \OperatorTok{=} \FloatTok{1}\OperatorTok{:}\VariableTok{N\_exp}
+    \VariableTok{data} \OperatorTok{=} \VariableTok{mu\_true} \OperatorTok{+} \VariableTok{sqrt}\NormalTok{(}\VariableTok{sigma2\_true}\NormalTok{)}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{n}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{mu\_hat}\NormalTok{(}\VariableTok{i}\NormalTok{) }\OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{data}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{sigma2\_MLE}\NormalTok{(}\VariableTok{i}\NormalTok{) }\OperatorTok{=} \VariableTok{mean}\NormalTok{((}\VariableTok{data} \OperatorTok{{-}} \VariableTok{mean}\NormalTok{(}\VariableTok{data}\NormalTok{))}\OperatorTok{.\^{}}\FloatTok{2}\NormalTok{)}\OperatorTok{;}       \CommentTok{\% MLE: divides by n}
+    \VariableTok{sigma2\_unbiased}\NormalTok{(}\VariableTok{i}\NormalTok{) }\OperatorTok{=} \VariableTok{var}\NormalTok{(}\VariableTok{data}\NormalTok{)}\OperatorTok{;}                      \CommentTok{\% Unbiased: divides by n{-}1}
+\KeywordTok{end}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}μ̂: E=\%.3f (true=\%.1f), Var=\%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{mu\_hat}\NormalTok{)}\OperatorTok{,} \VariableTok{mu\_true}\OperatorTok{,} \VariableTok{var}\NormalTok{(}\VariableTok{mu\_hat}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}σ²\_MLE: E=\%.3f (true=\%.1f, biased!)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{sigma2\_MLE}\NormalTok{)}\OperatorTok{,} \VariableTok{sigma2\_true}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}σ²\_unbiased: E=\%.3f (true=\%.1f)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{sigma2\_unbiased}\NormalTok{)}\OperatorTok{,} \VariableTok{sigma2\_true}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\PSsection{13.9}{مسایل تمرینی}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 1}
+
+داده از \lr{\mbox{$N(\mu,\, 9)$: $\bar{x} = 4.2$}}، \lr{$n = 25$}.
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  \lr{\mbox{MLE}} مربوط به \lr{$\mu$} را بنویسید. (ب) \lr{$\operatorname{Var}(\hat{\mu})$} چقدر است؟ (ج) آیا \lr{$\bar{X}$} برای \lr{$\mu$} کارا است؟
+\end{enumerate}
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  \lr{$\hat{\mu}_{\mathrm{MLE}} = \bar{X} = 4.2$}
+\item
+  \lr{$\displaystyle \operatorname{Var}(\bar{X}) = \frac{\sigma^{2}}{n} = \frac{9}{25} = 0.36$}
+\item
+  \lr{\mbox{CRLB}} برای \lr{$N(\mu,\,\sigma^{2})$: $\frac{1}{n \cdot I(\mu)} = \frac{\sigma^{2}}{n} = 0.36$. $\bar{X}$} به \lr{\mbox{CRLB}} می‌رسد \lr{\mbox{\ensuremath{\to}}} بله، کارا است.
+\end{enumerate}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 2}
+
+عمر قطعات (ساعت): 120، 350، 200، 480، 90، 560، 310، 175، 420، 280.
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  با فرض \lr{$\mathrm{Exp}(\lambda)$} مقدار \lr{$\lambda$} (نرخ خرابی) را با \lr{\mbox{MLE}} برآورد کنید. (ب) \lr{\mbox{MTTF}} را برآورد کنید.
+\end{enumerate}
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  \lr{$\displaystyle \bar{X} = \frac{120+350+200+480+90+560+310+175+420+280}{10} = 298.5$.}\PSbr{}\lr{$\hat{\lambda} = \frac{1}{298.5} = 0.00335$} خرابی در ساعت.
+\item
+  \lr{$\mathrm{MTTF} = \frac{1}{\hat{\lambda}} = \bar{X} = 298.5$} ساعت.
+\end{enumerate}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 3}
+
+برای داده \lr{\mbox{$\mathrm{Poisson}(\lambda)$: $x_{1},\,\ldots,\,x_{n}$. MLE}} مربوط به \lr{$\lambda$} را استخراج کنید.
+
+\PSsolution{} \lr{$\ell (\lambda) = \sum [x_{i} \ln (\lambda) - \lambda - \ln (x_{i}!)] = \left(\sum x_{i}\right)\ln (\lambda) - n\lambda - \sum \ln (x_{i}!)$}\PSbr{}\lr{$\displaystyle \frac{d\ell}{d\lambda} = \frac{\sum x_{i}}{\lambda} - n = 0 \to \hat{\lambda}_{\mathrm{MLE}} = \frac{1}{n}\sum x_{i} = \bar{X}$.}\PSbr{}\lr{\mbox{MLE}} برای نرخ پواسون همان میانگین نمونه است.
+
+\emph{ماژول بعدی: {ماژول 14 \lr{—} بازه‌های اطمینان}}
+
+\end{PSbox}

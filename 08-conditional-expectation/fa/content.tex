@@ -1,0 +1,362 @@
+\begin{PSbox}[unbreakable]{obj}{اهداف یادگیری}
+
+پس از تکمیل این ماژول، دانشجویان قادر خواهند بود:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  امیدهای ریاضی و واریانس‌های شرطی را محاسبه کنند
+\item
+  قانون امید ریاضی کل را به کار ببرند
+\item
+  قانون واریانس کل را به کار ببرند
+\item
+  از این ابزارها برای تحلیل مهندسی در شرایط کاری متعدد استفاده کنند
+\end{enumerate}
+
+\end{PSbox}
+
+\PSsection{8.1}{مقدمه}
+
+بسیاری از سیستم‌های مهندسی تحت \textbf{شرایط مختلف} کار می‌کنند (وضعیت‌های کانال، حالت‌ها، محیط‌ها). ما اغلب به \textbf{عملکرد میانگین کل} نیاز داریم که از عملکرد شرطی در هر وضعیت محاسبه می‌شود.
+
+\begin{itemize}
+\tightlist
+\item
+  میانگین \lr{\mbox{BER}} چقدر است هنگامی که کانال به‌طور تصادفی میان خوب و بد جابه‌جا می‌شود؟
+\item
+  واریانس کل اندازه‌گیری چقدر است هنگامی که حسگر در محیط‌های مختلف کار می‌کند؟
+\end{itemize}
+
+\PSsection{8.2}{امید ریاضی شرطی \lr{$E[X \mid Y = y]$}}
+
+\begin{PSbox}[unbreakable]{def}{تعریف}
+
+\textbf{پیوسته:}\PSdisplay{E[X|Y=y] = \int_{-\infty}^{\infty} x \cdot f_{X|Y}(x|y) \, dx}
+
+\textbf{گسسته:}\PSdisplay{E[X|Y=y] = \sum_x x \cdot p_{X|Y}(x|y)}
+
+\end{PSbox}
+
+\PSsubsection{تفسیر}
+
+\lr{$E[X \mid Y = y]$} همان \textbf{مقدار میانگین \lr{$X$}} است هنگامی که \lr{$Y = y$} را می‌دانیم. این تابعی از \lr{$y$} است.
+
+\PSsubsection{\lr{$E[X \mid Y]$} به‌عنوان یک متغیر تصادفی}
+
+هنگامی که خود \lr{$Y$} تصادفی باشد، \lr{$E[X \mid Y]$} یک \textbf{متغیر تصادفی} است \lr{—} وقتی \lr{$Y = y$} باشد مقدار \lr{$E[X \mid Y = y]$} را اختیار می‌کند.
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی}
+
+توان دریافتی میانگین به‌شرط وضعیت کانال:
+
+\begin{itemize}
+\tightlist
+\item
+  کانال خوب \lr{\mbox{$(Y = 1)$: $E[P \mid Y = 1] = 10$ mW}}
+\item
+  کانال ضعیف \lr{\mbox{$(Y = 0)$: $E[P \mid Y = 0] = 1$ mW}}
+\item
+  \lr{$P(Y = 1) = 0.7$}، \lr{$P(Y = 0) = 0.3$}
+\end{itemize}
+
+\end{PSbox}
+
+\PSsection{8.3}{واریانس شرطی \lr{$\operatorname{Var}(X \mid Y = y)$}}
+
+\begin{PSbox}[unbreakable]{def}{تعریف}
+
+\PSdisplay{\PSmtext{Var}(X|Y=y) = E[(X - E[X|Y=y])^2 | Y=y] = E[X^2|Y=y] - (E[X|Y=y])^2}
+
+\end{PSbox}
+
+\PSsubsection{تفسیر}
+
+واریانس شرطی \textbf{عدم‌قطعیت باقی‌مانده در \lr{$X$}} را پس از معلوم‌شدن \lr{$Y$} می‌سنجد.
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی}
+
+دقت اندازه‌گیری به دما وابسته است:
+
+\begin{itemize}
+\tightlist
+\item
+  در \lr{$T = 20^{\circ}C$: $\operatorname{Var}(X \mid T = 20) = 0.01$} (دقت بالا)
+\item
+  در \lr{$T = 80^{\circ}C$: $\operatorname{Var}(X \mid T = 80) = 0.09$} (دقت پایین به‌دلیل اثرهای گرمایی)
+\end{itemize}
+
+\end{PSbox}
+
+\PSsection{8.4}{قانون امید ریاضی کل (خاصیت برج)}
+
+\PSsubsection{بیان}
+
+\PSdisplay{E[X] = E[E[X|Y]]}
+
+\textbf{نسخه گسسته:}\PSdisplay{E[X] = \sum_y E[X|Y=y] \cdot P(Y=y)}
+
+\textbf{نسخه پیوسته:}\PSdisplay{E[X] = \int_{-\infty}^{\infty} E[X|Y=y] \cdot f_Y(y) \, dy}
+
+\PSsubsection{اثبات (گسسته)}
+
+\lr{$E[E[X \mid Y]] = \sum_{y} E[X \mid Y = y] \cdot P(Y = y)$}\PSbr{}\lr{$= \sum_{y} \left[\sum_{x} x \cdot P(X = x \mid Y = y)\right] \cdot P(Y = y)$}\PSbr{}\lr{$= \sum_{x} \Sigma_{y} x \cdot P(X = x,\, Y = y)$}\PSbr{}\lr{\mbox{$= \sum_{x} x \cdot P(X = x) = E[X]$ \PSyes{}}}
+
+\PSsubsection{تفسیر}
+
+\textbf{میانگین کل} برابر است با \textbf{میانگین وزنی میانگین‌های شرطی}، با وزن احتمال هر شرط.
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی: میانگین \lr{\mbox{BER}} در وضعیت‌های کانال}
+
+یک سیستم بی‌سیم میان سه حالت جابه‌جا می‌شود:
+
+\begin{itemize}
+\tightlist
+\item
+  حالت 1 (60\% زمان): \lr{$\mathrm{BER} = 10^{-6}$}
+\item
+  حالت 2 (30\% زمان): \lr{$\mathrm{BER} = 10^{-4}$}
+\item
+  حالت 3 (10\% زمان): \lr{$\mathrm{BER} = 10^{-2}$}
+\end{itemize}
+
+\lr{\mbox{BER}} کل \lr{$= E[\mathrm{BER}] = 0.6(10^{-6}) + 0.3(10^{-4}) + 0.1(10^{-2})$}\PSbr{}\lr{$= 0.6 \times 10^{-6} + 30 \times 10^{-6} + 10000 \times 10^{-6} \approx 1.003 \times 10^{-3}$}
+
+\textbf{نکته مهندسی:} \lr{\mbox{BER}} کل تحت تسلط بدترین حالت است، هرچند که این حالت تنها در 10\% زمان رخ می‌دهد.
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی: عمر میانگین با انواع نقص}
+
+قطعات بدون نقص (90\%) یا دارای نقص پنهان (10\%) هستند:
+
+\begin{itemize}
+\tightlist
+\item
+  بدون نقص: \lr{$E[T \mid \PSmtext{good}] = 10000$} ساعت
+\item
+  با نقص: \lr{$E[T \mid \PSmtext{defect}] = 500$} ساعت
+\end{itemize}
+
+\lr{$E[T] = 0.9(10000) + 0.1(500) = 9050$} ساعت
+
+\end{PSbox}
+
+\PSsection{8.5}{قانون واریانس کل}
+
+\PSsubsection{بیان}
+
+\PSdisplay{\PSmtext{Var}(X) = E[\PSmtext{Var}(X|Y)] + \PSmtext{Var}(E[X|Y])}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.2222}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.2222}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.5556}}@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{جمله} & \PSth{نام} & \PSth{تفسیر} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\lr{$\operatorname{Var}(X)$} & واریانس کل & عدم‌قطعیت کل در \lr{$X$} \\
+\lr{$E[\operatorname{Var}(X \mid Y)]$} & واریانس شرطی مورد انتظار & تغییرپذیری «درون‌گروهی» میانگین \\
+\lr{$\operatorname{Var}(E[X \mid Y])$} & واریانس میانگین‌های شرطی & تغییرپذیری «بین‌گروهی» \\
+\end{longtable}
+}
+
+\PSsubsection{اثبات}
+
+\lr{$\operatorname{Var}(X) = E[X^{2}] - (E[X])^{2}$}
+
+\lr{$E[X^{2}] = E[E[X^{2} \mid Y]]$} (خاصیت برج)\PSbr{}\lr{$= E[\operatorname{Var}(X \mid Y) + (E[X \mid Y])^{2}]$}\PSbr{}\lr{$= E[\operatorname{Var}(X \mid Y)] + E[(E[X \mid Y])^{2}]$}
+
+\lr{$(E[X])^{2} = (E[E[X \mid Y]])^{2}$}
+
+\lr{$\operatorname{Var}(X) = E[\operatorname{Var}(X \mid Y)] + E[(E[X \mid Y])^{2}] - (E[E[X \mid Y]])^{2}$}\PSbr{}\lr{$= E[\operatorname{Var}(X \mid Y)] + \operatorname{Var}(E[X \mid Y])$ \PSyes{}}
+
+\PSsubsection{تفسیر: تجزیه عدم‌قطعیت}
+
+عدم‌قطعیت کل = میانگین عدم‌قطعیت درون هر شرط + تغییرپذیری میانگین میان شرایط
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی: حسگر در دو محیط}
+
+یک حسگر در فضای بسته (\lr{$Y = 1$}، احتمال \PSnum{0.6)} و فضای باز (\lr{$Y = 2$}، احتمال \PSnum{0.4)} کار می‌کند:
+
+\begin{itemize}
+\tightlist
+\item
+  فضای بسته: \lr{$E[X \mid Y = 1] = 25^{\circ}C$}، \lr{$\operatorname{Var}(X \mid Y = 1) = 1$}
+\item
+  فضای باز: \lr{$E[X \mid Y = 2] = 15^{\circ}C$}، \lr{$\operatorname{Var}(X \mid Y = 2) = 16$}
+\end{itemize}
+
+**\lr{$E[\operatorname{Var}(X \mid Y)] \ast \ast = 0.6(1) + 0.4(16) = 7.0$} (میانگین واریانس درون‌شرطی)
+
+\lr{**$\operatorname{Var}(E[X \mid Y]) \ast \ast = E[(E[X \mid Y])^{2}] - (E[E[X \mid Y]])^{2}$}\PSbr{}\lr{$= 0.6(25^{2}) + 0.4(15^{2}) - [0.6(25) + 0.4(15)]^{2} = 375 + 90 - (21)^{2} = 465 - 441 = 24$}
+
+\lr{\mbox{**$\operatorname{Var}(X) \ast \ast = 7.0 + 24.0 = 31.0$}}
+
+بیشتر واریانس از تفاوت \textbf{بین‌شرطی} ناشی می‌شود (24 از 31).
+
+\end{PSbox}
+
+\PSsection{8.6}{مثال‌های \lr{\mbox{MATLAB}}}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 1: قانون امید ریاضی کل}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Average BER across channel states}
+\CommentTok{\% State probabilities and conditional BERs}
+\VariableTok{p\_state} \OperatorTok{=}\NormalTok{ [}\FloatTok{0.6}\OperatorTok{,} \FloatTok{0.3}\OperatorTok{,} \FloatTok{0.1}\NormalTok{]}\OperatorTok{;}
+\VariableTok{BER\_cond} \OperatorTok{=}\NormalTok{ [}\FloatTok{1e{-}6}\OperatorTok{,} \FloatTok{1e{-}4}\OperatorTok{,} \FloatTok{1e{-}2}\NormalTok{]}\OperatorTok{;}
+
+\CommentTok{\% Total expectation}
+\VariableTok{BER\_overall} \OperatorTok{=} \VariableTok{sum}\NormalTok{(}\VariableTok{p\_state} \OperatorTok{.*} \VariableTok{BER\_cond}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Overall BER = \%.4e\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{BER\_overall}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Simulation verification}
+\VariableTok{N} \OperatorTok{=} \FloatTok{1000000}\OperatorTok{;}
+\VariableTok{states} \OperatorTok{=} \VariableTok{randsample}\NormalTok{(}\FloatTok{1}\OperatorTok{:}\FloatTok{3}\OperatorTok{,} \VariableTok{N}\OperatorTok{,} \VariableTok{true}\OperatorTok{,} \VariableTok{p\_state}\NormalTok{)}\OperatorTok{;}
+\VariableTok{errors} \OperatorTok{=} \VariableTok{rand}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\VariableTok{N}\NormalTok{) }\OperatorTok{\textless{}} \VariableTok{BER\_cond}\NormalTok{(}\VariableTok{states}\NormalTok{)}\OperatorTok{;}
+\VariableTok{BER\_sim} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{errors}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Simulated BER = \%.4e\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{BER\_sim}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 2: قانون واریانس کل}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Total Variance Decomposition: Sensor Example}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+\VariableTok{p\_indoor} \OperatorTok{=} \FloatTok{0.6}\OperatorTok{;}
+
+\CommentTok{\% Generate environment (1=indoor, 2=outdoor)}
+\VariableTok{env} \OperatorTok{=}\NormalTok{ (}\VariableTok{rand}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\VariableTok{N}\NormalTok{) }\OperatorTok{\textgreater{}} \VariableTok{p\_indoor}\NormalTok{) }\OperatorTok{+} \FloatTok{1}\OperatorTok{;}
+
+\CommentTok{\% Generate measurements conditional on environment}
+\VariableTok{X} \OperatorTok{=} \VariableTok{zeros}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{X}\NormalTok{(}\VariableTok{env}\OperatorTok{==}\FloatTok{1}\NormalTok{) }\OperatorTok{=} \FloatTok{25} \OperatorTok{+} \FloatTok{1}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{sum}\NormalTok{(}\VariableTok{env}\OperatorTok{==}\FloatTok{1}\NormalTok{))}\OperatorTok{;}    \CommentTok{\% Indoor: N(25, 1)}
+\VariableTok{X}\NormalTok{(}\VariableTok{env}\OperatorTok{==}\FloatTok{2}\NormalTok{) }\OperatorTok{=} \FloatTok{15} \OperatorTok{+} \FloatTok{4}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{sum}\NormalTok{(}\VariableTok{env}\OperatorTok{==}\FloatTok{2}\NormalTok{))}\OperatorTok{;}    \CommentTok{\% Outdoor: N(15, 16)}
+
+\CommentTok{\% Total variance}
+\VariableTok{total\_var} \OperatorTok{=} \VariableTok{var}\NormalTok{(}\VariableTok{X}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% E[Var(X|Y)]}
+\VariableTok{within\_var} \OperatorTok{=} \VariableTok{p\_indoor}\OperatorTok{*}\VariableTok{var}\NormalTok{(}\VariableTok{X}\NormalTok{(}\VariableTok{env}\OperatorTok{==}\FloatTok{1}\NormalTok{)) }\OperatorTok{+}\NormalTok{ (}\FloatTok{1}\OperatorTok{{-}}\VariableTok{p\_indoor}\NormalTok{)}\OperatorTok{*}\VariableTok{var}\NormalTok{(}\VariableTok{X}\NormalTok{(}\VariableTok{env}\OperatorTok{==}\FloatTok{2}\NormalTok{))}\OperatorTok{;}
+
+\CommentTok{\% Var(E[X|Y])}
+\VariableTok{cond\_means} \OperatorTok{=}\NormalTok{ [}\VariableTok{mean}\NormalTok{(}\VariableTok{X}\NormalTok{(}\VariableTok{env}\OperatorTok{==}\FloatTok{1}\NormalTok{))}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{X}\NormalTok{(}\VariableTok{env}\OperatorTok{==}\FloatTok{2}\NormalTok{))]}\OperatorTok{;}
+\VariableTok{between\_var} \OperatorTok{=} \VariableTok{p\_indoor}\OperatorTok{*}\VariableTok{cond\_means}\NormalTok{(}\FloatTok{1}\NormalTok{)}\OperatorTok{\^{}}\FloatTok{2} \OperatorTok{+}\NormalTok{ (}\FloatTok{1}\OperatorTok{{-}}\VariableTok{p\_indoor}\NormalTok{)}\OperatorTok{*}\VariableTok{cond\_means}\NormalTok{(}\FloatTok{2}\NormalTok{)}\OperatorTok{\^{}}\FloatTok{2} \OperatorTok{...}
+              \OperatorTok{{-}}\NormalTok{ (}\VariableTok{p\_indoor}\OperatorTok{*}\VariableTok{cond\_means}\NormalTok{(}\FloatTok{1}\NormalTok{) }\OperatorTok{+}\NormalTok{ (}\FloatTok{1}\OperatorTok{{-}}\VariableTok{p\_indoor}\NormalTok{)}\OperatorTok{*}\VariableTok{cond\_means}\NormalTok{(}\FloatTok{2}\NormalTok{))}\OperatorTok{\^{}}\FloatTok{2}\OperatorTok{;}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Total Var(X) = \%.2f (theory: 31.0)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{total\_var}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}E[Var(X|Y)]  = \%.2f (theory: 7.0)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{within\_var}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Var(E[X|Y])  = \%.2f (theory: 24.0)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{between\_var}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Sum           = \%.2f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{within\_var} \OperatorTok{+} \VariableTok{between\_var}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 3: امید ریاضی شرطی به‌عنوان بهترین پیش‌بینی‌کننده}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% E[X|Y] as a function of Y}
+\CommentTok{\% Joint: X = Y + N, Y \textasciitilde{} Uniform(0,10), N \textasciitilde{} N(0, 1)}
+\VariableTok{N\_samp} \OperatorTok{=} \FloatTok{50000}\OperatorTok{;}
+\VariableTok{Y} \OperatorTok{=} \FloatTok{10}\OperatorTok{*}\VariableTok{rand}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N\_samp}\NormalTok{)}\OperatorTok{;}
+\VariableTok{X} \OperatorTok{=} \VariableTok{Y} \OperatorTok{+} \VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N\_samp}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Estimate E[X|Y=y] for various y}
+\VariableTok{y\_bins} \OperatorTok{=} \FloatTok{0}\OperatorTok{:}\FloatTok{0.5}\OperatorTok{:}\FloatTok{10}\OperatorTok{;}
+\VariableTok{E\_X\_given\_Y} \OperatorTok{=} \VariableTok{zeros}\NormalTok{(}\VariableTok{size}\NormalTok{(}\VariableTok{y\_bins}\NormalTok{)}\OperatorTok{{-}}\NormalTok{[}\FloatTok{0} \FloatTok{1}\NormalTok{])}\OperatorTok{;}
+\KeywordTok{for} \VariableTok{i} \OperatorTok{=} \FloatTok{1}\OperatorTok{:}\VariableTok{length}\NormalTok{(}\VariableTok{y\_bins}\NormalTok{)}\OperatorTok{{-}}\FloatTok{1}
+    \VariableTok{mask} \OperatorTok{=} \VariableTok{Y} \OperatorTok{\textgreater{}=} \VariableTok{y\_bins}\NormalTok{(}\VariableTok{i}\NormalTok{) }\OperatorTok{\&} \VariableTok{Y} \OperatorTok{\textless{}} \VariableTok{y\_bins}\NormalTok{(}\VariableTok{i}\OperatorTok{+}\FloatTok{1}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{E\_X\_given\_Y}\NormalTok{(}\VariableTok{i}\NormalTok{) }\OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{X}\NormalTok{(}\VariableTok{mask}\NormalTok{))}\OperatorTok{;}
+\KeywordTok{end}
+\VariableTok{y\_centers} \OperatorTok{=}\NormalTok{ (}\VariableTok{y\_bins}\NormalTok{(}\FloatTok{1}\OperatorTok{:}\KeywordTok{end}\OperatorTok{{-}}\FloatTok{1}\NormalTok{) }\OperatorTok{+} \VariableTok{y\_bins}\NormalTok{(}\FloatTok{2}\OperatorTok{:}\KeywordTok{end}\NormalTok{))}\OperatorTok{/}\FloatTok{2}\OperatorTok{;}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{scatter}\NormalTok{(}\VariableTok{Y}\NormalTok{(}\FloatTok{1}\OperatorTok{:}\FloatTok{5000}\NormalTok{)}\OperatorTok{,} \VariableTok{X}\NormalTok{(}\FloatTok{1}\OperatorTok{:}\FloatTok{5000}\NormalTok{)}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}b\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}.\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{y\_centers}\OperatorTok{,} \VariableTok{E\_X\_given\_Y}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r{-}\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{3}\NormalTok{)}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{y\_centers}\OperatorTok{,} \VariableTok{y\_centers}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}g{-}{-}\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Y\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}X\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{legend}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Data (X,Y)\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}E[X|Y] (estimated)\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}E[X|Y] = Y (theory)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Conditional Expectation\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\PSsection{8.7}{مسایل تمرینی}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 1}
+
+یک لینک دیجیتال روی دو نوع کانال کار می‌کند:
+
+\begin{itemize}
+\tightlist
+\item
+  نوع \lr{$A$} (احتمال \PSnum{0.7}): \lr{$E[\PSmtext{delay}\ \mid A] = 5\,\mathrm{ms}$}، \lr{$\operatorname{Var}(\PSmtext{delay}\ \mid A) = 2$}
+\item
+  نوع \lr{$B$} (احتمال \PSnum{0.3}): \lr{$E[\PSmtext{delay}\ \mid B] = 20\,\mathrm{ms}$}، \lr{$\operatorname{Var}(\PSmtext{delay}\ \mid B) = 25$}
+\end{itemize}
+
+موارد زیر را بیابید: (الف) \lr{$E[\PSmtext{delay}]$}، (ب) \lr{$\operatorname{Var}(\PSmtext{delay})$}.
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  \lr{\mbox{$E[D] = 0.7(5) + 0.3(20) = 3.5 + 6 = 9.5$ ms}}
+\item
+  \lr{$E[\operatorname{Var}(D \mid \PSmtext{type})] = 0.7(2) + 0.3(25) = 1.4 + 7.5 = 8.9$}\PSbr{}\lr{$\operatorname{Var}(E[D \mid \PSmtext{type}]) = 0.7(5^{2}) + 0.3(20^{2}) - 9.5^{2} = 17.5 + 120 - 90.25 = 47.25$}\PSbr{}\lr{$\operatorname{Var}(D) = 8.9 + 47.25 = 56.15$}
+\end{enumerate}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 2}
+
+تعداد تصادفی \lr{$N$} از قطعات آزمایش می‌شوند. \lr{$N \sim \mathrm{Poisson}(10)$}. هر قطعه احتمال خرابی مستقل \lr{$p = 0.05$} دارد. فرض کنید \lr{$X$} = تعداد خرابی‌ها. \lr{$E[X]$} و \lr{$\operatorname{Var}(X)$} را بیابید.
+
+\PSsolution{} \lr{$X \mid N \sim \mathrm{Binomial}(N,\, 0.05)$. $E[X \mid N] = 0.05\,\mathrm{N}$. $\operatorname{Var}(X \mid N) = N(0.05)(0.95) = 0.0475\,\mathrm{N}$.}\PSbr{}\lr{$E[X] = E[E[X \mid N]] = E[0.05\,\mathrm{N}] = 0.05(10) = 0.5$}\PSbr{}\lr{$\operatorname{Var}(X) = E[\operatorname{Var}(X \mid N)] + \operatorname{Var}(E[X \mid N]) = E[0.0475\,\mathrm{N}] + \operatorname{Var}(0.05\,\mathrm{N}) = 0.0475(10) + 0.05^{2}(10) = 0.475 + 0.025 = 0.5$}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 3}
+
+کد \lr{\mbox{MATLAB}} را برای بررسی مسیله 2 با شبیه‌سازی بنویسید.
+
+\PSsolution{} 
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\VariableTok{N\_trials} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;} \VariableTok{p} \OperatorTok{=} \FloatTok{0.05}\OperatorTok{;} \VariableTok{lambda} \OperatorTok{=} \FloatTok{10}\OperatorTok{;}
+\VariableTok{N} \OperatorTok{=} \VariableTok{poissrnd}\NormalTok{(}\VariableTok{lambda}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \VariableTok{N\_trials}\NormalTok{)}\OperatorTok{;}
+\VariableTok{X} \OperatorTok{=} \VariableTok{binornd}\NormalTok{(}\VariableTok{N}\OperatorTok{,} \VariableTok{p}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}E[X]: theory=0.5, sim=\%.3f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{X}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Var(X): theory=0.5, sim=\%.3f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{var}\NormalTok{(}\VariableTok{X}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{ماژول بعدی: {ماژول 9 \lr{—} کوواریانس و همبستگی}}
+
+\end{PSbox}

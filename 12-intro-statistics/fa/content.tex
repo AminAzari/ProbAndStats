@@ -1,0 +1,440 @@
+\begin{PSbox}[unbreakable]{obj}{اهداف یادگیری}
+
+پس از تکمیل این ماژول، دانشجویان قادر خواهند بود:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  میان جامعه و نمونه تمایز قایل شوند
+\item
+  میان پارامتر و آماره تمایز قایل شوند
+\item
+  میانگین نمونه و واریانس نمونه را تعریف و محاسبه کنند
+\item
+  توزیع‌های نمونه‌گیری و اهمیت آن‌ها را توضیح دهند
+\item
+  گذار از احتمال \lr{$(\text{\rl{مدل}}\ \to \text{\rl{پیش‌بینی}})$} به آمار \lr{$(\text{\rl{داده}}\ \to \text{\rl{مدل}})$} را درک کنند
+\end{enumerate}
+
+\end{PSbox}
+
+\PSsection{12.1}{مقدمه: از احتمال به آمار}
+
+\PSsubsection{دو جهت}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 2\tabcolsep) * \real{0.5217}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 2\tabcolsep) * \real{0.4783}}@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{احتمال} & \PSth{آمار} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+مدل \textbf{معلوم} است & مدل \textbf{نامعلوم} است \\
+پیش‌بینی خروجی‌ها & استنباط مدل از داده \\
+مسیله مستقیم & مسیله معکوس \\
+«با داشتن توزیع، داده چگونه است؟» & «با داشتن داده، توزیع چگونه است؟» \\
+\end{longtable}
+}
+
+\textbf{احتمال} (ماژول‌های \lr{\mbox{1–11}}): با داشتن یک مدل \lr{\mbox{\ensuremath{\to}}} مشاهده‌ها را پیش‌بینی کنید.\PSbr{}\textbf{آمار} (ماژول‌های \lr{\mbox{12–16}}): با داشتن مشاهده‌ها \lr{\mbox{\ensuremath{\to}}} مدل را استنباط کنید.
+
+\PSsubsection{زمینه مهندسی}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{احتمال:} «اگر نویز \lr{$N(0,\, 0.01)$} باشد، \lr{$P(\PSmtext{error})$} چقدر است؟»
+\item
+  \textbf{آمار:} «\lr{\mbox{1000}} نمونه نویز اندازه‌گیری کردم. \lr{$\sigma^{2}$} چقدر است؟»
+\end{itemize}
+
+\PSsection{12.2}{جامعه در برابر نمونه}
+
+\PSsubsection{جامعه}
+
+مجموعه \textbf{کامل} تمام اقلام/اندازه‌گیری‌های موردنظر.
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 2\tabcolsep) * \real{0.6129}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 2\tabcolsep) * \real{0.3871}}@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{زمینه مهندسی} & \PSth{جامعه} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+همه تراشه‌هایی که تاکنون در یک کارخانه تولید شده‌اند & \textbf{تمام} تأخیرهای تراشه \\
+فرایند نویز تا ابد & \textbf{تمام} مقادیر ولتاژ نویز \\
+تمام بسته‌های شبکه‌ای که تاکنون ارسال شده‌اند & \textbf{تمام} تأخیرهای بسته \\
+\end{longtable}
+}
+
+جامعه‌ها معمولاً \textbf{نامتناهی یا به‌طور غیرعملی بزرگ} هستند \lr{—} نمی‌توانیم همه چیز را اندازه‌گیری کنیم.
+
+\PSsubsection{نمونه}
+
+یک \textbf{زیرمجموعه} از جامعه که در واقع مشاهده/اندازه‌گیری می‌کنیم.
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}cc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{زمینه مهندسی} & \PSth{نمونه} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+50 تراشه آزمایش‌شده از خط تولید & تأخیرهای اندازه‌گیری‌شده \\
+10000 نمونه ولتاژ نویز ثبت‌شده & مقادیر ثبت‌شده \\
+500 تأخیر بسته اندازه‌گیری‌شده & تأخیرهای مشاهده‌شده \\
+\end{longtable}
+}
+
+\PSsubsection{چرا نمونه‌گیری می‌کنیم}
+
+\begin{itemize}
+\tightlist
+\item
+  نمی‌توان هر تراشه را آزمایش کرد (آزمون مخرب)
+\item
+  نمی‌توان نویز را تا ابد ثبت کرد (حافظه متناهی)
+\item
+  نمی‌توان هر بسته را اندازه‌گیری کرد (تعداد بسیار زیاد)
+\end{itemize}
+
+هدف: \textbf{استنباط ویژگی‌های جامعه از نمونه.}
+
+\PSsection{12.3}{پارامتر در برابر آماره}
+
+\PSsubsection{پارامتر}
+
+یک عدد \textbf{ثابت} (اما نامعلوم) که جامعه را توصیف می‌کند:
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$\mu$} = میانگین واقعی جامعه
+\item
+  \lr{$\sigma^{2}$} = واریانس واقعی جامعه
+\item
+  \lr{$p$} = نرخ واقعی نقص
+\item
+  \lr{$\lambda$} = نرخ واقعی خرابی
+\end{itemize}
+
+پارامترها \textbf{ثابت} هستند \lr{—} یک مقدار واقعی دارند (فقط آن را نمی‌دانیم).
+
+\PSsubsection{آماره}
+
+یک \textbf{تابع از داده نمونه} که برای برآورد یا آزمون پارامترها به کار می‌رود:
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$\bar{X}$} = میانگین نمونه (برآورد \lr{$\mu$})
+\item
+  \lr{$S^{2}$} = واریانس نمونه (برآورد \lr{$\sigma^{2}$})
+\item
+  \lr{$\hat{p}$} = نسبت نمونه (برآورد \lr{$p$})
+\end{itemize}
+
+\begin{PSquote}
+
+\lr{\mbox{\PSwarn{}}} \textbf{نکته کلیدی:} آماره‌ها متغیرهای تصادفی هستند! نمونه‌های مختلف مقادیر مختلفی می‌دهند.
+
+\end{PSquote}
+
+\begin{PSbox}[unbreakable]{ex}{مثال}
+
+توان واقعی نویز: \lr{$\sigma^{2} = 0.04\,\mathrm{V}^{2}$} (پارامتر \lr{—} ثابت، نامعلوم)
+
+آزمایش 1: جمع‌آوری 100 نمونه \lr{\mbox{\ensuremath{\to}}} محاسبه \lr{$S^{2} = 0.038$} (یک تحقق)\PSbr{}آزمایش 2: جمع‌آوری 100 نمونه \lr{\mbox{\ensuremath{\to}}} محاسبه \lr{$S^{2} = 0.042$} (تحقق متفاوت)\PSbr{}آزمایش 3: جمع‌آوری 100 نمونه \lr{\mbox{\ensuremath{\to}}} محاسبه \lr{$S^{2} = 0.041$} (تحقق دیگر)
+
+هر \lr{$S^{2}$} به‌دلیل تصادفی‌بودن نمونه‌گیری متفاوت است.
+
+\end{PSbox}
+
+\PSsection{12.4}{نمونه تصادفی}
+
+\begin{PSbox}[unbreakable]{def}{تعریف}
+
+یک \textbf{نمونه تصادفی} \lr{$X_{1},\, X_{2},\, \ldots,\, X_{n}$} مجموعه‌ای از \lr{$n$} متغیر تصادفی مستقل و هم‌توزیع \lr{$(i.i.d.)$} از توزیع جامعه است.
+
+\end{PSbox}
+
+\PSsubsection{شرایط لازم}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{مستقل:} هر مشاهده بر سایرین اثر نمی‌گذارد
+\item
+  \textbf{هم‌توزیع:} همه از همان جامعه آمده‌اند
+\item
+  \textbf{انتخاب تصادفی:} بدون بایاس نظام‌مند در انتخاب اقلام مورد اندازه‌گیری
+\end{enumerate}
+
+\PSsubsection{زمانی که \lr{\mbox{i.i.d}}. برقرار است}
+
+\lr{\mbox{\PSyes{}}} انتخاب تصادفی قطعات از یک دسته بزرگ\PSbr{}\lr{\mbox{\PSyes{}}} اندازه‌گیری‌های مستقل از یک فرایند پایدار\PSbr{}\lr{\mbox{\PSyes{}}} نمونه‌های نویز با فاصله بیش از زمان همبستگی
+
+\PSsubsection{زمانی که \lr{\mbox{i.i.d}}. برقرار نیست}
+
+\lr{\mbox{\PSno{}}} نمونه‌های متوالی یک سیگنال همبسته\PSbr{}\lr{\mbox{\PSno{}}} اندازه‌گیری‌ها در طول یک فرایند رانش‌دار\PSbr{}\lr{\mbox{\PSno{}}} انتخاب غیرتصادفی (مثلاً آزمایش فقط قطعات «مشکوک»)
+
+\PSsection{12.5}{توزیع‌های نمونه‌گیری}
+
+\begin{PSbox}[unbreakable]{def}{تعریف}
+
+\textbf{توزیع نمونه‌گیری} یک آماره همان توزیع احتمال آن آماره در تمام نمونه‌های ممکن به اندازه \lr{$n$} است.
+
+\end{PSbox}
+
+\PSsubsection{چرا اهمیت دارد}
+
+یک آماره (مانند \lr{$\bar{X}$}) یک متغیر تصادفی است. توزیع آن به ما می‌گوید:
+
+\begin{itemize}
+\tightlist
+\item
+  چقدر از نمونه‌ای به نمونه دیگر تغییر می‌کند؟
+\item
+  با چه احتمالی به پارامتر واقعی نزدیک است؟
+\item
+  عدم‌قطعیت خود را چگونه کمّی کنیم؟
+\end{itemize}
+
+این بنیاد بازه‌های اطمینان و آزمون فرض است.
+
+\PSsection{12.6}{میانگین نمونه \lr{$\bar{X}$}}
+
+\begin{PSbox}[unbreakable]{def}{تعریف}
+
+\PSdisplay{\bar{X} = \frac{1}{n}\sum_{i=1}^n X_i}
+
+\end{PSbox}
+
+\PSsubsection{ویژگی‌ها}
+
+\textbf{میانگین \lr{$\bar{X}$}:}\PSdisplay{E[\bar{X}] = \mu}
+
+\lr{$\bar{X}$} یک برآوردگر \textbf{نااریب} برای \lr{$\mu$} است (به‌طور میانگین برابر مقدار واقعی است).
+
+\textbf{واریانس \lr{$\bar{X}$}:}\PSdisplay{\PSmtext{Var}(\bar{X}) = \frac{\sigma^2}{n}}
+
+اندازه‌گیری‌های بیشتر \lr{\mbox{\ensuremath{\to}}} تغییرپذیری کمتر \lr{\mbox{\ensuremath{\to}}} برآورد دقیق‌تر.
+
+\textbf{خطای معیار:}\PSdisplay{\PSmtext{SE}(\bar{X}) = \frac{\sigma}{\sqrt{n}}}
+
+\PSsubsection{توزیع نمونه‌گیری \lr{$\bar{X}$}}
+
+\begin{itemize}
+\tightlist
+\item
+  اگر جامعه گاوسی باشد: \lr{$\bar{X} \sim N\left(\mu,\, \frac{\sigma^{2}}{n}\right)$} \textbf{به‌طور دقیق} برای هر \lr{$n$}
+\item
+  اگر جامعه گاوسی نباشد: \lr{$\bar{X} \approx N\left(\mu,\, \frac{\sigma^{2}}{n}\right)$} \textbf{به‌طور تقریبی} برای \lr{$n$} بزرگ (بر اساس \lr{\mbox{CLT}})
+\end{itemize}
+
+\PSsection{12.7}{واریانس نمونه \lr{$S^{2}$}}
+
+\begin{PSbox}[unbreakable]{def}{تعریف}
+
+\PSdisplay{S^2 = \frac{1}{n-1}\sum_{i=1}^n (X_i - \bar{X})^2}
+
+\end{PSbox}
+
+\PSsubsection{چرا \lr{$n-1$}؟ (تصحیح بسل)}
+
+استفاده از \lr{$n$} در مخرج یک برآوردگر \textbf{اریب} می‌دهد (به‌طور نظام‌مند \lr{$\sigma^{2}$} را کم‌برآورد می‌کند):
+
+\lr{$\displaystyle E\left[\frac{1}{n} \cdot \sum (X_{i} - \bar{X})^{2}\right] = \frac{n-1}{n}\sigma^{2} \ne \sigma^{2}$}
+
+استفاده از \lr{$n-1$} این را تصحیح می‌کند:\PSdisplay{E[S^2] = \sigma^2}
+
+\textbf{شهود:} \lr{$\bar{X}$} از همان داده محاسبه می‌شود، بنابراین انحراف‌ها از \lr{$\bar{X}$} کوچک‌تر از انحراف‌ها از \lr{$\mu$} هستند. با برآورد میانگین، «یک درجه آزادی را از دست می‌دهیم».
+
+\PSsubsection{درجات آزادی}
+
+با \lr{$n$} نقطه داده و برآورد \lr{$\bar{X}$}:
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$n$} انحراف \lr{$(X_{i} - \bar{X})$} جمعاً صفر می‌شوند: \lr{$\sum (X_{i} - \bar{X}) = 0$}
+\item
+  تنها \lr{$n-1$} تای آن‌ها «آزاد» هستند \lr{—} آخری تعیین‌شده است
+\item
+  \lr{$df = n - 1$}
+\end{itemize}
+
+\PSsubsection{توزیع نمونه‌گیری (جامعه نرمال)}
+
+اگر جامعه \lr{$N(\mu,\, \sigma^{2})$} باشد:\PSdisplay{(n-1)S^2/\sigma^2 \sim \chi^2(n-1)}
+
+\PSsection{12.8}{انحراف معیار نمونه}
+
+\PSdisplay{S = \sqrt{S^2} = \sqrt{\frac{1}{n-1}\sum_{i=1}^n (X_i - \bar{X})^2}}
+
+توجه: \lr{$E[S] \ne \sigma$} (\lr{\mbox{S}} برای \lr{$\sigma$} کمی اریب است، هرچند \lr{$S^{2}$} برای \lr{$\sigma^{2}$} نااریب است).
+
+\PSsection{12.9}{ارتباط با \lr{\mbox{CLT}}}
+
+از ماژول 11: \lr{$\bar{X} \to N\left(\mu,\, \frac{\sigma^{2}}{n}\right)$} وقتی \lr{$n \to \infty$}.
+
+این بدان معناست که توزیع نمونه‌گیری \lr{$\bar{X}$} تقریباً گاوسی است. این همان چیزی است که به ما امکان می‌دهد:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  بازه‌های اطمینان بسازیم (ماژول 14)
+\item
+  آزمون‌های فرض انجام دهیم (ماژول 15)
+\item
+  عدم‌قطعیت در برآوردها را کمّی کنیم
+\end{enumerate}
+
+\PSsection{12.10}{مثال‌های \lr{\mbox{MATLAB}}}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 1: توزیع نمونه‌گیری \lr{$\bar{X}$}}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Demonstrate: X̄ is a random variable with its own distribution}
+\CommentTok{\% Population: Exponential(λ=1), μ=1, σ²=1}
+\VariableTok{mu\_pop} \OperatorTok{=} \FloatTok{1}\OperatorTok{;} \VariableTok{sigma2\_pop} \OperatorTok{=} \FloatTok{1}\OperatorTok{;}
+\VariableTok{n} \OperatorTok{=} \FloatTok{25}\OperatorTok{;}  \CommentTok{\% Sample size}
+\VariableTok{N\_experiments} \OperatorTok{=} \FloatTok{10000}\OperatorTok{;}
+
+\CommentTok{\% Repeat experiment N\_experiments times}
+\VariableTok{X\_bar} \OperatorTok{=} \VariableTok{zeros}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N\_experiments}\NormalTok{)}\OperatorTok{;}
+\KeywordTok{for} \VariableTok{i} \OperatorTok{=} \FloatTok{1}\OperatorTok{:}\VariableTok{N\_experiments}
+    \VariableTok{sample} \OperatorTok{=} \VariableTok{exprnd}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \VariableTok{n}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{X\_bar}\NormalTok{(}\VariableTok{i}\NormalTok{) }\OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{sample}\NormalTok{)}\OperatorTok{;}
+\KeywordTok{end}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{histogram}\NormalTok{(}\VariableTok{X\_bar}\OperatorTok{,} \FloatTok{60}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Normalization\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}pdf\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+\VariableTok{x} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\FloatTok{0}\OperatorTok{,} \FloatTok{3}\OperatorTok{,} \FloatTok{200}\NormalTok{)}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{x}\OperatorTok{,} \VariableTok{normpdf}\NormalTok{(}\VariableTok{x}\OperatorTok{,} \VariableTok{mu\_pop}\OperatorTok{,} \VariableTok{sqrt}\NormalTok{(}\VariableTok{sigma2\_pop}\OperatorTok{/}\VariableTok{n}\NormalTok{))}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Sample Mean\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}PDF\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\VariableTok{sprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Sampling Distribution of X̄ (n=\%d)\textquotesingle{}}\OperatorTok{,} \VariableTok{n}\NormalTok{))}\OperatorTok{;}
+\VariableTok{legend}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Empirical\textquotesingle{}}\OperatorTok{,} \VariableTok{sprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}N(\%.1f, \%.4f)\textquotesingle{}}\OperatorTok{,} \VariableTok{mu\_pop}\OperatorTok{,} \VariableTok{sigma2\_pop}\OperatorTok{/}\VariableTok{n}\NormalTok{))}\OperatorTok{;}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}E[X̄] = \%.4f (theory: \%.4f)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{X\_bar}\NormalTok{)}\OperatorTok{,} \VariableTok{mu\_pop}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Var(X̄) = \%.4f (theory: \%.4f)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{var}\NormalTok{(}\VariableTok{X\_bar}\NormalTok{)}\OperatorTok{,} \VariableTok{sigma2\_pop}\OperatorTok{/}\VariableTok{n}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 2: توزیع واریانس نمونه}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Sampling Distribution of S²}
+\CommentTok{\% Population: N(0, 4), σ² = 4}
+\VariableTok{sigma2} \OperatorTok{=} \FloatTok{4}\OperatorTok{;} \VariableTok{n} \OperatorTok{=} \FloatTok{10}\OperatorTok{;}
+\VariableTok{N\_experiments} \OperatorTok{=} \FloatTok{10000}\OperatorTok{;}
+
+\VariableTok{S2} \OperatorTok{=} \VariableTok{zeros}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N\_experiments}\NormalTok{)}\OperatorTok{;}
+\KeywordTok{for} \VariableTok{i} \OperatorTok{=} \FloatTok{1}\OperatorTok{:}\VariableTok{N\_experiments}
+    \VariableTok{sample} \OperatorTok{=} \VariableTok{sqrt}\NormalTok{(}\VariableTok{sigma2}\NormalTok{) }\OperatorTok{*} \VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{n}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{S2}\NormalTok{(}\VariableTok{i}\NormalTok{) }\OperatorTok{=} \VariableTok{var}\NormalTok{(}\VariableTok{sample}\NormalTok{)}\OperatorTok{;}   \CommentTok{\% Uses n{-}1 denominator}
+\KeywordTok{end}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}E[S²] = \%.4f (theory: \%.4f)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{S2}\NormalTok{)}\OperatorTok{,} \VariableTok{sigma2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Var(S²) = \%.4f (theory: \%.4f)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{var}\NormalTok{(}\VariableTok{S2}\NormalTok{)}\OperatorTok{,} \FloatTok{2}\OperatorTok{*}\VariableTok{sigma2}\OperatorTok{\^{}}\FloatTok{2}\OperatorTok{/}\NormalTok{(}\VariableTok{n}\OperatorTok{{-}}\FloatTok{1}\NormalTok{))}\OperatorTok{;}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{histogram}\NormalTok{(}\VariableTok{S2}\OperatorTok{,} \FloatTok{80}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Normalization\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}pdf\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+\VariableTok{x} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\FloatTok{0}\OperatorTok{,} \FloatTok{15}\OperatorTok{,} \FloatTok{200}\NormalTok{)}\OperatorTok{;}
+\CommentTok{\% (n{-}1)S²/σ² \textasciitilde{} χ²(n{-}1), so S² \textasciitilde{} σ²/(n{-}1) * χ²(n{-}1)}
+\VariableTok{plot}\NormalTok{(}\VariableTok{x}\OperatorTok{,} \VariableTok{chi2pdf}\NormalTok{(}\VariableTok{x}\OperatorTok{*}\NormalTok{(}\VariableTok{n}\OperatorTok{{-}}\FloatTok{1}\NormalTok{)}\OperatorTok{/}\VariableTok{sigma2}\OperatorTok{,} \VariableTok{n}\OperatorTok{{-}}\FloatTok{1}\NormalTok{)}\OperatorTok{*}\NormalTok{(}\VariableTok{n}\OperatorTok{{-}}\FloatTok{1}\NormalTok{)}\OperatorTok{/}\VariableTok{sigma2}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}S²\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}PDF\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\VariableTok{sprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Sampling Distribution of S² (n=\%d, σ²=\%d)\textquotesingle{}}\OperatorTok{,} \VariableTok{n}\OperatorTok{,} \VariableTok{sigma2}\NormalTok{))}\OperatorTok{;}
+\VariableTok{legend}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Empirical\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Theoretical (scaled χ²)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 3: اثر اندازه نمونه}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Precision improves with n: Var(X̄) = σ²/n}
+\VariableTok{sigma} \OperatorTok{=} \FloatTok{2}\OperatorTok{;}
+\VariableTok{n\_values} \OperatorTok{=}\NormalTok{ [}\FloatTok{5}\OperatorTok{,} \FloatTok{10}\OperatorTok{,} \FloatTok{25}\OperatorTok{,} \FloatTok{50}\OperatorTok{,} \FloatTok{100}\OperatorTok{,} \FloatTok{500}\NormalTok{]}\OperatorTok{;}
+\VariableTok{N\_exp} \OperatorTok{=} \FloatTok{10000}\OperatorTok{;}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}n\textbackslash{}t| SE(X̄) Theory\textbackslash{}t| SE(X̄) Sim\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}{-}{-}{-}{-}{-}{-}{-}{-}+{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}+{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\KeywordTok{for} \VariableTok{n} \OperatorTok{=} \VariableTok{n\_values}
+    \VariableTok{X\_bar} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{sigma}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\VariableTok{n}\OperatorTok{,} \VariableTok{N\_exp}\NormalTok{)}\OperatorTok{,} \FloatTok{1}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}\%d\textbackslash{}t| \%.4f\textbackslash{}t| \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{n}\OperatorTok{,} \VariableTok{sigma}\OperatorTok{/}\VariableTok{sqrt}\NormalTok{(}\VariableTok{n}\NormalTok{)}\OperatorTok{,} \VariableTok{std}\NormalTok{(}\VariableTok{X\_bar}\NormalTok{))}\OperatorTok{;}
+\KeywordTok{end}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\PSsection{12.11}{مسایل تمرینی}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 1}
+
+یک جامعه دارای \lr{$\mu = 50$} و \lr{$\sigma = 10$} است. یک نمونه تصادفی به اندازه \lr{$n = 64$} گرفته می‌شود.
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  \lr{$E[\bar{X}]$} چقدر است؟ (ب) \lr{$\operatorname{Var}(\bar{X})$} چقدر است؟ (ج) \lr{$P(48 < \bar{X} < 52)$} چقدر است؟
+\end{enumerate}
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  \lr{$E[\bar{X}] = 50$}
+\item
+  \lr{$\operatorname{Var}(\bar{X}) = \frac{100}{64} = 1.5625$}، \lr{$\operatorname{SE} = 1.25$}
+\item
+  \lr{$P(48 < \bar{X} < 52) = P(-1.6 < Z < 1.6) = 2\Phi (1.6) - 1 = 0.8904$}
+\end{enumerate}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 2}
+
+چرا در فرمول واریانس نمونه از \lr{$n-1$} استفاده می‌کنیم و نه \lr{$n$}؟ هم به‌صورت ریاضی و هم به‌صورت شهودی توضیح دهید.
+
+\PSsolution{} از نظر ریاضی: \lr{$E\left[\frac{1}{n}\sum (X_{i}-\bar{X})^{2}\right] = \frac{n-1}{n} \cdot \sigma^{2}$}، بنابراین تقسیم بر \lr{$n-1$} نتیجه می‌دهد \lr{$E[S^{2}] = \sigma^{2}$}. از نظر شهودی: ما از \lr{$\bar{X}$} همان داده استفاده می‌کنیم (نه \lr{$\mu$} واقعی)، بنابراین انحراف‌ها از \lr{$\bar{X}$} به‌طور مصنوعی کوچک‌اند. یک درجه آزادی «صرف» برآورد میانگین می‌شود.
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 3}
+
+یک مهندس توان نویز را از 20 نمونه اندازه‌گیری می‌کند و \lr{$S^{2} = 0.045\,\mathrm{V}^{2}$} به دست می‌آید. واریانس واقعی \lr{$\sigma^{2} = 0.04\,\mathrm{V}^{2}$} است. آیا این نگران‌کننده است؟ برای ارزیابی از توزیع نمونه‌گیری استفاده کنید.
+
+\PSsolution{} تحت \lr{$H_{0}: \sigma^{2} = 0.04$}، داریم \lr{$\frac{(n-1)S^{2}}{\sigma^{2}} \sim \chi^{2}(19)$}. مقدار مشاهده‌شده: \lr{$\frac{19(0.045)}{0.04} = 21.375$. $P(\chi^{2}(19) > 21.375) \approx 0.31$}. این غیرمعمول نیست \lr{—} حدود 31\% از نمونه‌ها هنگامی که \lr{$\sigma^{2} = 0.04$} است، \lr{$S^{2} \ge 0.045$} می‌دهند. نگران‌کننده نیست.
+
+\emph{ماژول بعدی: {ماژول 13 \lr{—} برآورد پارامتر}}
+
+\end{PSbox}

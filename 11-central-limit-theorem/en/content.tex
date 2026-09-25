@@ -1,0 +1,437 @@
+\begin{PSbox}[unbreakable]{obj}{Learning Objectives}
+
+After completing this module, students will be able to:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  State and explain the Law of Large Numbers
+\item
+  State and apply the Central Limit Theorem
+\item
+  Explain why Gaussian distributions appear so frequently in engineering
+\item
+  Use CLT for approximations
+\item
+  Demonstrate CLT visually using MATLAB Monte Carlo simulations
+\end{enumerate}
+
+\end{PSbox}
+
+\PSsection{11.1}{Introduction: Why Is the Gaussian Everywhere?}
+
+The Gaussian distribution appears in:
+
+\begin{itemize}
+\tightlist
+\item
+  Thermal noise, measurement errors, manufacturing tolerances, aggregate interference, stock fluctuations
+\end{itemize}
+
+\textbf{The reason:} All these quantities are sums (or averages) of many small, independent random effects. The CLT guarantees convergence to Gaussian regardless of the underlying distribution.
+
+\PSsection{11.2}{Law of Large Numbers (LLN)}
+
+\PSsubsection{Weak Law of Large Numbers}
+
+For $X_{1},\, X_{2},\, \ldots,\, X_{n}$ i.i.d. with mean $\mu$ and finite variance $\sigma^{2}$:
+
+\PSdisplay{\bar{X}_n = \frac{1}{n}\sum_{i=1}^n X_i \xrightarrow{P} \mu \quad \text{as } n \to \infty}
+
+(``Convergence in probability'': $P(\lvert \bar{X}_{n} - \mu\rvert > \varepsilon) \to 0$ for any $\varepsilon > 0$)
+
+\PSsubsection{Strong Law of Large Numbers}
+
+\PSdisplay{\bar{X}_n \xrightarrow{a.s.} \mu \quad \text{as } n \to \infty}
+
+(``Almost sure convergence'': $P(\bar{X}_{n} \to \mu) = 1$)
+
+\PSsubsection{Engineering Significance}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Sample average converges to true mean} as sample size grows
+\item
+  Justifies estimating means from data
+\item
+  Foundation of Monte Carlo simulation (simulate many times \ensuremath{\to} average converges)
+\item
+  Justifies: ``If I measure enough times, my average will be close to the truth''
+\end{itemize}
+
+\PSsubsection{How Fast?}
+
+By Chebyshev: $P(\lvert \bar{X}_{n} - \mu\rvert > \varepsilon) \le \frac{\sigma^{2}}{n\varepsilon^{2}}$
+
+For 95\% confidence that error $< \varepsilon$: need $n \ge \frac{\sigma^{2}}{0.05 \cdot \varepsilon^{2}}$
+
+\PSsection{11.3}{Central Limit Theorem (CLT)}
+
+\PSsubsection{Formal Statement}
+
+For $X_{1},\, X_{2},\, \ldots,\, X_{n}$ i.i.d. with mean $\mu$ and finite variance $\sigma^{2}$:
+
+\PSdisplay{Z_n = \frac{\bar{X}_n - \mu}{\sigma/\sqrt{n}} = \frac{\sum_{i=1}^n X_i - n\mu}{\sigma\sqrt{n}} \xrightarrow{d} N(0,1)}
+
+\PSsubsection{Practical Form}
+
+For large $n$:\PSdisplay{\bar{X}_n \approx N\left(\mu, \frac{\sigma^2}{n}\right)}
+
+\PSdisplay{S_n = \sum_{i=1}^n X_i \approx N(n\mu, n\sigma^2)}
+
+\PSsubsection{Conditions}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  $X_{1},\, \ldots,\, X_{n}$ are independent
+\item
+  Identically distributed (can be relaxed with Lyapunov/Lindeberg CLT)
+\item
+  Finite mean $\mu$ and finite variance $\sigma^{2}$
+\item
+  $n$ is ``large enough'' (rule of thumb: $n \ge 30$, but depends on distribution shape)
+\end{enumerate}
+
+\PSsubsection{What CLT Does NOT Require}
+
+\begin{itemize}
+\tightlist
+\item
+  Does NOT require $X_{i}$ to be Gaussian
+\item
+  Does NOT require $X_{i}$ to be continuous
+\item
+  Does NOT require any specific distribution
+\end{itemize}
+
+\PSsection{11.4}{Rate of Convergence}
+
+How fast does the CLT ``kick in''?
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}cc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{Original Distribution} & \PSth{$n$ needed for good approximation} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Symmetric (uniform) & $n \approx 5-10$ \\
+Mildly skewed & $n \approx 20-30$ \\
+Highly skewed (exponential) & $n \approx 30-50$ \\
+Extremely skewed & $n \approx 50-100+$ \\
+\end{longtable}
+}
+
+\textbf{Rule:} More symmetric distributions \ensuremath{\to} faster convergence.
+
+\PSsection{11.5}{Visual Demonstration}
+
+\PSsubsection{Sum of Uniform RVs \ensuremath{\to} Gaussian}
+
+\begin{itemize}
+\tightlist
+\item
+  $n = 1$: Uniform (flat)
+\item
+  $n = 2$: Triangular
+\item
+  $n = 3$: Starts looking bell-shaped
+\item
+  $n = 5$: Nearly Gaussian
+\item
+  $n = 12$: Practically indistinguishable from Gaussian
+\end{itemize}
+
+\PSsubsection{Sum of Exponential RVs \ensuremath{\to} Gaussian}
+
+\begin{itemize}
+\tightlist
+\item
+  $n = 1$: Exponential (heavily right-skewed)
+\item
+  $n = 3$: Still skewed but less so $(\mathrm{Gamma}(3))$
+\item
+  $n = 10$: Nearly symmetric, bell-shaped
+\item
+  $n = 30$: Essentially Gaussian
+\end{itemize}
+
+\PSsubsection{Binomial \ensuremath{\to} Normal Approximation}
+
+$\mathrm{Binomial}(n,\, p) \approx N(np,\, np(1-p))$ for large $n$
+
+This is CLT applied to sum of Bernoulli trials!
+
+\begin{itemize}
+\tightlist
+\item
+  Continuity correction: $P(X \le k) \approx \Phi \left(\frac{k + 0.5 - np}{\sqrt{np(1-p)}}\right)$
+\end{itemize}
+
+\PSsection{11.6}{Engineering Significance}
+
+\PSsubsection{Why Thermal Noise is Gaussian}
+
+Thermal noise = aggregate effect of billions of electrons moving randomly. Each electron’s contribution is tiny and independent \ensuremath{\to} CLT applies \ensuremath{\to} noise is Gaussian.
+
+\PSsubsection{Why Aggregate Interference is Gaussian}
+
+In a cellular network, total interference = sum of signals from many independent users. $\mathrm{CLT}$ \ensuremath{\to} interference \ensuremath{\approx} Gaussian (for many users).
+
+\PSsubsection{Why Measurement Errors are Gaussian}
+
+Total error = sum of many independent small error sources (calibration, quantization, thermal, vibration, etc.) $\to \mathrm{CLT}$ \ensuremath{\to} error \ensuremath{\approx} Gaussian.
+
+\PSsubsection{Why Manufacturing Variations are Gaussian}
+
+Resistor value = nominal + sum of many small process variations (doping, etching, temperature, etc.) $\to \mathrm{CLT}$ \ensuremath{\to} value \ensuremath{\approx} Gaussian around nominal.
+
+\PSsection{11.7}{MATLAB Monte Carlo Demonstrations}
+
+\begin{PSbox}[unbreakable]{ex}{Example 1: CLT with Uniform Distribution}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% CLT: Sum of Uniform RVs approaches Gaussian}
+\VariableTok{N\_experiments} \OperatorTok{=} \FloatTok{50000}\OperatorTok{;}
+\VariableTok{n\_values} \OperatorTok{=}\NormalTok{ [}\FloatTok{1}\OperatorTok{,} \FloatTok{2}\OperatorTok{,} \FloatTok{5}\OperatorTok{,} \FloatTok{12}\OperatorTok{,} \FloatTok{30}\NormalTok{]}\OperatorTok{;}
+
+\VariableTok{figure}\OperatorTok{;}
+\KeywordTok{for} \VariableTok{idx} \OperatorTok{=} \FloatTok{1}\OperatorTok{:}\VariableTok{length}\NormalTok{(}\VariableTok{n\_values}\NormalTok{)}
+    \VariableTok{n} \OperatorTok{=} \VariableTok{n\_values}\NormalTok{(}\VariableTok{idx}\NormalTok{)}\OperatorTok{;}
+    
+    \CommentTok{\% Generate sum of n Uniform(0,1) RVs}
+    \VariableTok{X} \OperatorTok{=} \VariableTok{sum}\NormalTok{(}\VariableTok{rand}\NormalTok{(}\VariableTok{n}\OperatorTok{,} \VariableTok{N\_experiments}\NormalTok{)}\OperatorTok{,} \FloatTok{1}\NormalTok{)}\OperatorTok{;}
+    
+    \CommentTok{\% Standardize: Z = (X {-} nμ)/(σ√n) where μ=0.5, σ²=1/12}
+    \VariableTok{mu\_sum} \OperatorTok{=} \VariableTok{n} \OperatorTok{*} \FloatTok{0.5}\OperatorTok{;}
+    \VariableTok{sigma\_sum} \OperatorTok{=} \VariableTok{sqrt}\NormalTok{(}\VariableTok{n} \OperatorTok{/} \FloatTok{12}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{Z} \OperatorTok{=}\NormalTok{ (}\VariableTok{X} \OperatorTok{{-}} \VariableTok{mu\_sum}\NormalTok{) }\OperatorTok{/} \VariableTok{sigma\_sum}\OperatorTok{;}
+    
+    \VariableTok{subplot}\NormalTok{(}\FloatTok{2}\OperatorTok{,} \FloatTok{3}\OperatorTok{,} \VariableTok{idx}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{histogram}\NormalTok{(}\VariableTok{Z}\OperatorTok{,} \FloatTok{60}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Normalization\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}pdf\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+    \VariableTok{z} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\OperatorTok{{-}}\FloatTok{4}\OperatorTok{,} \FloatTok{4}\OperatorTok{,} \FloatTok{200}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{plot}\NormalTok{(}\VariableTok{z}\OperatorTok{,} \VariableTok{normpdf}\NormalTok{(}\VariableTok{z}\NormalTok{)}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{title}\NormalTok{(}\VariableTok{sprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}n = \%d\textquotesingle{}}\OperatorTok{,} \VariableTok{n}\NormalTok{))}\OperatorTok{;}
+    \VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Standardized Sum\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{xlim}\NormalTok{([}\OperatorTok{{-}}\FloatTok{4} \FloatTok{4}\NormalTok{])}\OperatorTok{;}
+    \KeywordTok{if} \VariableTok{idx} \OperatorTok{==} \FloatTok{1}\OperatorTok{,} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}PDF\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \KeywordTok{end}
+\KeywordTok{end}
+\VariableTok{sgtitle}\NormalTok{(}\SpecialStringTok{\textquotesingle{}CLT: Sum of Uniform RVs → Gaussian\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{Example 2: CLT with Exponential Distribution}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% CLT: Sample Mean of Exponential(1) converges to Gaussian}
+\VariableTok{lambda} \OperatorTok{=} \FloatTok{1}\OperatorTok{;}  \VariableTok{mu} \OperatorTok{=} \FloatTok{1}\OperatorTok{;}  \VariableTok{sigma} \OperatorTok{=} \FloatTok{1}\OperatorTok{;}
+\VariableTok{N\_experiments} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+\VariableTok{n\_values} \OperatorTok{=}\NormalTok{ [}\FloatTok{1}\OperatorTok{,} \FloatTok{3}\OperatorTok{,} \FloatTok{10}\OperatorTok{,} \FloatTok{30}\OperatorTok{,} \FloatTok{100}\NormalTok{]}\OperatorTok{;}
+
+\VariableTok{figure}\OperatorTok{;}
+\KeywordTok{for} \VariableTok{idx} \OperatorTok{=} \FloatTok{1}\OperatorTok{:}\VariableTok{length}\NormalTok{(}\VariableTok{n\_values}\NormalTok{)}
+    \VariableTok{n} \OperatorTok{=} \VariableTok{n\_values}\NormalTok{(}\VariableTok{idx}\NormalTok{)}\OperatorTok{;}
+    
+    \CommentTok{\% Generate sample means}
+    \VariableTok{X} \OperatorTok{=} \VariableTok{exprnd}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{n}\OperatorTok{,} \VariableTok{N\_experiments}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{X\_bar} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{X}\OperatorTok{,} \FloatTok{1}\NormalTok{)}\OperatorTok{;}
+    
+    \VariableTok{subplot}\NormalTok{(}\FloatTok{2}\OperatorTok{,} \FloatTok{3}\OperatorTok{,} \VariableTok{idx}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{histogram}\NormalTok{(}\VariableTok{X\_bar}\OperatorTok{,} \FloatTok{80}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Normalization\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}pdf\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+    \VariableTok{x} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\FloatTok{0}\OperatorTok{,} \VariableTok{max}\NormalTok{(}\VariableTok{X\_bar}\NormalTok{)}\OperatorTok{,} \FloatTok{200}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{plot}\NormalTok{(}\VariableTok{x}\OperatorTok{,} \VariableTok{normpdf}\NormalTok{(}\VariableTok{x}\OperatorTok{,} \VariableTok{mu}\OperatorTok{,} \VariableTok{sigma}\OperatorTok{/}\VariableTok{sqrt}\NormalTok{(}\VariableTok{n}\NormalTok{))}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{title}\NormalTok{(}\VariableTok{sprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}n = \%d\textquotesingle{}}\OperatorTok{,} \VariableTok{n}\NormalTok{))}\OperatorTok{;}
+    \VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Sample Mean\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\KeywordTok{end}
+\VariableTok{sgtitle}\NormalTok{(}\SpecialStringTok{\textquotesingle{}CLT: Mean of Exponential → Gaussian\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{Example 3: Binomial Normal Approximation}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Binomial(n,p) approximated by Gaussian}
+\VariableTok{n} \OperatorTok{=} \FloatTok{50}\OperatorTok{;} \VariableTok{p} \OperatorTok{=} \FloatTok{0.3}\OperatorTok{;}
+\VariableTok{k} \OperatorTok{=} \FloatTok{0}\OperatorTok{:}\VariableTok{n}\OperatorTok{;}
+\VariableTok{pmf\_binom} \OperatorTok{=} \VariableTok{binopdf}\NormalTok{(}\VariableTok{k}\OperatorTok{,} \VariableTok{n}\OperatorTok{,} \VariableTok{p}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Normal approximation}
+\VariableTok{mu\_approx} \OperatorTok{=} \VariableTok{n}\OperatorTok{*}\VariableTok{p}\OperatorTok{;}
+\VariableTok{sigma\_approx} \OperatorTok{=} \VariableTok{sqrt}\NormalTok{(}\VariableTok{n}\OperatorTok{*}\VariableTok{p}\OperatorTok{*}\NormalTok{(}\FloatTok{1}\OperatorTok{{-}}\VariableTok{p}\NormalTok{))}\OperatorTok{;}
+\VariableTok{pdf\_normal} \OperatorTok{=} \VariableTok{normpdf}\NormalTok{(}\VariableTok{k}\OperatorTok{,} \VariableTok{mu\_approx}\OperatorTok{,} \VariableTok{sigma\_approx}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{bar}\NormalTok{(}\VariableTok{k}\OperatorTok{,} \VariableTok{pmf\_binom}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}FaceAlpha\textquotesingle{}}\OperatorTok{,} \FloatTok{0.5}\NormalTok{)}\OperatorTok{;}
+\VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{k}\OperatorTok{,} \VariableTok{pdf\_normal}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r{-}\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}k\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Probability\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\VariableTok{sprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Binomial(\%d, \%.1f) vs Normal(\%.1f, \%.2f)\textquotesingle{}}\OperatorTok{,} \VariableTok{n}\OperatorTok{,} \VariableTok{p}\OperatorTok{,} \VariableTok{mu\_approx}\OperatorTok{,} \VariableTok{sigma\_approx}\OperatorTok{\^{}}\FloatTok{2}\NormalTok{))}\OperatorTok{;}
+\VariableTok{legend}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Binomial (exact)\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Normal approximation\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\PSsubsection{Example 4: Complete Monte Carlo CLT Demonstration}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Full CLT demonstration: non{-}Gaussian → Gaussian via averaging}
+\CommentTok{\% Generate N samples from a VERY non{-}Gaussian distribution}
+\CommentTok{\% (mixture: 80\% from Exp(1), 20\% from Exp(0.1))}
+\VariableTok{N\_experiments} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+\VariableTok{n\_samples} \OperatorTok{=} \FloatTok{50}\OperatorTok{;}
+
+\CommentTok{\% Generate raw data}
+\VariableTok{raw} \OperatorTok{=} \VariableTok{zeros}\NormalTok{(}\VariableTok{n\_samples}\OperatorTok{,} \VariableTok{N\_experiments}\NormalTok{)}\OperatorTok{;}
+\KeywordTok{for} \VariableTok{i} \OperatorTok{=} \FloatTok{1}\OperatorTok{:}\VariableTok{N\_experiments}
+    \VariableTok{mask} \OperatorTok{=} \VariableTok{rand}\NormalTok{(}\VariableTok{n\_samples}\OperatorTok{,} \FloatTok{1}\NormalTok{) }\OperatorTok{\textless{}} \FloatTok{0.8}\OperatorTok{;}
+    \VariableTok{raw}\NormalTok{(}\VariableTok{mask}\OperatorTok{,} \VariableTok{i}\NormalTok{) }\OperatorTok{=} \VariableTok{exprnd}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{sum}\NormalTok{(}\VariableTok{mask}\NormalTok{)}\OperatorTok{,} \FloatTok{1}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{raw}\NormalTok{(}\OperatorTok{\textasciitilde{}}\VariableTok{mask}\OperatorTok{,} \VariableTok{i}\NormalTok{) }\OperatorTok{=} \VariableTok{exprnd}\NormalTok{(}\FloatTok{10}\OperatorTok{,} \VariableTok{sum}\NormalTok{(}\OperatorTok{\textasciitilde{}}\VariableTok{mask}\NormalTok{)}\OperatorTok{,} \FloatTok{1}\NormalTok{)}\OperatorTok{;}
+\KeywordTok{end}
+
+\CommentTok{\% True mean and variance of mixture}
+\VariableTok{mu\_true} \OperatorTok{=} \FloatTok{0.8}\OperatorTok{*}\FloatTok{1} \OperatorTok{+} \FloatTok{0.2}\OperatorTok{*}\FloatTok{10}\OperatorTok{;}  \CommentTok{\% = 2.8}
+\VariableTok{var\_true} \OperatorTok{=} \FloatTok{0.8}\OperatorTok{*}\NormalTok{(}\FloatTok{1}\OperatorTok{+}\FloatTok{1}\OperatorTok{\^{}}\FloatTok{2}\NormalTok{) }\OperatorTok{+} \FloatTok{0.2}\OperatorTok{*}\NormalTok{(}\FloatTok{100}\OperatorTok{+}\FloatTok{10}\OperatorTok{\^{}}\FloatTok{2}\NormalTok{) }\OperatorTok{{-}} \VariableTok{mu\_true}\OperatorTok{\^{}}\FloatTok{2}\OperatorTok{;}  \CommentTok{\% Second moment {-} mean\^{}2}
+
+\CommentTok{\% Compute sample means}
+\VariableTok{X\_bar} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{raw}\OperatorTok{,} \FloatTok{1}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{subplot}\NormalTok{(}\FloatTok{2}\OperatorTok{,}\FloatTok{1}\OperatorTok{,}\FloatTok{1}\NormalTok{)}\OperatorTok{;}
+\VariableTok{histogram}\NormalTok{(}\VariableTok{raw}\NormalTok{(}\OperatorTok{:,}\FloatTok{1}\NormalTok{)}\OperatorTok{,} \FloatTok{100}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Normalization\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}pdf\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Original Distribution (highly skewed mixture)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}X\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}PDF\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{subplot}\NormalTok{(}\FloatTok{2}\OperatorTok{,}\FloatTok{1}\OperatorTok{,}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{histogram}\NormalTok{(}\VariableTok{X\_bar}\OperatorTok{,} \FloatTok{100}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Normalization\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}pdf\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+\VariableTok{x} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\VariableTok{min}\NormalTok{(}\VariableTok{X\_bar}\NormalTok{)}\OperatorTok{,} \VariableTok{max}\NormalTok{(}\VariableTok{X\_bar}\NormalTok{)}\OperatorTok{,} \FloatTok{200}\NormalTok{)}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{x}\OperatorTok{,} \VariableTok{normpdf}\NormalTok{(}\VariableTok{x}\OperatorTok{,} \VariableTok{mu\_true}\OperatorTok{,} \VariableTok{sqrt}\NormalTok{(}\VariableTok{var\_true}\OperatorTok{/}\VariableTok{n\_samples}\NormalTok{))}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\VariableTok{sprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Sample Mean (n=\%d) — Gaussian by CLT!\textquotesingle{}}\OperatorTok{,} \VariableTok{n\_samples}\NormalTok{))}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Sample Mean\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}PDF\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{legend}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Empirical\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Gaussian approximation\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\PSsection{11.8}{Approximations Using CLT}
+
+\PSsubsection{General Procedure}
+
+To approximate $P(S_{n} \le x)$ where $S_{n} = X_{1} + \ldots + X_{n}$:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Compute $\mu = E[X_{i}],\, \sigma^{2} = \operatorname{Var}(X_{i})$
+\item
+  $S_{n} \approx N(n\mu,\, n\sigma^{2})$
+\item
+  $\displaystyle P(S_{n} \le x) \approx \Phi \left(\frac{x - n\mu}{\sigma \sqrt{n}}\right)$
+\end{enumerate}
+
+\PSsubsection{Continuity Correction (for Discrete RVs)}
+
+When approximating a discrete sum by Gaussian:
+
+\begin{itemize}
+\tightlist
+\item
+  $\displaystyle P(X \le k) \approx \Phi \left(\frac{k + 0.5 - n\mu}{\sigma \sqrt{n}}\right)$
+\item
+  $\displaystyle P(X = k) \approx \Phi \left(\frac{k + 0.5 - n\mu}{\sigma \sqrt{n}}\right) - \Phi \left(\frac{k - 0.5 - n\mu}{\sigma \sqrt{n}}\right)$
+\end{itemize}
+
+\begin{PSbox}[unbreakable]{ex}{Example: Packet Errors}
+
+1000 packets, each error probability 0.02. $X$ = total errors.\PSbr{}Exact: $X \sim \mathrm{Binomial}(1000,\, 0.02)$\PSbr{}CLT approx: $X \approx N(20,\, 19.6)$
+
+$\displaystyle P(X > 30) \approx 1 - \Phi \left(\frac{30.5 - 20}{\sqrt{19.6}}\right) = 1 - \Phi (2.37) = 0.0089$
+
+\end{PSbox}
+
+\PSsection{11.9}{Practice Problems}
+
+\begin{PSbox}[unbreakable]{prob}{Problem 1}
+
+A factory produces bolts. Length $X$ \textasciitilde{} distribution with $\mu = 10\,\mathrm{cm},\, \sigma = 0.2\,\mathrm{cm}$. A batch of 100 bolts is measured.
+
+\begin{enumerate}
+\def\labelenumi{(\alph{enumi})}
+\tightlist
+\item
+  What is the approximate distribution of $\bar{X}$? (b) $P(\bar{X} > 10.05)$? (c) $P(9.96 < \bar{X} < 10.04)$?
+\end{enumerate}
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\alph{enumi})}
+\tightlist
+\item
+  $\displaystyle \bar{X} \sim N\left(10,\, \frac{0.04}{100}\right) = N(10,\, 0.0004),\, \sigma_{\bar{X}} = 0.02$
+\item
+  $P(\bar{X} > 10.05) = P(Z > 2.5) = 0.0062$
+\item
+  $P(9.96 < \bar{X} < 10.04) = \Phi (2) - \Phi (-2) = 0.9545$
+\end{enumerate}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{Problem 2}
+
+A communication link has 10000 bits with $\mathrm{BER} = 0.001$. Approximate $P(\text{more than 15 errors})$ using CLT.
+
+\PSsolution{} $X \sim \mathrm{Binomial}(10000,\, 0.001)$. $\mu = 10,\, \sigma^{2} = 9.99$.\PSbr{}$\displaystyle P(X > 15) \approx 1 - \Phi \left(\frac{15.5-10}{\sqrt{9.99}}\right) = 1 - \Phi (1.74) = 0.0409$
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{Problem 3}
+
+Write MATLAB code to verify the CLT for chi-squared(1) distribution (very skewed) and show convergence for $n = 2,\,5,\,10,\,50$.
+
+\PSsolution{} 
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;} \VariableTok{ns} \OperatorTok{=}\NormalTok{ [}\FloatTok{2} \FloatTok{5} \FloatTok{10} \FloatTok{50}\NormalTok{]}\OperatorTok{;}
+\VariableTok{figure}\OperatorTok{;}
+\KeywordTok{for} \VariableTok{i} \OperatorTok{=} \FloatTok{1}\OperatorTok{:}\FloatTok{4}
+    \VariableTok{X\_bar} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{chi2rnd}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{ns}\NormalTok{(}\VariableTok{i}\NormalTok{)}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{,} \FloatTok{1}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{subplot}\NormalTok{(}\FloatTok{2}\OperatorTok{,}\FloatTok{2}\OperatorTok{,}\VariableTok{i}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{histogram}\NormalTok{(}\VariableTok{X\_bar}\OperatorTok{,} \FloatTok{80}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Normalization\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}pdf\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+    \VariableTok{x} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\FloatTok{0}\OperatorTok{,} \FloatTok{3}\OperatorTok{,} \FloatTok{200}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{plot}\NormalTok{(}\VariableTok{x}\OperatorTok{,} \VariableTok{normpdf}\NormalTok{(}\VariableTok{x}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \VariableTok{sqrt}\NormalTok{(}\FloatTok{2}\OperatorTok{/}\VariableTok{ns}\NormalTok{(}\VariableTok{i}\NormalTok{)))}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{title}\NormalTok{(}\VariableTok{sprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}n=\%d\textquotesingle{}}\OperatorTok{,} \VariableTok{ns}\NormalTok{(}\VariableTok{i}\NormalTok{)))}\OperatorTok{;}
+\KeywordTok{end}
+\VariableTok{sgtitle}\NormalTok{(}\SpecialStringTok{\textquotesingle{}CLT for χ²(1): Mean→Gaussian\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{Next Module: {Module 12 — Introduction to Statistics}}
+
+\end{PSbox}

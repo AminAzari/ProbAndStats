@@ -1,0 +1,484 @@
+\begin{PSbox}[unbreakable]{obj}{اهداف یادگیری}
+
+پس از تکمیل این ماژول، دانشجویان قادر خواهند بود:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  کوواریانس را محاسبه و تفسیر کنند
+\item
+  ضریب همبستگی را محاسبه و تفسیر کنند
+\item
+  میان استقلال و ناهمبستگی تمایز قایل شوند
+\item
+  ماتریس‌های همبستگی را بسازند و تفسیر کنند
+\item
+  تحلیل همبستگی را در مسایل مهندسی به کار ببرند
+\end{enumerate}
+
+\end{PSbox}
+
+\PSsection{9.1}{مقدمه: اندازه‌گیری روابط خطی}
+
+هنگامی که دو متغیر تصادفی مستقل نباشند، باید \textbf{نحوه ارتباط آن‌ها} را کمّی کنیم. کوواریانس و همبستگی \textbf{رابطه خطی} میان دو متغیر تصادفی را می‌سنجند.
+
+مثال‌های مهندسی:
+
+\begin{itemize}
+\tightlist
+\item
+  نویز همبسته در کانال‌های حسگر مجاور
+\item
+  اندازه‌گیری سیگنال در دو آنتن (همبستگی \lr{\mbox{MIMO}})
+\item
+  ولتاژ و جریان در یک مدار (مرتبط از طریق امپدانس)
+\item
+  دما و عملکرد قطعه (وابستگی گرمایی)
+\end{itemize}
+
+\PSsection{9.2}{کوواریانس}
+
+\begin{PSbox}[unbreakable]{def}{تعریف}
+
+\PSdisplay{\PSmtext{Cov}(X,Y) = E[(X - \mu_X)(Y - \mu_Y)] = E[XY] - E[X]E[Y]}
+
+\end{PSbox}
+
+\PSsubsection{ویژگی‌ها}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \lr{$\operatorname{Cov}(X,\, X) = \operatorname{Var}(X)$}
+\item
+  \lr{$\operatorname{Cov}(X,\, Y) = \operatorname{Cov}(Y,\, X)$} (متقارن)
+\item
+  \lr{$\operatorname{Cov}(\PSmtext{aX} + b,\, \PSmtext{cY} + d)$ = ac $\cdot \operatorname{Cov}(X,\, Y)$}
+\item
+  اگر \lr{$X$}، \lr{$Y$} مستقل باشند \lr{$\to \operatorname{Cov}(X,\, Y) = 0$}
+\item
+  \lr{$\operatorname{Var}(X + Y) = \operatorname{Var}(X) + \operatorname{Var}(Y) + 2\operatorname{Cov}(X,\, Y)$}
+\item
+  \lr{$\operatorname{Var}(X - Y) = \operatorname{Var}(X) + \operatorname{Var}(Y) - 2\operatorname{Cov}(X,\, Y)$}
+\end{enumerate}
+
+\PSsubsection{تفسیر علامت}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}cc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{\lr{$\operatorname{Cov}(X,\,Y)$}} & \PSth{معنا} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\lr{\mbox{\textgreater{} 0}} & \lr{$X$} و \lr{$Y$} تمایل دارند با هم افزایش یابند \\
+\lr{\mbox{\textless{} 0}} & وقتی \lr{$X$} افزایش می‌یابد، \lr{$Y$} تمایل به کاهش دارد \\
+\lr{\mbox{= 0}} & رابطه خطی وجود ندارد (ناهمبسته) \\
+\end{longtable}
+}
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی: بهره تقویت‌کننده و خروجی}
+
+اگر بهره \lr{$G$} به‌طور تصادفی تغییر کند و ورودی در \lr{$V_{\mathrm{in}}$} ثابت باشد:
+
+\begin{itemize}
+\tightlist
+\item
+  خروجی: \lr{$V_{\mathrm{out}} = G \cdot V_{\mathrm{in}}$}
+\item
+  \lr{$\operatorname{Cov}(G,\, V_{\PSmtext{out}}) = \operatorname{Cov}(G,\, G \cdot V_{\mathrm{in}}) = V_{\mathrm{in}} \cdot \operatorname{Var}(G) > 0$}
+\end{itemize}
+
+بهره بالاتر \lr{\mbox{\ensuremath{\to}}} خروجی بالاتر (کوواریانس مثبت).
+
+\end{PSbox}
+
+\PSsection{9.3}{ضریب همبستگی}
+
+\begin{PSbox}[unbreakable]{def}{تعریف}
+
+\PSdisplay{\rho_{XY} = \frac{\PSmtext{Cov}(X,Y)}{\sigma_X \sigma_Y}}
+
+\end{PSbox}
+
+\PSsubsection{ویژگی‌ها}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{کران‌دار:} \lr{$-1 \le \rho \le 1$}
+\item
+  \lr{\mbox{\textbf{\lr{\mbox{$\rho = 1$:}}}}} رابطه خطی مثبت کامل (\lr{\mbox{$Y$ = aX $+ b$}}، \lr{$a > 0$})
+\item
+  \lr{\mbox{\textbf{\lr{\mbox{$\rho = -1$:}}}}} رابطه خطی منفی کامل (\lr{\mbox{$Y$ = aX $+ b$}}، \lr{$a < 0$})
+\item
+  \lr{\mbox{\textbf{\lr{\mbox{$\rho = 0$:}}}}} ناهمبسته (بدون رابطه خطی)
+\item
+  \textbf{بی‌بُعد:} برخلاف کوواریانس، \lr{$\rho$} به یکاها وابسته نیست
+\end{enumerate}
+
+\PSsubsection{مقیاس تفسیر}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}cc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{بازه} & \PSth{\lr{$\rho$}} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\lr{\mbox{0.0 – 0.2}} & بسیار ضعیف/ناچیز \\
+\lr{\mbox{0.2 – 0.4}} & ضعیف \\
+\lr{\mbox{0.4 – 0.6}} & متوسط \\
+\lr{\mbox{0.6 – 0.8}} & قوی \\
+\lr{\mbox{0.8 – 1.0}} & بسیار قوی \\
+\end{longtable}
+}
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی: محوشدگی همبسته}
+
+دو مسیر آنتنی با همبستگی \lr{$\rho = 0.3$}:
+
+\begin{itemize}
+\tightlist
+\item
+  همبستگی کم \lr{\mbox{\ensuremath{\to}}} تنوع به‌خوبی کار می‌کند (محوشدگی مستقل)
+\item
+  همبستگی زیاد \lr{\mbox{\ensuremath{\to}}} بهره تنوع کاهش می‌یابد
+\end{itemize}
+
+طراحی سیستم \lr{\mbox{MIMO}} نیازمند: \lr{$\rho < 0.5$} برای مالتی‌پلکسینگ فضایی مؤثر.
+
+\end{PSbox}
+
+\PSsection{9.4}{همبستگی متقابل}
+
+\begin{PSbox}[unbreakable]{def}{تعریف}
+
+\PSdisplay{R_{XY} = E[XY]}
+
+\end{PSbox}
+
+\PSsubsection{رابطه با کوواریانس}
+
+\PSdisplay{\PSmtext{Cov}(X,Y) = R_{XY} - \mu_X \mu_Y}
+
+اگر \lr{$X$} یا \lr{$Y$} میانگین صفر داشته باشد: \lr{$\operatorname{Cov}(X,\,Y) = E[XY] = R_{XY}$}
+
+\PSsubsection{اهمیت مهندسی}
+
+همبستگی متقابل در موارد زیر بنیادی است:
+
+\begin{itemize}
+\tightlist
+\item
+  فیلترهای منطبق (گیرنده‌های همبستگی در مخابرات)
+\item
+  پردازش سیگنال رادار (تشخیص تأخیر زمانی)
+\item
+  آشکارسازی سیگنال (همبسته‌سازی دریافتی با الگوی معلوم)
+\end{itemize}
+
+\PSsection{9.5}{استقلال در برابر ناهمبستگی}
+
+\PSsubsection{تمایز حیاتی}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}cc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{گزاره} & \PSth{همیشه درست است؟} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+مستقل \lr{\mbox{\ensuremath{\to}}} ناهمبسته & \lr{\mbox{\PSyes{}}} بله \\
+ناهمبسته \lr{\mbox{\ensuremath{\to}}} مستقل & \lr{\mbox{\PSno{}}} خیر (به‌طور کلی) \\
+ناهمبسته \lr{\mbox{\ensuremath{\to}}} مستقل (گاوسی مشترک) & \lr{\mbox{\PSyes{}}} بله \\
+\end{longtable}
+}
+
+\PSsubsection{چرا مستقل \lr{\mbox{\ensuremath{\to}}} ناهمبسته}
+
+اگر \lr{$X$}، \lr{$Y$} مستقل باشند: \lr{$E[XY] = E[X]E[Y]$}، بنابراین \lr{$\operatorname{Cov}(X,\,Y) = E[XY] - E[X]E[Y] = 0$}.
+
+\begin{PSbox}[unbreakable]{ex}{مثال نقض: ناهمبسته اما وابسته}
+
+فرض کنید \lr{$X \sim N(0,\,1)$} و \lr{$Y = X^{2}$}. آنگاه:
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$\operatorname{Cov}(X,\, Y) = E[XY] - E[X]E[Y] = E[X^{3}] - 0 = 0$} (چون \lr{$X$} متقارن است)
+\item
+  اما \lr{$Y$} کاملاً توسط \lr{$X$} تعیین می‌شود \lr{\mbox{\ensuremath{\to}}} وابستگی حداکثری!
+\end{itemize}
+
+\textbf{\lr{$\rho = 0$} به معنای استقلال نیست} (به‌جز برای متغیرهای تصادفی گاوسی مشترک).
+
+\end{PSbox}
+
+\PSsubsection{استثنای گاوسی}
+
+برای متغیرهای تصادفی \textbf{گاوسی مشترک}:
+
+\PSdisplay{\PSmtext{Uncorrelated} \Leftrightarrow \PSmtext{Independent}}
+
+به همین دلیل توزیع گاوسی در مهندسی بسیار راحت است \lr{—} بررسی \lr{$\rho = 0$} برای اثبات استقلال کافی است.
+
+\PSsubsection{پیام مهندسی}
+
+در مخابرات با نویز گاوسی:
+
+\begin{itemize}
+\tightlist
+\item
+  اگر نمونه‌های نویز ناهمبسته باشند \lr{\mbox{\ensuremath{\to}}} مستقل هستند
+\item
+  این موضوع تحلیل را به‌شدت ساده می‌کند
+\item
+  برای تداخل غیرگاوسی: ناهمبستگی استقلال را تضمین نمی‌کند
+\end{itemize}
+
+\PSsection{9.6}{ماتریس همبستگی}
+
+\begin{PSbox}[unbreakable]{def}{تعریف برای بردار تصادفی \lr{$X = [X_{1},\, X_{2},\, \ldots,\, X_{n}]^{T}$}}
+
+\textbf{ماتریس کوواریانس} \lr{$\Sigma$}:
+
+\PSdisplay{\Sigma_{ij} = \PSmtext{Cov}(X_i, X_j)}
+
+\PSdisplay{\Sigma = \begin{bmatrix} \PSmtext{Var}(X_1) & \PSmtext{Cov}(X_1,X_2) & \cdots \\ \PSmtext{Cov}(X_2,X_1) & \PSmtext{Var}(X_2) & \cdots \\ \vdots & & \ddots \end{bmatrix}}
+
+\textbf{ماتریس همبستگی} \lr{$R$} (نرمال‌شده):
+
+\PSdisplay{R_{ij} = \rho_{X_i X_j} = \frac{\Sigma_{ij}}{\sqrt{\Sigma_{ii}\Sigma_{jj}}}}
+
+\end{PSbox}
+
+\PSsubsection{ویژگی‌های ماتریس کوواریانس}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  متقارن: \lr{$\Sigma = \Sigma^{T}$}
+\item
+  نیم‌معین مثبت: \lr{$x^{T}\Sigma x \ge 0$} برای تمام \lr{$x$}
+\item
+  درایه‌های قطری = واریانس‌ها
+\item
+  درایه‌های غیرقطری = کوواریانس‌ها
+\end{enumerate}
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی: سه حسگر}
+
+سه حسگر دما با:
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$\sigma_{1} = \sigma_{2} = \sigma_{3} = 1^{\circ}C$}
+\item
+  \lr{$\rho_{12} = 0.8$} (حسگرهای 1 و 2 نزدیک هم هستند)
+\item
+  \lr{$\rho_{13} = 0.3$} (حسگر 3 دورتر است)
+\item
+  \lr{$\rho_{23} = 0.4$}
+\end{itemize}
+
+ماتریس همبستگی:\PSdisplay{R = \begin{bmatrix} 1.0 & 0.8 & 0.3 \\ 0.8 & 1.0 & 0.4 \\ 0.3 & 0.4 & 1.0 \end{bmatrix}}
+
+\end{PSbox}
+
+\PSsection{9.7}{واریانس ترکیب‌های خطی}
+
+\PSsubsection{فرمول کلی}
+
+\PSdisplay{\PSmtext{Var}\left(\sum_{i=1}^n a_i X_i\right) = \sum_{i=1}^n a_i^2 \PSmtext{Var}(X_i) + 2\sum_{i<j} a_i a_j \PSmtext{Cov}(X_i, X_j)}
+
+در شکل ماتریسی: \lr{$\operatorname{Var}(a^{T}X) = a^{T}\Sigma a$}
+
+\PSsubsection{حالت خاص: جمع دو متغیر تصادفی}
+
+\lr{$\operatorname{Var}(X + Y) = \operatorname{Var}(X) + \operatorname{Var}(Y) + 2\operatorname{Cov}(X,\,Y) = \sigma_{X}^{2} + \sigma_{Y}^{2} + 2\rho \sigma_{X}\sigma_{Y}$}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.4194}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.3226}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.2581}}@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{همبستگی} & \PSth{\lr{$\operatorname{Var}(X+Y)$}} & \PSth{اثر} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\lr{$\rho = 1$} & \lr{$(\sigma_{X} + \sigma_{Y})^{2}$} & بیشینه \lr{—} واریانس‌ها به‌صورت سازنده جمع می‌شوند \\
+\lr{$\rho = 0$} & \lr{$\sigma_{X}^{2} + \sigma_{Y}^{2}$} & جمع مستقل \\
+\lr{$\rho = -1$} & \lr{$(\sigma_{X} - \sigma_{Y})^{2}$} & کمینه \lr{—} حذف متقابل \\
+\end{longtable}
+}
+
+\PSsubsection{کاربرد مهندسی: میانگین‌گیری از حسگرهای همبسته}
+
+اگر \lr{$n$} حسگر واریانس برابر \lr{$\sigma^{2}$} و همبستگی زوجی \lr{$\rho$} داشته باشند:
+
+\PSdisplay{\PSmtext{Var}(\bar{X}) = \frac{\sigma^2}{n}[1 + (n-1)\rho]}
+
+\begin{itemize}
+\tightlist
+\item
+  اگر \lr{$\rho = 0$} (مستقل): \lr{$\operatorname{Var}(\bar{X}) = \frac{\sigma^{2}}{n}$} (بهره کامل میانگین‌گیری)
+\item
+  اگر \lr{$\rho = 1$} (یکسان): \lr{$\operatorname{Var}(\bar{X}) = \sigma^{2}$} (بدون بهره از میانگین‌گیری!)
+\item
+  اگر \lr{$\rho = 0.5$}، \lr{$n = 4$: $\operatorname{Var}(\bar{X}) = \frac{\sigma^{2}(1 + 3 \times 0.5)}{4} = 0.625\sigma^{2}$} (بهره کاهش‌یافته)
+\end{itemize}
+
+\PSsection{9.8}{مثال‌های \lr{\mbox{MATLAB}}}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 1: محاسبه همبستگی}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Sample Correlation: Correlated Sensor Data}
+\VariableTok{N} \OperatorTok{=} \FloatTok{10000}\OperatorTok{;}
+\VariableTok{rho} \OperatorTok{=} \FloatTok{0.7}\OperatorTok{;}  \VariableTok{sigma1} \OperatorTok{=} \FloatTok{2}\OperatorTok{;}  \VariableTok{sigma2} \OperatorTok{=} \FloatTok{3}\OperatorTok{;}
+
+\CommentTok{\% Generate correlated Gaussians}
+\VariableTok{Z1} \OperatorTok{=} \VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{Z2} \OperatorTok{=} \VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{X} \OperatorTok{=} \VariableTok{sigma1} \OperatorTok{*} \VariableTok{Z1}\OperatorTok{;}
+\VariableTok{Y} \OperatorTok{=} \VariableTok{sigma2} \OperatorTok{*}\NormalTok{ (}\VariableTok{rho}\OperatorTok{*}\VariableTok{Z1} \OperatorTok{+} \VariableTok{sqrt}\NormalTok{(}\FloatTok{1}\OperatorTok{{-}}\VariableTok{rho}\OperatorTok{\^{}}\FloatTok{2}\NormalTok{)}\OperatorTok{*}\VariableTok{Z2}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Compute sample statistics}
+\VariableTok{cov\_xy} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{X}\OperatorTok{.*}\VariableTok{Y}\NormalTok{) }\OperatorTok{{-}} \VariableTok{mean}\NormalTok{(}\VariableTok{X}\NormalTok{)}\OperatorTok{*}\VariableTok{mean}\NormalTok{(}\VariableTok{Y}\NormalTok{)}\OperatorTok{;}
+\VariableTok{rho\_hat} \OperatorTok{=} \VariableTok{cov\_xy} \OperatorTok{/}\NormalTok{ (}\VariableTok{std}\NormalTok{(}\VariableTok{X}\NormalTok{)}\OperatorTok{*}\VariableTok{std}\NormalTok{(}\VariableTok{Y}\NormalTok{))}\OperatorTok{;}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}True ρ = \%.2f, Estimated ρ = \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{rho}\OperatorTok{,} \VariableTok{rho\_hat}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Cov(X,Y): Theory=\%.2f, Estimated=\%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{rho}\OperatorTok{*}\VariableTok{sigma1}\OperatorTok{*}\VariableTok{sigma2}\OperatorTok{,} \VariableTok{cov\_xy}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Scatter plot}
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{scatter}\NormalTok{(}\VariableTok{X}\OperatorTok{,} \VariableTok{Y}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}b\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}.\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}X (Sensor 1)\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Y (Sensor 2)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\VariableTok{sprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Correlated Sensors (ρ = \%.2f)\textquotesingle{}}\OperatorTok{,} \VariableTok{rho}\NormalTok{))}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 2: ناهمبسته اما وابسته}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Demonstration: ρ = 0 does NOT mean independent}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+\VariableTok{X} \OperatorTok{=} \VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{Y} \OperatorTok{=} \VariableTok{X}\OperatorTok{.\^{}}\FloatTok{2}\OperatorTok{;}        \CommentTok{\% Y completely depends on X}
+
+\VariableTok{rho\_hat} \OperatorTok{=} \VariableTok{corr}\NormalTok{(}\VariableTok{X}\OperatorTok{\textquotesingle{},} \VariableTok{Y}\OperatorTok{\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Correlation ρ(X, X²) = \%.4f ≈ 0 (UNCORRELATED)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{rho\_hat}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}But Y = X² is perfectly determined by X (DEPENDENT!)\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{scatter}\NormalTok{(}\VariableTok{X}\OperatorTok{,} \VariableTok{Y}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}.\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}X\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Y = X²\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Uncorrelated but Dependent!\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 3: مصورسازی ماتریس همبستگی}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Correlation Matrix for Multiple Sensors}
+\VariableTok{n\_sensors} \OperatorTok{=} \FloatTok{5}\OperatorTok{;}
+\CommentTok{\% Create correlation matrix with decaying correlation}
+\VariableTok{R} \OperatorTok{=} \VariableTok{zeros}\NormalTok{(}\VariableTok{n\_sensors}\NormalTok{)}\OperatorTok{;}
+\KeywordTok{for} \VariableTok{i} \OperatorTok{=} \FloatTok{1}\OperatorTok{:}\VariableTok{n\_sensors}
+    \KeywordTok{for} \VariableTok{j} \OperatorTok{=} \FloatTok{1}\OperatorTok{:}\VariableTok{n\_sensors}
+        \VariableTok{R}\NormalTok{(}\VariableTok{i}\OperatorTok{,}\VariableTok{j}\NormalTok{) }\OperatorTok{=} \FloatTok{0.9}\OperatorTok{\^{}}\VariableTok{abs}\NormalTok{(}\VariableTok{i}\OperatorTok{{-}}\VariableTok{j}\NormalTok{)}\OperatorTok{;}  \CommentTok{\% Correlation decays with distance}
+    \KeywordTok{end}
+\KeywordTok{end}
+
+\CommentTok{\% Generate correlated samples}
+\VariableTok{L} \OperatorTok{=} \VariableTok{chol}\NormalTok{(}\VariableTok{R}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}lower\textquotesingle{}}\NormalTok{)}\OperatorTok{;}   \CommentTok{\% Cholesky decomposition}
+\VariableTok{N} \OperatorTok{=} \FloatTok{10000}\OperatorTok{;}
+\VariableTok{Z} \OperatorTok{=} \VariableTok{randn}\NormalTok{(}\VariableTok{n\_sensors}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{X} \OperatorTok{=} \VariableTok{L} \OperatorTok{*} \VariableTok{Z}\OperatorTok{;}              \CommentTok{\% Correlated samples}
+
+\CommentTok{\% Estimated correlation matrix}
+\VariableTok{R\_hat} \OperatorTok{=} \VariableTok{corrcoef}\NormalTok{(}\VariableTok{X}\OperatorTok{\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{subplot}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\FloatTok{2}\OperatorTok{,}\FloatTok{1}\NormalTok{)}\OperatorTok{;} \VariableTok{imagesc}\NormalTok{(}\VariableTok{R}\NormalTok{)}\OperatorTok{;} \VariableTok{colorbar}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Theoretical R\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Sensor\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Sensor\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{subplot}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\FloatTok{2}\OperatorTok{,}\FloatTok{2}\NormalTok{)}\OperatorTok{;} \VariableTok{imagesc}\NormalTok{(}\VariableTok{R\_hat}\NormalTok{)}\OperatorTok{;} \VariableTok{colorbar}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Estimated R\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Sensor\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Sensor\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\PSsection{9.9}{مسایل تمرینی}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 1}
+
+برای \lr{$X$} و \lr{$Y$} داریم: \lr{$E[X] = 2$}، \lr{$E[Y] = 3$}، \lr{$\operatorname{Var}(X) = 4$}، \lr{$\operatorname{Var}(Y) = 9$}، \lr{$E[XY] = 8$}.
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  \lr{$\operatorname{Cov}(X,\,Y)$} را بیابید. (ب) \lr{$\rho$} را بیابید. (ج) \lr{$\operatorname{Var}(X+Y)$} را بیابید. (د) \lr{$\operatorname{Var}(2X-3Y)$} را بیابید.
+\end{enumerate}
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  \lr{$\operatorname{Cov}(X,\,Y) = E[XY] - E[X]E[Y] = 8 - 2(3) = 2$}
+\item
+  \lr{$\displaystyle \rho = \frac{2}{\sqrt{4} \cdot \sqrt{9}} = \frac{2}{6} = \frac{1}{3}$}
+\item
+  \lr{$\operatorname{Var}(X+Y) = 4 + 9 + 2(2) = 17$}
+\item
+  \lr{$\operatorname{Var}(2X-3Y) = 4(4) + 9(9) + 2(2)(-3)(2) = 16 + 81 - 24 = 73$}
+\end{enumerate}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 2}
+
+چهار حسگر یکسان \lr{$(\sigma^{2} = 1)$} همبستگی زوجی \lr{$\rho = 0.5$} دارند. \lr{$\operatorname{Var}(\bar{X})$} چقدر است؟
+
+\PSsolution{} \lr{$\displaystyle \operatorname{Var}(\bar{X}) = \frac{\sigma^{2}}{n} \cdot [1 + (n-1)\rho] = \frac{1}{4} \cdot [1 + 3(0.5)] = 0.25 \times 2.5 = 0.625$}
+
+مقایسه کنید: اگر مستقل باشند \lr{\mbox{$(\rho = 0)$: $\operatorname{Var}(\bar{X}) = 0.25$}}. همبستگی اثربخشی میانگین‌گیری را کاهش می‌دهد.
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 3}
+
+با داده \lr{$X \sim N(0,\,1)$}، تعریف کنید \lr{$Y = X$} هنگامی که \lr{$\lvert X\rvert < 1$} و \lr{$Y = -X$} هنگامی که \lr{$\lvert X\rvert \ge 1$}. نشان دهید در این حالت \lr{$\operatorname{Cov}(X,\,Y) \ne 0$} اما \lr{$E[X \cdot Y]$} قابل محاسبه است.
+
+\PSsolution{} \lr{$E[XY] = E[X^{2} \cdot 1(\lvert X\rvert < 1)] + E[-X^{2} \cdot 1(\lvert X\rvert \ge 1)] = E[X^{2} \cdot 1(\lvert X\rvert < 1)] - E[X^{2} \cdot 1(\lvert X\rvert \ge 1)]$}\PSbr{}\lr{$= P(\lvert X\rvert < 1)E[X^{2}\lvert \rvert X \mid < 1] - P(\lvert X\rvert \ge 1)E[X^{2}\lvert \rvert X \mid \ge 1]$}\PSbr{}این مقدار ناصفر است زیرا \lr{$E[X^{2}\lvert \rvert X \mid < 1] \ne E[X^{2}\lvert \rvert X \mid \ge 1]$}، بنابراین \lr{$\operatorname{Cov}(X,\,Y) = E[XY] - 0 \ne 0$}.\PSbr{}\lr{$X$} و \lr{$Y$} به‌روشنی وابسته هستند (\lr{$Y$} از \lr{$X$} تعریف شده است) و در این حالت همبسته نیز هستند.
+
+\emph{ماژول بعدی: {ماژول 10 \lr{—} چند متغیر تصادفی}}
+
+\end{PSbox}

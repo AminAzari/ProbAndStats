@@ -1,0 +1,339 @@
+\begin{PSbox}[unbreakable]{obj}{Learning Objectives}
+
+After completing this module, students will be able to:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Derive the distribution of $Z = X + Y$ using convolution
+\item
+  Find distributions of differences, products, ratios, max, and min
+\item
+  Apply the bivariate Jacobian transformation method
+\item
+  Connect these results to engineering applications (signal+noise, reliability)
+\end{enumerate}
+
+\end{PSbox}
+
+\PSsection{7.1}{Introduction}
+
+Engineering systems combine random variables:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Received signal} = transmitted + noise: $R = S + N$
+\item
+  \textbf{Total interference} = sum of multiple sources: $I = I_{1} + I_{2} + \ldots + I_{n}$
+\item
+  \textbf{System lifetime} = minimum of component lifetimes: $T = \min (T_{1},\, T_{2})$
+\item
+  \textbf{SNR} $= \dfrac{\text{signal power}}{\text{noise power}}$: ratio of RVs
+\end{itemize}
+
+We need methods to find distributions of \textbf{functions of two (or more) RVs}.
+
+\PSsection{7.2}{Sum of Two Random Variables: $Z = X + Y$}
+
+\PSsubsection{CDF Method}
+
+$F_{Z}(z) = P(X + Y \le z) = \int \int_{x+y \le z} f_{X,Y}(x,\,y)\,dx\,dy$
+
+\PSsubsection{Convolution Formula (Independent Case)}
+
+If $X$ and $Y$ are \textbf{independent}:
+
+\PSdisplay{f_Z(z) = \int_{-\infty}^{\infty} f_X(x) \cdot f_Y(z-x) \, dx = (f_X * f_Y)(z)}
+
+This is the \textbf{convolution} of $f_{X}$ and $f_{Y}$.
+
+\PSsubsection{Derivation}
+
+$F_{Z}(z) = P(X + Y \le z) = \int_{-\infty}^{\infty} \int_{-\infty}^{z-x} f_{X}(x)f_{Y}(y)\,dy\,dx$\PSbr{}$= \int_{-\infty}^{\infty} f_{X}(x) F_{Y}(z-x)\,dx$
+
+Differentiating: $f_{Z}(z) = \int_{-\infty}^{\infty} f_{X}(x) f_{Y}(z-x)\,dx$ \PSyes{}
+
+\PSsubsection{Important Special Cases}
+
+\textbf{Sum of two Gaussians (independent):}\PSbr{}$X \sim N(\mu_{1},\, \sigma_{1}^{2}),\, Y \sim N(\mu_{2},\, \sigma_{2}^{2}) \to Z = X+Y \sim N(\mu_{1}+\mu_{2},\, \sigma_{1}^{2}+\sigma_{2}^{2})$
+
+\textbf{Sum of two exponentials (same rate):}\PSbr{}$X,\, Y \sim \mathrm{Exp}(\lambda)$ independent $\to Z \sim \mathrm{Gamma}\left(2,\, \frac{1}{\lambda}\right) = \mathrm{Erlang}(2,\, \lambda)$
+
+\textbf{Sum of two Poissons:}\PSbr{}$X \sim \mathrm{Poisson}(\lambda_{1}),\, Y \sim \mathrm{Poisson}(\lambda_{2})$ independent $\to Z \sim \mathrm{Poisson}(\lambda_{1}+\lambda_{2})$
+
+\textbf{Sum of two uniforms:}\PSbr{}$X,\, Y \sim \mathrm{Uniform}(0,\,1)$ independent $\to Z$ has triangular distribution on [0,2]
+
+\begin{PSbox}[unbreakable]{ex}{Engineering Example: Signal + Noise}
+
+Transmitted signal $S \sim N(A,\, \sigma_{s}^{2})$, noise $N \sim N(0,\, \sigma_{n}^{2})$, independent.\PSbr{}Received: $R = S + N \sim N(A,\, \sigma_{s}^{2} + \sigma_{n}^{2})$
+
+The received signal is still Gaussian — with increased variance (reduced SNR).
+
+\end{PSbox}
+
+\PSsection{7.3}{Difference: $Z = X - Y$}
+
+For independent $X,\, Y$:\PSdisplay{f_Z(z) = \int_{-\infty}^{\infty} f_X(x) \cdot f_Y(x-z) \, dx}
+
+\textbf{Gaussian case:} $X \sim N(\mu_{1},\, \sigma_{1}^{2}),\, Y \sim N(\mu_{2},\, \sigma_{2}^{2}) \to Z = X-Y \sim N(\mu_{1}-\mu_{2},\, \sigma_{1}^{2}+\sigma_{2}^{2})$
+
+Note: variances still ADD (not subtract) because $\operatorname{Var}(-Y) = \operatorname{Var}(Y)$.
+
+\begin{PSbox}[unbreakable]{ex}{Engineering Example: Differential Measurement}
+
+Two sensors measure same quantity: $X_{1} = \theta + N_{1},\, X_{2} = \theta + N_{2}$.\PSbr{}Difference: $X_{1} - X_{2} = N_{1} - N_{2} \sim N(0,\, \sigma_{1}^{2} + \sigma_{2}^{2})$
+
+The difference eliminates the common signal but doubles the noise variance.
+
+\end{PSbox}
+
+\PSsection{7.4}{Product: $Z$ = XY}
+
+For independent $X,\, Y$:\PSdisplay{f_Z(z) = \int_{-\infty}^{\infty} \frac{1}{|x|} f_X(x) \cdot f_Y(z/x) \, dx}
+
+\begin{PSbox}[unbreakable]{ex}{Engineering Example: Power}
+
+Voltage $V$ and current I in a linear circuit: $P = V \cdot I$.\PSbr{}If $V$ and I have known joint distribution, we can find the power distribution.
+
+\end{PSbox}
+
+\PSsection{7.5}{Ratio: $Z = \frac{X}{Y}$}
+
+For independent $X,\, Y$:\PSdisplay{f_Z(z) = \int_{-\infty}^{\infty} |y| \cdot f_X(zy) \cdot f_Y(y) \, dy}
+
+\begin{PSbox}[unbreakable]{ex}{Engineering Example: SNR}
+
+$\mathrm{SNR} = \dfrac{\text{Signal Power}}{\text{Noise Power}} = \dfrac{P_s}{P_n}$
+
+If both are chi-squared distributed (sum of squared Gaussians), the ratio follows an \textbf{F-distribution}.
+
+\end{PSbox}
+
+\PSsection{7.6}{Maximum: $Z = \max (X,\, Y)$}
+
+\PSsubsection{CDF Approach}
+
+$F_{Z}(z) = P(\max (X,\,Y) \le z) = P(X \le z\ \text{AND}\ Y \le z)$
+
+If independent: $F_{Z}(z) = F_{X}(z) \cdot F_{Y}(z)$
+
+PDF: $f_{Z}(z) = f_{X}(z)F_{Y}(z) + F_{X}(z)f_{Y}(z)$
+
+\begin{PSbox}[unbreakable]{ex}{Engineering Example: Parallel Redundancy}
+
+System works if AT LEAST ONE component works. System fails only when ALL fail.\PSbr{}System lifetime $= \max (T_{1},\, T_{2})$ for parallel redundant components.
+
+For $T_{1},\, T_{2} \sim \mathrm{Exp}(\lambda)$ independent:\PSbr{}$F_{Z}(z) = (1 - e^{-\lambda z})^{2}$ for $z \ge 0$
+
+$f_{Z}(z) = 2\lambda e^{-\lambda z}(1 - e^{-\lambda z})$
+
+Mean lifetime: $E[\max] = \frac{3}{2\lambda} > \frac{1}{\lambda} = E[\text{single component}]$ (reliability improved!)
+
+\end{PSbox}
+
+\PSsection{7.7}{Minimum: $Z = \min (X,\, Y)$}
+
+\PSsubsection{Survival Function Approach}
+
+$P(Z > z) = P(\min (X,\,Y) > z) = P(X > z\ \text{AND}\ Y > z)$
+
+If independent: $P(Z > z) = P(X > z) \cdot P(Y > z) = [1-F_{X}(z)][1-F_{Y}(z)]$
+
+CDF: $F_{Z}(z) = 1 - [1-F_{X}(z)][1-F_{Y}(z)]$
+
+\begin{PSbox}[unbreakable]{ex}{Engineering Example: Series System}
+
+System fails when FIRST component fails. System lifetime $= \min (T_{1},\, T_{2})$.
+
+For $T_{1} \sim \mathrm{Exp}(\lambda_{1}),\, T_{2} \sim \mathrm{Exp}(\lambda_{2})$ independent:\PSbr{}$P(Z > z) = e^{-\lambda_{1}z} \cdot e^{-\lambda_{2}z} = e^{-(\lambda_{1}+\lambda_{2})z}$
+
+Therefore: $\min (T_{1},\, T_{2}) \sim \mathrm{Exp}(\lambda_{1} + \lambda_{2})$
+
+\textbf{Key result:} Failure rates ADD in series systems. Mean lifetime $= \frac{1}{\lambda_{1}+\lambda_{2}} < \min \left(\frac{1}{\lambda_{1}},\, \frac{1}{\lambda_{2}}\right)$.
+
+\end{PSbox}
+
+\PSsection{7.8}{General Bivariate Transformation (Jacobian Method)}
+
+\PSsubsection{Setup}
+
+Given $(X,\, Y)$ with known joint PDF, find the joint PDF of $(U,\, V)$ where:
+
+\begin{itemize}
+\tightlist
+\item
+  $U = g_{1}(X,\, Y)$
+\item
+  $V = g_{2}(X,\, Y)$
+\end{itemize}
+
+\PSsubsection{Procedure}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Solve for the inverse: $X = h_{1}(U,\, V),\, Y = h_{2}(U,\, V)$
+\item
+  Compute the Jacobian determinant:
+\end{enumerate}
+
+\PSdisplay{J = \begin{vmatrix} \frac{\partial x}{\partial u} & \frac{\partial x}{\partial v} \\ \frac{\partial y}{\partial u} & \frac{\partial y}{\partial v} \end{vmatrix}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\item
+  Apply:\PSdisplay{f_{U,V}(u,v) = f_{X,Y}(h_1(u,v), h_2(u,v)) \cdot |J|}
+\item
+  If only $U$ is needed, marginalize out $V$.
+\end{enumerate}
+
+\begin{PSbox}[unbreakable]{ex}{Example: Sum and Difference}
+
+$\displaystyle U = X + Y,\, V = X - Y \to X = \frac{U+V}{2},\, Y = \frac{U-V}{2}$
+
+$\displaystyle J = \lvert \frac{\partial x}{\partial u} \cdot \frac{\partial y}{\partial v} - \frac{\partial x}{\partial v} \cdot \frac{\partial y}{\partial u}\rvert = \lvert \frac{1}{2}\left(-\frac{1}{2}\right) - \frac{1}{2}\left(\frac{1}{2}\right)\rvert = \frac{1}{2}$
+
+$\displaystyle f_{U,V}(u,\,v) = \frac{1}{2} \cdot f_{X,Y}\left(\frac{u+v}{2},\, \frac{u-v}{2}\right)$
+
+\end{PSbox}
+
+\PSsection{7.9}{MATLAB Examples}
+
+\begin{PSbox}[unbreakable]{ex}{Example 1: Convolution — Sum of Two Uniforms}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Z = X + Y, both Uniform(0,1)}
+\VariableTok{N} \OperatorTok{=} \FloatTok{200000}\OperatorTok{;}
+\VariableTok{X} \OperatorTok{=} \VariableTok{rand}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;} \VariableTok{Y} \OperatorTok{=} \VariableTok{rand}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{Z} \OperatorTok{=} \VariableTok{X} \OperatorTok{+} \VariableTok{Y}\OperatorTok{;}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{histogram}\NormalTok{(}\VariableTok{Z}\OperatorTok{,} \FloatTok{100}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Normalization\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}pdf\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+\VariableTok{z} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\FloatTok{0}\OperatorTok{,} \FloatTok{2}\OperatorTok{,} \FloatTok{200}\NormalTok{)}\OperatorTok{;}
+\VariableTok{f\_theory} \OperatorTok{=} \VariableTok{max}\NormalTok{(}\FloatTok{0}\OperatorTok{,} \FloatTok{1} \OperatorTok{{-}} \VariableTok{abs}\NormalTok{(}\VariableTok{z} \OperatorTok{{-}} \FloatTok{1}\NormalTok{))}\OperatorTok{;}  \CommentTok{\% Triangular PDF}
+\VariableTok{plot}\NormalTok{(}\VariableTok{z}\OperatorTok{,} \VariableTok{f\_theory}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Z = X + Y\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}PDF\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Sum of Two Uniforms → Triangular\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{legend}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Simulation\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Theory\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{Example 2: Sum of Gaussians (Signal + Noise)}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Received = Signal + Noise}
+\VariableTok{mu\_s} \OperatorTok{=} \FloatTok{3}\OperatorTok{;} \VariableTok{sigma\_s} \OperatorTok{=} \FloatTok{0.5}\OperatorTok{;}  \CommentTok{\% Signal}
+\VariableTok{sigma\_n} \OperatorTok{=} \FloatTok{1}\OperatorTok{;}               \CommentTok{\% Noise (zero{-}mean)}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+
+\VariableTok{S} \OperatorTok{=} \VariableTok{mu\_s} \OperatorTok{+} \VariableTok{sigma\_s}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{Noise} \OperatorTok{=} \VariableTok{sigma\_n}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{R} \OperatorTok{=} \VariableTok{S} \OperatorTok{+} \VariableTok{Noise}\OperatorTok{;}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}E[R]: Theory=\%.2f, Sim=\%.2f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mu\_s}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{R}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Var(R): Theory=\%.2f, Sim=\%.2f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{sigma\_s}\OperatorTok{\^{}}\FloatTok{2}\OperatorTok{+}\VariableTok{sigma\_n}\OperatorTok{\^{}}\FloatTok{2}\OperatorTok{,} \VariableTok{var}\NormalTok{(}\VariableTok{R}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}SNR = \%.2f dB\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \FloatTok{10}\OperatorTok{*}\VariableTok{log10}\NormalTok{(}\VariableTok{mu\_s}\OperatorTok{\^{}}\FloatTok{2}\OperatorTok{/}\NormalTok{(}\VariableTok{sigma\_s}\OperatorTok{\^{}}\FloatTok{2}\OperatorTok{+}\VariableTok{sigma\_n}\OperatorTok{\^{}}\FloatTok{2}\NormalTok{)))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{Example 3: Series System Reliability (Minimum)}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Series System: T\_sys = min(T1, T2)}
+\VariableTok{lambda1} \OperatorTok{=} \FloatTok{0.001}\OperatorTok{;} \VariableTok{lambda2} \OperatorTok{=} \FloatTok{0.002}\OperatorTok{;}  \CommentTok{\% Failure rates per hour}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+
+\VariableTok{T1} \OperatorTok{=} \VariableTok{exprnd}\NormalTok{(}\FloatTok{1}\OperatorTok{/}\VariableTok{lambda1}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{T2} \OperatorTok{=} \VariableTok{exprnd}\NormalTok{(}\FloatTok{1}\OperatorTok{/}\VariableTok{lambda2}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{T\_sys} \OperatorTok{=} \VariableTok{min}\NormalTok{(}\VariableTok{T1}\OperatorTok{,} \VariableTok{T2}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}MTTF component 1: \%.0f hours\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \FloatTok{1}\OperatorTok{/}\VariableTok{lambda1}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}MTTF component 2: \%.0f hours\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \FloatTok{1}\OperatorTok{/}\VariableTok{lambda2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}MTTF system (theory): \%.0f hours\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \FloatTok{1}\OperatorTok{/}\NormalTok{(}\VariableTok{lambda1}\OperatorTok{+}\VariableTok{lambda2}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}MTTF system (sim): \%.0f hours\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{T\_sys}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{Example 4: Parallel System (Maximum)}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Parallel System: T\_sys = max(T1, T2)}
+\VariableTok{lambda} \OperatorTok{=} \FloatTok{0.01}\OperatorTok{;} \VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+\VariableTok{T1} \OperatorTok{=} \VariableTok{exprnd}\NormalTok{(}\FloatTok{1}\OperatorTok{/}\VariableTok{lambda}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{T2} \OperatorTok{=} \VariableTok{exprnd}\NormalTok{(}\FloatTok{1}\OperatorTok{/}\VariableTok{lambda}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{T\_parallel} \OperatorTok{=} \VariableTok{max}\NormalTok{(}\VariableTok{T1}\OperatorTok{,} \VariableTok{T2}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}MTTF single: \%.0f hours\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \FloatTok{1}\OperatorTok{/}\VariableTok{lambda}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}MTTF parallel (theory): \%.0f hours\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \FloatTok{3}\OperatorTok{/}\NormalTok{(}\FloatTok{2}\OperatorTok{*}\VariableTok{lambda}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}MTTF parallel (sim): \%.0f hours\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{T\_parallel}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\PSsection{7.10}{Practice Problems}
+
+\begin{PSbox}[unbreakable]{prob}{Problem 1}
+
+$X \sim \mathrm{Exp}(1),\, Y \sim \mathrm{Exp}(1)$, independent. Find the PDF of $Z = X + Y$.
+
+\PSsolution{} Convolution: $f_{Z}(z) = \int_{0}^{z} e^{-x} \cdot e^{-(z-x)}\,dx = \int_{0}^{z} e^{-z}\,dx = ze^{-z},\, z \ge 0$.\PSbr{}This is $\mathrm{Gamma}(2,\,1) = \mathrm{Erlang}(2,\,1)$. $E[Z] = 2,\, \operatorname{Var}(Z) = 2$.
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{Problem 2}
+
+Three components in series with failure rates $\lambda_{1} = 0.001,\, \lambda_{2} = 0.002,\, \lambda_{3} = 0.003$ per hour.
+
+\begin{enumerate}
+\def\labelenumi{(\alph{enumi})}
+\tightlist
+\item
+  Find system MTTF. (b) Find $P(\text{system survives 100}\,\mathrm{hours})$.
+\end{enumerate}
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\alph{enumi})}
+\tightlist
+\item
+  $\mathrm{MTTF} = \frac{1}{0.001+0.002+0.003} = \frac{1}{0.006} = 166.7$ hours
+\item
+  $P(T_{\text{sys}} > 100) = e^{-0.006 \times 100} = e^{-0.6} = 0.549$
+\end{enumerate}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{Problem 3}
+
+$X \sim N(5,\, 4),\, Y \sim N(3,\, 9)$, independent. Find distribution and $P(X + Y > 12)$.
+
+\PSsolution{} $Z = X+Y \sim N(8,\, 13)$. $P(Z > 12) = P\left(Z' > \frac{12-8}{\sqrt{13}}\right) = Q(1.109) = 0.1337$.
+
+\emph{Next Module: {Module 8 — Conditional Expectation and Variance}}
+
+\end{PSbox}

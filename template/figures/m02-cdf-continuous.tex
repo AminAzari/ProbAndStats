@@ -1,0 +1,10 @@
+% Module 2 — CDF of a continuous RV: a smooth, continuous rise from 0 to 1
+\begin{tikzpicture}
+\begin{axis}[PSplot, width=9.2cm, height=5.4cm,
+  xmin=0, xmax=7, ymin=0, ymax=1.12,
+  xtick={1,2,3,4,5,6}, xticklabels={}, ytick={0,0.5,1.0},
+  yticklabel style={/pgf/number format/fixed, /pgf/number format/precision=1},
+  ymajorgrids, xlabel={$x$}, ylabel={$F_X(x)$}]
+  \addplot[PSnavy, line width=1.5pt] coordinates {(0,0) (2,0) (6,1) (7,1)};
+\end{axis}
+\end{tikzpicture}

@@ -1,0 +1,18 @@
+% Module 3 — decision tree for continuous distributions
+\input{\PSroot/figures/PStree-styles}
+\begin{tikzpicture}[PStree]
+  \node[PSroot] (root) at (0,0) {\PSL{Is the random variable continuous?}{آیا متغیر تصادفی پیوسته است؟}};
+  \draw[PStrunk] (0.35,-0.3) -- (0.35,-7.5);
+  \foreach \y/\en/\fa/\res in {
+      -1.25/{Equally likely over a bounded range?}/{هم‌احتمال روی یک بازه کران‌دار؟}/{$\mathrm{Uniform}(a,b)$},
+      -2.5/{Time between events (memoryless)?}/{زمان بین رخدادها (بی‌حافظه)؟}/{$\mathrm{Exponential}(\lambda)$},
+      -3.75/{Sum of many small independent effects?}/{مجموع تعداد زیادی اثر کوچک مستقل؟}/{$\mathrm{Gaussian}(\mu,\sigma^2)$},
+      -5.0/{Total time for $k$ events (sum of exponentials)?}/{زمان کل برای $k$ رخداد (مجموع نمایی‌ها)؟}/{$\mathrm{Gamma}(k,\beta)$},
+      -6.25/{Magnitude of 2D Gaussian vector?}/{اندازه یک بردار گاوسی دوبعدی؟}/{$\mathrm{Rayleigh}(\sigma)$},
+      -7.5/{Sum of squared Gaussians?}/{مجموع مربعات گاوسی‌ها؟}/{$\text{Chi-square}(n)$}}{
+    \node[PSq] (q) at (0.85,\y) {\PSL{\en}{\fa}};
+    \draw[PStrunk] (0.35,\y) -- (q.\PSstart);
+    \node[PSr] (r) at (8.1,\y) {\res};
+    \draw[PSarrow] (q.\PSend) -- node[PSyes] {\PSL{YES}{بله}} (r.\PSstart);
+  }
+\end{tikzpicture}

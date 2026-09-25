@@ -1,0 +1,926 @@
+\begin{PSbox}[unbreakable]{obj}{اهداف یادگیری}
+
+پس از تکمیل این ماژول، دانشجویان قادر خواهند بود:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  متغیرهای تصادفی را تعریف کنند و نقش آن‌ها را در تحلیل مهندسی توضیح دهند
+\item
+  میان متغیرهای تصادفی گسسته و پیوسته تمایز قایل شوند
+\item
+  \lr{\mbox{PMF}}، \lr{\mbox{PDF}} و \lr{\mbox{CDF}} را محاسبه و تفسیر کنند
+\item
+  تفاوت میان جرم احتمال، چگالی و احتمال تجمعی را به‌روشنی توضیح دهند
+\item
+  تبدیل‌ها را روی متغیرهای تصادفی اعمال کنند
+\item
+  از \lr{\mbox{MATLAB}} برای تولید، مصورسازی و تحلیل متغیرهای تصادفی استفاده کنند
+\end{enumerate}
+
+\end{PSbox}
+
+\PSsection{2.1}{مقدمه: چرا متغیرهای تصادفی؟}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله}
+
+در ماژول 1 با رویدادها کار کردیم \lr{—} زیرمجموعه‌هایی از یک فضای نمونه. اما تحلیل مهندسی به \textbf{اعداد} نیاز دارد:
+
+\begin{itemize}
+\tightlist
+\item
+  چه مقدار ولتاژ نویز وجود دارد؟
+\item
+  چند بسته رسید؟
+\item
+  توان سیگنال دریافتی چقدر است؟
+\end{itemize}
+
+یک \textbf{متغیر تصادفی} خروجی‌های یک آزمایش تصادفی را به اعداد حقیقی نگاشت می‌کند و به این ترتیب امکان استفاده از تمام ابزارهای حساب دیفرانسیل و انتگرال و جبر را برای ما فراهم می‌کند.
+
+\end{PSbox}
+
+\PSsubsection{انگیزه مهندسی}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}cc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{می‌خواهیم تحلیل کنیم\lr{…}} & \PSth{یک متغیر تصادفی تعریف می‌کنیم\lr{…}} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+نویز در یک مدار & \lr{$X$} = ولتاژ نویز (ولت) \\
+خطاهای بیت در یک فریم & \lr{$N$} = تعداد خطاهای بیت \\
+عمر قطعه & \lr{$T$} = زمان تا خرابی (ساعت) \\
+دامنه سیگنال & \lr{$A$} = دامنه دریافتی \lr{$(V)$} \\
+تأخیر بسته & \lr{$D$} = تأخیر سرتاسری \lr{$(ms)$} \\
+\end{longtable}
+}
+
+\PSsection{2.2}{تعریف متغیر تصادفی}
+
+\begin{PSbox}[unbreakable]{def}{تعریف صوری}
+
+یک \textbf{متغیر تصادفی} \lr{$X$} تابعی است که هر خروجی \lr{$\omega$} در فضای نمونه \lr{$S$} را به یک عدد حقیقی نگاشت می‌کند:
+
+\PSdisplay{X: S \rightarrow \mathbb{R}}\PSdisplay{\omega \mapsto X(\omega)}
+
+\end{PSbox}
+
+\PSsubsection{تفسیر}
+
+متغیر تصادفی به هر خروجی ممکن آزمایش یک مقدار عددی نسبت می‌دهد. تصادفی‌بودن از این ناشی می‌شود که کدام خروجی \lr{$\omega$} رخ می‌دهد \lr{—} به‌محض تعیین \lr{$\omega$}، مقدار \lr{$X(\omega)$} یک عدد معیّن است.
+
+\PSsubsection{مثال مهندسی}
+
+\textbf{آزمایش:} ارسال 5 بیت روی یک کانال نویزی.\PSbr{}\textbf{فضای نمونه:} \lr{$S$} = تمام دنباله‌های ممکن درست/خطا برای 5 بیت (\lr{$2^{5} = 32$} خروجی)\PSbr{}\textbf{متغیر تصادفی:} \lr{$X$} = تعداد خطاهای بیت
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}cc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{خروجی \lr{$\omega$}} & \PSth{\lr{$X(\omega)$}} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\lr{$(C,\,C,\,C,\,C,\,C)$} & 0 \\
+\lr{$(E,\,C,\,C,\,C,\,C)$} & 1 \\
+\lr{$(E,\,E,\,C,\,C,\,C)$} & 2 \\
+\lr{\mbox{…}} & \lr{\mbox{…}} \\
+\lr{$(E,\,E,\,E,\,E,\,E)$} & 5 \\
+\end{longtable}
+}
+
+حالا به‌جای کار با 32 خروجی، با یک عدد منفرد \lr{$X \in \{0,\,1,\,2,\,3,\,4,\,5\}$} کار می‌کنیم.
+
+\PSsection{2.3}{متغیرهای تصادفی گسسته}
+
+\begin{PSbox}[unbreakable]{def}{تعریف}
+
+متغیر تصادفی \lr{$X$} \textbf{گسسته} است اگر مقادیر خود را از یک مجموعه \textbf{شمارا} (متناهی یا شمارای نامتناهی) بگیرد.
+
+\end{PSbox}
+
+\PSsubsection{ویژگی‌ها}
+
+\begin{itemize}
+\tightlist
+\item
+  مقادیر را می‌توان فهرست کرد: \lr{$\{x_{1},\, x_{2},\, x_{3},\, \ldots \}$}
+\item
+  هر مقدار یک احتمال مشخص دارد (یک «جرم» از احتمال)
+\item
+  مجموع تمام احتمال‌ها = \lr{\mbox{1}}
+\end{itemize}
+
+\PSsubsection{مثال‌های مهندسی}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.3810}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.4048}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.2143}}@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{متغیر تصادفی} & \PSth{مقادیر ممکن} & \PSth{زمینه} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+تعداد خطاهای بیت & \lr{$\{0,\, 1,\, 2,\, \ldots,\, n\}$} & انتقال بسته \\
+تعداد ارسال‌های مجدد & \lr{\mbox{\{0, 1, 2, …\}}} & پروتکل \lr{\mbox{ARQ}} \\
+سطح ولتاژ کوانتیزه‌شده & \lr{$\{0,\, 1,\, \ldots,\, 2^{N}-1\}$} & خروجی مبدل آنالوگ به دیجیتال \lr{\mbox{N}}-بیتی \\
+تعداد ورودها در هر ثانیه & \lr{\mbox{\{0, 1, 2, …\}}} & ترافیک شبکه \\
+تعداد تراشه‌های معیوب & \lr{$\{0,\, 1,\, \ldots,\, n\}$} & آزمون ویفر \\
+\end{longtable}
+}
+
+\PSsection{2.4}{متغیرهای تصادفی پیوسته}
+
+\begin{PSbox}[unbreakable]{def}{تعریف}
+
+متغیر تصادفی \lr{$X$} \textbf{پیوسته} است اگر مقادیر خود را از یک مجموعه \textbf{ناشمارا} (بازه‌ای از اعداد حقیقی) بگیرد.
+
+\end{PSbox}
+
+\PSsubsection{ویژگی‌ها}
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$X$} می‌تواند هر مقدار در یک محدوده را اختیار کند (مثلاً \lr{$[0,\, \infty)$} یا \lr{$(-\infty,\, \infty)$})
+\item
+  احتمال هر مقدار دقیق منفرد صفر است: \lr{$P(X = x) = 0$}
+\item
+  احتمال‌ها برای بازه‌ها تعریف می‌شوند: \lr{$P(a \le X \le b)$}
+\end{itemize}
+
+\PSsubsection{مثال‌های مهندسی}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}ccc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{متغیر تصادفی} & \PSth{محدوده} & \PSth{زمینه} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+ولتاژ نویز حرارتی & \lr{$(-\infty,\, \infty)$} & نویز مدار \\
+زمان تا خرابی & \lr{$[0,\, \infty)$} & قابلیت اطمینان \\
+فاز سیگنال دریافتی & \lr{$[0,\, 2\pi)$} & مخابرات \\
+مقدار مقاومت & \lr{$(R_{0} - \delta,\, R_{0} + \delta)$} & ساخت و تولید \\
+بهره کانال & \lr{$[0,\, \infty)$} & محوشدگی بی‌سیم \\
+\end{longtable}
+}
+
+\PSsubsection{چرا برای متغیرهای تصادفی پیوسته \lr{$P(X = x) = 0$} است}
+
+تصور کنید یک ولتاژ را اندازه‌گیری می‌کنید. احتمال این‌که \lr{$V$} دقیقاً \lr{\mbox{3.14159265}}\lr{…} ولت باشد (با دقت نامتناهی) صفر است. تنها می‌توانیم درباره بازه‌ها بپرسیم: \lr{$P(3.14 < V < 3.15)$}.
+
+\PSsection{2.5}{تابع جرم احتمال \lr{\mbox{(PMF)}}}
+
+\begin{PSbox}[unbreakable]{def}{تعریف}
+
+برای یک متغیر تصادفی گسسته \lr{$X$}، \textbf{تابع جرم احتمال} عبارت است از:
+
+\PSdisplay{p_X(x) = P(X = x)}
+
+\end{PSbox}
+
+\PSsubsection{ویژگی‌ها}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{نامنفی بودن:} \lr{$p_{X}(x) \ge 0$} برای تمام \lr{$x$}
+\item
+  \textbf{نرمال‌سازی:} \lr{$\sum p_{X}(x_{i}) = 1$} (جمع روی تمام مقادیر ممکن)
+\item
+  \textbf{محاسبه احتمال:} \lr{$P(X \in A) = \sum_{x \in A} p_{X}(x)$}
+\end{enumerate}
+
+\PSsubsection{مصورسازی}
+
+\lr{\mbox{PMF}} به‌صورت \textbf{خطوط عمودی} (ضربه‌ها) در هر مقدار ممکن نمایش داده می‌شود، که ارتفاع آن برابر با احتمال است.
+
+\PSfigure{m02-pmf-stems}
+
+\PSsubsection{مثال مهندسی: خطاهای بیت در یک بایت}
+
+8 بیت ارسال می‌شود که هر بیت احتمال خطای مستقل \lr{$p = 0.1$} دارد.\PSbr{}\lr{$X$} = تعداد خطاهای بیت.
+
+\lr{$p_{X}(k) = C(8,\,k) \cdot (0.1)^{k} \cdot (0.9)^{8-k}$, for $k = 0,\, 1,\, \ldots,\, 8$}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}cc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{\lr{$k$}} & \PSth{\lr{$p_{X}(k)$}} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & \PSnum{0.4305} \\
+1 & \PSnum{0.3826} \\
+2 & \PSnum{0.1488} \\
+3 & \PSnum{0.0331} \\
+4 & \PSnum{0.0046} \\
+\lr{\mbox{5+}} & \lr{\mbox{\textless{} 0.001}} \\
+\end{longtable}
+}
+
+\PSsection{2.6}{تابع چگالی احتمال \lr{\mbox{(PDF)}}}
+
+\begin{PSbox}[unbreakable]{def}{تعریف}
+
+برای یک متغیر تصادفی پیوسته \lr{$X$}، \textbf{تابع چگالی احتمال} \lr{$f_{X}(x)$} به‌گونه‌ای تعریف می‌شود که:
+
+\PSdisplay{P(a \leq X \leq b) = \int_a^b f_X(x) \, dx}
+
+\end{PSbox}
+
+\PSsubsection{ویژگی‌ها}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{نامنفی بودن:} \lr{$f_{X}(x) \ge 0$} برای تمام \lr{$x$}
+\item
+  \textbf{نرمال‌سازی:} \lr{$\int_{-\infty}^{\infty} f_{X}(x)\,dx = 1$}
+\item
+  \textbf{احتمال = مساحت زیر منحنی} میان دو نقطه
+\end{enumerate}
+
+\PSsubsection{نکته حیاتی: \lr{$f_{X}(x)$} یک احتمال نیست!}
+
+\begin{PSquote}
+
+\lr{\mbox{\PSwarn{} $f_{X}(x)$}} می‌تواند بزرگ‌تر از 1 باشد!
+
+\end{PSquote}
+
+\lr{\mbox{PDF}} \textbf{چگالی} احتمال را می‌دهد \lr{—} احتمال در واحد طول. تنها \textbf{انتگرال} (مساحت) احتمال را می‌دهد.
+
+\textbf{قیاس:} چگالی جرم \lr{\mbox{(kg/m\textsuperscript{3})}} جرم نیست. برای به‌دست‌آوردن جرم باید چگالی را روی حجم انتگرال بگیرید. به‌همین‌ترتیب، چگالی احتمال هم احتمال نیست \lr{—} برای به‌دست‌آوردن احتمال باید روی یک بازه انتگرال بگیرید.
+
+\PSsubsection{مصورسازی}
+
+\PSfigure{m02-pdf-area}
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی: ولتاژ نویز حرارتی}
+
+ولتاژ نویز حرارتی در یک مدار اغلب از توزیع گاوسی پیروی می‌کند:
+
+\PSdisplay{f_X(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{-x^2/(2\sigma^2)}}
+
+که در آن \lr{$\sigma$} ولتاژ مؤثر \lr{\mbox{(RMS)}} نویز است.
+
+\lr{$P(\PSmtext{noise exceeds 2}\sigma) = P(\lvert X\rvert > 2\sigma) = 1 - P(-2\sigma \le X \le 2\sigma) \approx 1 - 0.9545 = 0.0455$}
+
+\end{PSbox}
+
+\PSsection{2.7}{تابع توزیع تجمعی \lr{\mbox{(CDF)}}}
+
+\begin{PSbox}[unbreakable]{def}{تعریف}
+
+برای هر متغیر تصادفی \lr{$X$} (گسسته یا پیوسته)، \textbf{تابع توزیع تجمعی} عبارت است از:
+
+\PSdisplay{F_X(x) = P(X \leq x)}
+
+\end{PSbox}
+
+\PSsubsection{ویژگی‌ها}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{نامنزولی:} اگر \lr{$a < b$}، آنگاه \lr{$F_{X}(a) \le F_{X}(b)$}
+\item
+  \textbf{حدود:} \lr{$F_{X}(-\infty) = 0$}، \lr{$F_{X}(+\infty) = 1$}
+\item
+  \textbf{پیوستگی از راست:} \lr{$F_{X}(x)$} از سمت راست پیوسته است
+\item
+  \textbf{احتمال یک بازه:} \lr{$P(a < X \le b) = F_{X}(b) - F_{X}(a)$}
+\end{enumerate}
+
+\PSsubsection{\lr{\mbox{CDF}} برای متغیرهای تصادفی گسسته}
+
+\lr{\mbox{CDF}} یک \textbf{تابع پله‌ای} با جهش‌هایی در هر مقدار ممکن است:
+
+\PSfigure{m02-cdf-discrete}
+
+جهش در \lr{$x = k$} دارای ارتفاع \lr{$p_{X}(k)$} است.
+
+\PSsubsection{\lr{\mbox{CDF}} برای متغیرهای تصادفی پیوسته}
+
+\lr{\mbox{CDF}} یک منحنی \textbf{هموار و پیوسته} است:
+
+\PSdisplay{F_X(x) = \int_{-\infty}^{x} f_X(t) \, dt}
+
+و برعکس:\PSdisplay{f_X(x) = \frac{dF_X(x)}{dx}}
+
+\PSfigure{m02-cdf-continuous}
+
+\PSsubsection{رابطه: \lr{\mbox{$\mathrm{PDF}$ \ensuremath{\leftrightarrow} CDF}}}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.3793}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.3103}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.3103}}@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{جهت} & \PSth{فرمول} & \PSth{معنا} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\lr{\mbox{$\mathrm{PDF}$ \ensuremath{\to} CDF}} & \lr{$F_{X}(x) = \int_{-\infty}^{x} f_{X}(t)dt$} & انتگرال‌گیری از چگالی برای به‌دست‌آوردن احتمال تجمعی \\
+\lr{\mbox{$\mathrm{CDF}$ \ensuremath{\to} PDF}} & \lr{$f_{X}(x) = \frac{dF_{X}}{dx}$} & مشتق‌گیری از \lr{\mbox{CDF}} برای به‌دست‌آوردن چگالی \\
+\end{longtable}
+}
+
+\PSsection{2.8}{تمایز کلیدی: جرم در برابر چگالی در برابر تجمعی}
+
+این یکی از مهم‌ترین تمایزهای مفهومی در نظریه احتمال است.
+
+\PSsubsection{جدول مقایسه}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 6\tabcolsep) * \real{0.2326}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 6\tabcolsep) * \real{0.2558}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 6\tabcolsep) * \real{0.2558}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 6\tabcolsep) * \real{0.2558}}@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{ویژگی} & \PSth{\lr{\mbox{PMF $p_{X}(x)$}}} & \PSth{\lr{\mbox{PDF $f_{X}(x)$}}} & \PSth{\lr{\mbox{CDF $F_{X}(x)$}}} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{برای} & فقط متغیرهای تصادفی گسسته & فقط متغیرهای تصادفی پیوسته & هر دو \\
+\textbf{مستقیماً می‌دهد} & \lr{$P(X = x)$} & چگالی احتمال در \lr{$x$} & \lr{$P(X \le x)$} \\
+\textbf{دامنه مقادیر} & \lr{\mbox{[0, 1]}} & \lr{$[0,\, \infty)$} \lr{—} می‌تواند از 1 فراتر رود! & \lr{\mbox{[0, 1]}} \\
+\textbf{جمع/انتگرال} & \lr{$\sum p_{X}(x) = 1$} & \lr{$\int f_{X}(x)dx = 1$} & از 0 شروع و به 1 ختم می‌شود \\
+\textbf{به‌دست‌آوردن احتمال} & \lr{$P(X = x) = p_{X}(x)$} & \lr{$P(a \le X \le b) = \int f_{X}(x)dx$} & \lr{$P(a < X \le b) = F(b)-F(a)$} \\
+\end{longtable}
+}
+
+\PSsubsection{قیاس بصری: انبار}
+
+احتمال را به‌عنوان «ماده‌ای» تصور کنید که روی مقادیر ممکن توزیع شده است:
+
+\textbf{گسسته \lr{\mbox{(PMF)}}:} مانند انبار کردن ماده در جعبه‌های شماره‌گذاری‌شده. هر جعبه یک جرم مشخص دارد. \lr{\mbox{PMF}} جرم هر جعبه را به شما می‌گوید.
+
+\PSfigure{m02-pmf-boxes}
+
+\textbf{پیوسته \lr{\mbox{(PDF)}}:} مانند پهن‌کردن ماده در طول یک قفسه پیوسته. چگالی به شما می‌گوید ماده در هر نقطه چقدر ضخیم است. جرم را با محاسبه مساحت (ضخامت \ensuremath{\times} عرض) به دست می‌آورید.
+
+\PSfigure{m02-pdf-area-12}
+
+\textbf{تجمعی \lr{\mbox{(CDF)}}:} مانند یک جمع در حال اجرا \lr{—} تا این نقطه چه مقدار ماده انباشته‌اید؟
+
+\PSsubsection{چرا این موضوع در مهندسی اهمیت دارد}
+
+\textbf{مثال:} یک ولتاژ نویز \lr{$X$} دارای \lr{\mbox{PDF $f_{X}(x) = 2$}} برای \lr{$x \in [0,\, 0.5]$} است.
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$f_{X}(0.3) = 2$} \lr{—} این یک احتمال نیست! به این معناست که چگالی برابر \lr{$2\,\mathrm{V}^{-1}$} است.
+\item
+  \lr{$P(0.2 \le X \le 0.4) = \int_{0.2}^{0.4} 2\,dx = 2 \times 0.2 = 0.4$} \lr{—} این یک احتمال است.
+\item
+  \lr{$P(X = 0.3) = 0$} \lr{—} برای متغیرهای تصادفی پیوسته، یک نقطه منفرد احتمال صفر دارد.
+\end{itemize}
+
+\PSsubsection{خطاهای رایجی که باید از آن‌ها پرهیز کرد}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 2\tabcolsep) * \real{0.5000}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{\lr{\mbox{\PSno{}}} گزاره نادرست} & \PSth{\lr{\mbox{\PSyes{}}} گزاره درست} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+«احتمال در \lr{$x = 2$} برابر \lr{$f(2)$} است» & «چگالی احتمال در \lr{$x = 2$} برابر \lr{$f(2)$} است» \\
+«\lr{$f(x)$} باید \lr{\mbox{\ensuremath{\le} 1}} باشد» & «\lr{$f(x)$} می‌تواند هر مقدار نامنفی باشد» \\
+«برای \lr{$X$} پیوسته \lr{$P(X = 3) = f(3)$}» & «برای \lr{$X$} پیوسته \lr{$P(X = 3) = 0$}» \\
+«\lr{\mbox{PMF}} و \lr{\mbox{PDF}} یک چیز هستند» & «\lr{\mbox{PMF}} جرم می‌دهد؛ \lr{\mbox{PDF}} چگالی می‌دهد» \\
+\end{longtable}
+}
+
+\PSsection{2.9}{تبدیل‌های متغیرهای تصادفی}
+
+\PSsubsection{انگیزه}
+
+در مهندسی، اغلب توزیع یک کمیت را می‌دانیم اما توزیع \textbf{تابعی} از آن کمیت را نیاز داریم:
+
+\begin{itemize}
+\tightlist
+\item
+  ولتاژ \lr{$V$} معلوم است \lr{\mbox{\ensuremath{\to}}} توان \lr{$P = \frac{V^{2}}{R}$} لازم است
+\item
+  سیگنال خطی \lr{$X$} معلوم است \lr{\mbox{\ensuremath{\to}}} مقدار \lr{\mbox{dB}} یعنی \lr{$Y = 10 \cdot \log_{10}(X)$} لازم است
+\item
+  نویز \lr{$N$} معلوم است \lr{$\to \lvert N\rvert$} (نویز یکسوسازی‌شده) لازم است
+\end{itemize}
+
+\PSsubsection{بیان مسیله}
+
+داده شده: \lr{$X$} با \lr{\mbox{PDF}} معلوم \lr{$f_{X}(x)$} یا \lr{\mbox{PMF}} معلوم \lr{$p_{X}(x)$}\PSbr{}مطلوب: توزیع \lr{$Y = g(X)$}
+
+\PSsubsection{حالت 1: تبدیل متغیر تصادفی گسسته}
+
+اگر \lr{$X$} گسسته با \lr{\mbox{PMF $p_{X}(x)$}} باشد و \lr{$Y = g(X)$}:
+
+\PSdisplay{p_Y(y) = \sum_{x: g(x)=y} p_X(x)}
+
+احتمال‌های تمام مقادیر \lr{$x$} را که به همان \lr{$y$} نگاشت می‌شوند جمع کنید.
+
+\textbf{مثال:} \lr{$X \in \{-2,\, -1,\, 0,\, 1,\, 2\}$} با احتمال برابر \PSnum{0.2} برای هر یک.\PSbr{}\lr{$Y = X^{2}$}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}ccc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{\lr{$Y = X^{2}$}} & \PSth{مقادیر \lr{$X$} که به \lr{$Y$} نگاشت می‌شوند} & \PSth{\lr{$p_{Y}(y)$}} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & \{0\} & \PSnum{0.2} \\
+1 & \lr{\mbox{\{-1, 1\}}} & \PSnum{0.4} \\
+4 & \lr{\mbox{\{-2, 2\}}} & \PSnum{0.4} \\
+\end{longtable}
+}
+
+\PSsubsection{حالت 2: تبدیل یکنوا (پیوسته)}
+
+اگر \lr{$Y = g(X)$} که در آن \lr{$g$} اکیداً یکنوا و مشتق‌پذیر است:
+
+\PSdisplay{f_Y(y) = f_X(g^{-1}(y)) \cdot \left|\frac{dg^{-1}(y)}{dy}\right|}
+
+یا به‌طور معادل:\PSdisplay{f_Y(y) = \frac{f_X(x)}{|g'(x)|}\bigg|_{x=g^{-1}(y)}}
+
+\textbf{استخراج از طریق روش \lr{\mbox{CDF}}:}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  با \lr{\mbox{CDF}} شروع کنید: \lr{$F_{Y}(y) = P(Y \le y) = P(g(X) \le y)$}
+\item
+  وارون کنید: \lr{$= P(X \le g^{-1}(y))$} اگر \lr{$g$} صعودی باشد
+\item
+  مشتق بگیرید: \lr{$f_{Y}(y) = f_{X}(g^{-1}(y)) \cdot \frac{d}{dy}[g^{-1}(y)]$}
+\end{enumerate}
+
+\PSsubsection{حالت 3: تبدیل غیریکنوا}
+
+اگر \lr{$g$} یکنوا نباشد، دامنه را به بازه‌هایی تقسیم کنید که در آن‌ها \lr{$g$} یکنوا است:
+
+\PSdisplay{f_Y(y) = \sum_i \frac{f_X(x_i)}{|g'(x_i)|}}
+
+که در آن \lr{$x_{1},\, x_{2}$}, \lr{…} همگی جواب‌های \lr{$g(x) = y$} هستند.
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی: توان از ولتاژ}
+
+یک ولتاژ نویز \lr{$X$} دارای \lr{\mbox{PDF $f_{X}(x)$}} است (مثلاً گاوسی با میانگین صفر).\PSbr{}توان تلف‌شده در یک مقاومت \lr{\mbox{1\ensuremath{\Omega}}}: \lr{$P = X^{2}$}
+
+از آنجا که \lr{$Y = X^{2}$} یکنوا نیست (هر دو \lr{$+x$} و \lr{$-x$} همان \lr{$y$} را می‌دهند):
+
+برای \lr{$y > 0$}: هر دو \lr{$x = +\sqrt{y}$} و \lr{$x = -\sqrt{y}$} جواب هستند.\PSbr{}\lr{$g(x) = x^{2}$}، پس \lr{$g'(x) = 2x$}
+
+\PSdisplay{f_Y(y) = \frac{f_X(\sqrt{y})}{2\sqrt{y}} + \frac{f_X(-\sqrt{y})}{2\sqrt{y}}, \quad y > 0}
+
+اگر \lr{$X$} گاوسی با میانگین صفر باشد: \lr{$f_{X}(x) = f_{X}(-x)$}، پس:\PSdisplay{f_Y(y) = \frac{f_X(\sqrt{y})}{\sqrt{y}}, \quad y > 0}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی: تقویت خطی}
+
+سیگنال \lr{\mbox{$Y$ = aX $+ b$}} (تقویت‌کننده با بهره \lr{$a$} و آفست \lr{\mbox{b}}).\PSbr{}\lr{$X$} دارای \lr{\mbox{PDF $f_{X}(x)$}} است.
+
+\lr{$g^{-1}(y) = \frac{y-b}{a}$}، و \lr{$\lvert \frac{d}{dy}\left[\frac{y-b}{a}\right]\rvert = \frac{1}{\lvert a\rvert}$}
+
+\PSdisplay{f_Y(y) = \frac{1}{|a|} f_X\left(\frac{y-b}{a}\right)}
+
+\end{PSbox}
+
+\PSsection{2.10}{مثال‌های \lr{\mbox{MATLAB}}}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 1: رسم یک \lr{\mbox{PMF}}}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% PMF of Number of Bit Errors in a Byte}
+\VariableTok{n} \OperatorTok{=} \FloatTok{8}\OperatorTok{;}           \CommentTok{\% bits per byte}
+\VariableTok{p} \OperatorTok{=} \FloatTok{0.1}\OperatorTok{;}         \CommentTok{\% bit error probability}
+\VariableTok{k} \OperatorTok{=} \FloatTok{0}\OperatorTok{:}\VariableTok{n}\OperatorTok{;}         \CommentTok{\% possible values}
+
+\CommentTok{\% Compute PMF (binomial distribution)}
+\VariableTok{pmf} \OperatorTok{=} \VariableTok{binopdf}\NormalTok{(}\VariableTok{k}\OperatorTok{,} \VariableTok{n}\OperatorTok{,} \VariableTok{p}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Plot}
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{stem}\NormalTok{(}\VariableTok{k}\OperatorTok{,} \VariableTok{pmf}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}filled\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Number of Errors (k)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(X = k)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}PMF: Bit Errors in 8{-}bit Byte (p = 0.1)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;}
+
+\CommentTok{\% Verify normalization}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Sum of PMF = \%.6f (should be 1)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{sum}\NormalTok{(}\VariableTok{pmf}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 2: رسم یک \lr{\mbox{PDF}} و بررسی ویژگی‌ها}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% PDF of Gaussian Noise Voltage}
+\VariableTok{sigma} \OperatorTok{=} \FloatTok{0.5}\OperatorTok{;}     \CommentTok{\% RMS noise voltage}
+\VariableTok{x} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\OperatorTok{{-}}\FloatTok{3}\OperatorTok{*}\VariableTok{sigma}\OperatorTok{,} \FloatTok{3}\OperatorTok{*}\VariableTok{sigma}\OperatorTok{,} \FloatTok{1000}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Compute PDF}
+\VariableTok{pdf\_x} \OperatorTok{=} \VariableTok{normpdf}\NormalTok{(}\VariableTok{x}\OperatorTok{,} \FloatTok{0}\OperatorTok{,} \VariableTok{sigma}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Plot}
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{x}\OperatorTok{,} \VariableTok{pdf\_x}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}b{-}\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Voltage (V)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}f\_X(x) [V\^{}\{{-}1\}]\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}PDF: Gaussian Noise (σ = 0.5 V)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;}
+
+\CommentTok{\% Verify normalization (numerical integration)}
+\VariableTok{dx} \OperatorTok{=} \VariableTok{x}\NormalTok{(}\FloatTok{2}\NormalTok{) }\OperatorTok{{-}} \VariableTok{x}\NormalTok{(}\FloatTok{1}\NormalTok{)}\OperatorTok{;}
+\VariableTok{total\_area} \OperatorTok{=} \VariableTok{trapz}\NormalTok{(}\VariableTok{x}\OperatorTok{,} \VariableTok{pdf\_x}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Total area under PDF = \%.6f (should be 1)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{total\_area}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Note: PDF values can exceed 1!}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Maximum PDF value = \%.4f (can be \textgreater{} 1!)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{max}\NormalTok{(}\VariableTok{pdf\_x}\NormalTok{))}\OperatorTok{;}
+
+\CommentTok{\% Compute P(|X| \textgreater{} 1V)}
+\VariableTok{prob\_exceed} \OperatorTok{=} \FloatTok{1} \OperatorTok{{-}} \VariableTok{normcdf}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \FloatTok{0}\OperatorTok{,} \VariableTok{sigma}\NormalTok{) }\OperatorTok{+} \VariableTok{normcdf}\NormalTok{(}\OperatorTok{{-}}\FloatTok{1}\OperatorTok{,} \FloatTok{0}\OperatorTok{,} \VariableTok{sigma}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(|X| \textgreater{} 1V) = \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{prob\_exceed}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 3: مصورسازی \lr{\mbox{CDF}}}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Comparing CDF for Discrete vs Continuous}
+
+\VariableTok{figure}\OperatorTok{;}
+
+\CommentTok{\% Subplot 1: Discrete CDF (Poisson, packets per second)}
+\VariableTok{subplot}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\FloatTok{2}\OperatorTok{,}\FloatTok{1}\NormalTok{)}\OperatorTok{;}
+\VariableTok{lambda} \OperatorTok{=} \FloatTok{3}\OperatorTok{;}      \CommentTok{\% average arrivals per second}
+\VariableTok{k} \OperatorTok{=} \FloatTok{0}\OperatorTok{:}\FloatTok{10}\OperatorTok{;}
+\VariableTok{cdf\_discrete} \OperatorTok{=} \VariableTok{poisscdf}\NormalTok{(}\VariableTok{k}\OperatorTok{,} \VariableTok{lambda}\NormalTok{)}\OperatorTok{;}
+\VariableTok{stairs}\NormalTok{(}\VariableTok{k}\OperatorTok{,} \VariableTok{cdf\_discrete}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r{-}\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Number of Packets\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}F\_X(x) = P(X ≤ x)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}CDF: Discrete (Poisson, λ=3)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;} \VariableTok{ylim}\NormalTok{([}\FloatTok{0} \FloatTok{1.1}\NormalTok{])}\OperatorTok{;}
+
+\CommentTok{\% Subplot 2: Continuous CDF (Exponential, time to failure)}
+\VariableTok{subplot}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\FloatTok{2}\OperatorTok{,}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{mu} \OperatorTok{=} \FloatTok{5}\OperatorTok{;}          \CommentTok{\% mean time to failure (hours)}
+\VariableTok{t} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\FloatTok{0}\OperatorTok{,} \FloatTok{20}\OperatorTok{,} \FloatTok{500}\NormalTok{)}\OperatorTok{;}
+\VariableTok{cdf\_continuous} \OperatorTok{=} \VariableTok{expcdf}\NormalTok{(}\VariableTok{t}\OperatorTok{,} \VariableTok{mu}\NormalTok{)}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{t}\OperatorTok{,} \VariableTok{cdf\_continuous}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}b{-}\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Time (hours)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}F\_X(x) = P(X ≤ x)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}CDF: Continuous (Exponential, μ=5)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;} \VariableTok{ylim}\NormalTok{([}\FloatTok{0} \FloatTok{1.1}\NormalTok{])}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\PSsubsection{مثال 4: تبدیل یک متغیر تصادفی}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Transformation: Power from Noise Voltage}
+\CommentTok{\% X = noise voltage, Gaussian(0, sigma)}
+\CommentTok{\% Y = X\^{}2 = instantaneous power (in 1{-}ohm load)}
+
+\VariableTok{sigma} \OperatorTok{=} \FloatTok{1}\OperatorTok{;}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+
+\CommentTok{\% Generate Gaussian noise samples}
+\VariableTok{X} \OperatorTok{=} \VariableTok{sigma} \OperatorTok{*} \VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Transform: power = voltage\^{}2}
+\VariableTok{Y} \OperatorTok{=} \VariableTok{X}\OperatorTok{.\^{}}\FloatTok{2}\OperatorTok{;}
+
+\CommentTok{\% Plot empirical PDF of Y using histogram}
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{subplot}\NormalTok{(}\FloatTok{2}\OperatorTok{,}\FloatTok{1}\OperatorTok{,}\FloatTok{1}\NormalTok{)}\OperatorTok{;}
+\VariableTok{histogram}\NormalTok{(}\VariableTok{X}\OperatorTok{,} \FloatTok{100}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Normalization\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}pdf\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+\VariableTok{x\_theory} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\OperatorTok{{-}}\FloatTok{4}\OperatorTok{,} \FloatTok{4}\OperatorTok{,} \FloatTok{500}\NormalTok{)}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{x\_theory}\OperatorTok{,} \VariableTok{normpdf}\NormalTok{(}\VariableTok{x\_theory}\OperatorTok{,} \FloatTok{0}\OperatorTok{,} \VariableTok{sigma}\NormalTok{)}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r{-}\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Voltage X\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}f\_X(x)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Input: Gaussian Noise Voltage\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{legend}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Empirical\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Theoretical\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{subplot}\NormalTok{(}\FloatTok{2}\OperatorTok{,}\FloatTok{1}\OperatorTok{,}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{histogram}\NormalTok{(}\VariableTok{Y}\OperatorTok{,} \FloatTok{100}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Normalization\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}pdf\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+\CommentTok{\% Theoretical: Y \textasciitilde{} chi{-}squared with 1 degree of freedom}
+\VariableTok{y\_theory} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\FloatTok{0.01}\OperatorTok{,} \FloatTok{10}\OperatorTok{,} \FloatTok{500}\NormalTok{)}\OperatorTok{;}
+\VariableTok{pdf\_y\_theory} \OperatorTok{=} \VariableTok{chi2pdf}\NormalTok{(}\VariableTok{y\_theory}\OperatorTok{,} \FloatTok{1}\NormalTok{)}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{y\_theory}\OperatorTok{,} \VariableTok{pdf\_y\_theory}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r{-}\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Power Y = X\^{}2\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}f\_Y(y)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Output: Instantaneous Power\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{legend}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Empirical\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Theoretical (χ²₁)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\PSsubsection{مثال 5: مقایسه \lr{\mbox{PMF}} در برابر \lr{\mbox{PDF}} در برابر \lr{\mbox{CDF}}}
+
+\tcbset{PScodemode/.style={breakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Complete Visualization: PMF/PDF and CDF side by side}
+\VariableTok{figure}\OperatorTok{;}
+
+\CommentTok{\% {-}{-}{-} Discrete Case: Number of retransmissions {-}{-}{-}}
+\CommentTok{\% Geometric distribution: number of trials until first success}
+\VariableTok{p\_success} \OperatorTok{=} \FloatTok{0.3}\OperatorTok{;}   \CommentTok{\% success probability per trial}
+\VariableTok{k} \OperatorTok{=} \FloatTok{1}\OperatorTok{:}\FloatTok{15}\OperatorTok{;}
+
+\CommentTok{\% PMF}
+\VariableTok{subplot}\NormalTok{(}\FloatTok{2}\OperatorTok{,}\FloatTok{2}\OperatorTok{,}\FloatTok{1}\NormalTok{)}\OperatorTok{;}
+\VariableTok{pmf\_geom} \OperatorTok{=} \VariableTok{geopdf}\NormalTok{(}\VariableTok{k}\OperatorTok{{-}}\FloatTok{1}\OperatorTok{,} \VariableTok{p\_success}\NormalTok{)}\OperatorTok{;}  \CommentTok{\% MATLAB\textquotesingle{}s geopdf counts failures}
+\VariableTok{stem}\NormalTok{(}\VariableTok{k}\OperatorTok{,} \VariableTok{pmf\_geom}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}filled\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{1.5}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}k (transmissions)\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(X = k)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Discrete PMF: Retransmissions\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;}
+
+\CommentTok{\% CDF}
+\VariableTok{subplot}\NormalTok{(}\FloatTok{2}\OperatorTok{,}\FloatTok{2}\OperatorTok{,}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{cdf\_geom} \OperatorTok{=} \VariableTok{geocdf}\NormalTok{(}\VariableTok{k}\OperatorTok{{-}}\FloatTok{1}\OperatorTok{,} \VariableTok{p\_success}\NormalTok{)}\OperatorTok{;}
+\VariableTok{stairs}\NormalTok{(}\VariableTok{k}\OperatorTok{,} \VariableTok{cdf\_geom}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}k\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(X ≤ k)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Discrete CDF\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;} \VariableTok{ylim}\NormalTok{([}\FloatTok{0} \FloatTok{1.1}\NormalTok{])}\OperatorTok{;}
+
+\CommentTok{\% {-}{-}{-} Continuous Case: Delay time {-}{-}{-}}
+\CommentTok{\% Exponential distribution}
+\VariableTok{mu} \OperatorTok{=} \FloatTok{2}\OperatorTok{;}  \CommentTok{\% mean delay in ms}
+\VariableTok{t} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\FloatTok{0}\OperatorTok{,} \FloatTok{10}\OperatorTok{,} \FloatTok{500}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% PDF}
+\VariableTok{subplot}\NormalTok{(}\FloatTok{2}\OperatorTok{,}\FloatTok{2}\OperatorTok{,}\FloatTok{3}\NormalTok{)}\OperatorTok{;}
+\VariableTok{pdf\_exp} \OperatorTok{=} \VariableTok{exppdf}\NormalTok{(}\VariableTok{t}\OperatorTok{,} \VariableTok{mu}\NormalTok{)}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{t}\OperatorTok{,} \VariableTok{pdf\_exp}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Delay (ms)\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}f\_X(x) [ms\^{}\{{-}1\}]\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Continuous PDF: Delay\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;}
+
+\CommentTok{\% CDF}
+\VariableTok{subplot}\NormalTok{(}\FloatTok{2}\OperatorTok{,}\FloatTok{2}\OperatorTok{,}\FloatTok{4}\NormalTok{)}\OperatorTok{;}
+\VariableTok{cdf\_exp} \OperatorTok{=} \VariableTok{expcdf}\NormalTok{(}\VariableTok{t}\OperatorTok{,} \VariableTok{mu}\NormalTok{)}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{t}\OperatorTok{,} \VariableTok{cdf\_exp}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Delay (ms)\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(X ≤ x)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Continuous CDF\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;} \VariableTok{ylim}\NormalTok{([}\FloatTok{0} \FloatTok{1.1}\NormalTok{])}\OperatorTok{;}
+
+\VariableTok{sgtitle}\NormalTok{(}\SpecialStringTok{\textquotesingle{}PMF/PDF vs CDF: Discrete and Continuous\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}FontSize\textquotesingle{}}\OperatorTok{,} \FloatTok{14}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\PSsection{2.11}{مسایل تمرینی}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 1: تشخیص نوع متغیر تصادفی}
+
+هر مورد را به‌عنوان گسسته یا پیوسته دسته‌بندی کنید و محدوده را بیان کنید:
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  تعداد تماس‌های قطع‌شده در یک ساعت
+\item
+  قدرت سیگنال دریافتی \lr{\mbox{(dBm)}}
+\item
+  تعداد بیت‌های دارای خطا در یک فریم اترنت 1500 بایتی
+\item
+  زمان میان ورود بسته‌ها
+\item
+  سطح خروجی کوانتایزر (کوانتایزر 3 بیتی)
+\end{enumerate}
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  گسسته، \lr{$X \in \{0,\, 1,\, 2,\, \ldots \}$}
+\item
+  پیوسته، \lr{$X \in (-\infty,\, \infty)$} و در عمل حدود \lr{\mbox{$\sim (-120,\, 0)$ dBm}}
+\item
+  گسسته، \lr{$X \in \{0,\, 1,\, 2,\, \ldots,\, 12000\}$}
+\item
+  پیوسته، \lr{$T \in [0,\, \infty)$}
+\item
+  گسسته، \lr{$X \in \{0,\, 1,\, 2,\, 3,\, 4,\, 5,\, 6,\, 7\}$}
+\end{enumerate}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 2: ویژگی‌های \lr{\mbox{PMF}}}
+
+یک متغیر تصادفی \lr{$X$} دارای \lr{\mbox{PMF}} زیر است: \lr{$p_{X}(0) = 0.1$}، \lr{$p_{X}(1) = 0.3$}، \lr{$p_{X}(2) = c$}، \lr{$p_{X}(3) = 0.2$}.
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  مقدار \lr{$c$} را بیابید.
+\item
+  \lr{$P(X \ge 2)$} را بیابید.
+\item
+  \lr{$F_{X}(1.5)$} را بیابید.
+\item
+  \lr{$P(0.5 < X \le 2.5)$} را بیابید.
+\end{enumerate}
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\item
+  مجموع = \lr{\mbox{1}}: \lr{$0.1 + 0.3 + c + 0.2 = 1 \to c = 0.4$}
+\item
+  \lr{$P(X \ge 2) = p_{X}(2) + p_{X}(3) = 0.4 + 0.2 = 0.6$}
+\item
+  \lr{$F_{X}(1.5) = P(X \le 1.5) = p_{X}(0) + p_{X}(1) = 0.1 + 0.3 = 0.4$}
+\item
+  \lr{$P(0.5 < X \le 2.5) = p_{X}(1) + p_{X}(2) = 0.3 + 0.4 = 0.7$}
+\end{enumerate}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 3: \lr{\mbox{PDF}} و \lr{\mbox{CDF}}}
+
+یک متغیر تصادفی دارای \lr{\mbox{PDF}} زیر است:\PSbr{}\lr{\mbox{$f_{X}(x)$ = cx}} برای \lr{$0 \le x \le 4$}، و در غیر این صورت 0.
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  مقدار \lr{$c$} را بیابید.
+\item
+  تابع \lr{\mbox{CDF}} یعنی \lr{$F_{X}(x)$} را بیابید.
+\item
+  \lr{$P(1 \le X \le 3)$} را بیابید.
+\item
+  مقدار \lr{$x_{0}$} را بیابید که در آن \lr{$P(X \le x_{0}) = 0.5$}.
+\end{enumerate}
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\item
+  \lr{$\int_{0}^{4}$ cx $dx = c \cdot \left[\frac{x^{2}}{2}\right]_{0}^{4} = c \cdot 8 = 1 \to c = \frac{1}{8}$}
+\item
+  \lr{$F_{X}(x) = \int_{0}^{x} \frac{t}{8}dt = \frac{x^{2}}{16}$}، برای \lr{$0 \le x \le 4$}\PSbr{}\lr{$F_{X}(x) = 0$} برای \lr{$x < 0$}؛ \lr{$F_{X}(x) = 1$} برای \lr{$x > 4$}
+\item
+  \lr{$\displaystyle P(1 \le X \le 3) = F_{X}(3) - F_{X}(1) = \frac{9}{16} - \frac{1}{16} = \frac{8}{16} = 0.5$}
+\item
+  \lr{$\displaystyle \frac{x_{0}^{2}}{16} = 0.5 \to x_{0}^{2} = 8 \to x_{0} = 2\sqrt{2} \approx 2.83$}
+\end{enumerate}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 4: تبدیل}
+
+یک حسگر دما \lr{$X$} را اندازه‌گیری می‌کند که به‌طور یکنواخت روی \lr{\mbox{[20, 30] \ensuremath{^{\circ}}C}} توزیع شده است.\PSbr{}ولتاژ خروجی \lr{$Y = 0.1X - 2$} است (حسگر خطی).
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  \lr{\mbox{PDF}} مربوط به \lr{$Y$} را بیابید.
+\item
+  محدوده \lr{$Y$} را بیابید.
+\item
+  \lr{$P(Y > 0.5)$} را بیابید.
+\end{enumerate}
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\item
+  \lr{$X \sim \mathrm{Uniform}[20,\, 30]$}، پس \lr{$f_{X}(x) = \frac{1}{10}$} برای \lr{$20 \le x \le 30$}.\PSbr{}\lr{$Y = 0.1X - 2$}، پس \lr{$a = 0.1$} و \lr{$b = -2$}.\PSbr{}\lr{$f_{Y}(y) = \frac{1}{\lvert a\rvert} \cdot f_{X}\left(\frac{y-b}{a}\right) = \frac{1}{0.1} \cdot \frac{1}{10} = 1$} برای محدوده معتبر.
+\item
+  وقتی \lr{\mbox{$X = 20$: $Y = 0.1(20) - 2 = 0$}}؛ وقتی \lr{\mbox{$X = 30$: $Y = 0.1(30) - 2 = 1$}}\PSbr{}محدوده \lr{\mbox{$Y$: [0, 1]}}. پس \lr{$Y \sim \mathrm{Uniform}[0,\, 1]$}.
+\item
+  \lr{$P(Y > 0.5) = 1 - F_{Y}(0.5) = 1 - 0.5 = 0.5$}
+\end{enumerate}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 5: تبدیل غیریکنوا}
+
+یک ولتاژ \lr{$X \sim \mathrm{Uniform}[-1,\, 1] V$}. توان لحظه‌ای \lr{$Y = X^{2}$} است.
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  \lr{\mbox{CDF}} مربوط به \lr{$Y$} را بیابید.
+\item
+  \lr{\mbox{PDF}} مربوط به \lr{$Y$} را بیابید.
+\item
+  با شبیه‌سازی \lr{\mbox{MATLAB}} بررسی کنید.
+\end{enumerate}
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  برای \lr{$0 \le y \le 1$}:\PSbr{}\lr{$F_{Y}(y) = P(X^{2} \le y) = P\left(-\sqrt{y} \le X \le \sqrt{y}\right) = F_{X}\left(\sqrt{y}\right) - F_{X}\left(-\sqrt{y}\right)$}
+\end{enumerate}
+
+از آنجا که \lr{$X \sim \mathrm{Uniform}[-1,\,1]$: $F_{X}(x) = \frac{x+1}{2}$}
+
+\lr{$\displaystyle F_{Y}(y) = \frac{\sqrt{y} + 1}{2} - \frac{-\sqrt{y} + 1}{2} = \sqrt{y}$}
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\setcounter{enumi}{1}
+\item
+  \lr{$f_{Y}(y) = \frac{dF_{Y}}{dy} = \frac{1}{2\sqrt{y}}$} برای \lr{$0 < y \le 1$}
+\item
+  \lr{\mbox{MATLAB:}}
+\end{enumerate}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+\VariableTok{X} \OperatorTok{=} \FloatTok{2}\OperatorTok{*}\VariableTok{rand}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\VariableTok{N}\NormalTok{) }\OperatorTok{{-}} \FloatTok{1}\OperatorTok{;}   \CommentTok{\% Uniform[{-}1,1]}
+\VariableTok{Y} \OperatorTok{=} \VariableTok{X}\OperatorTok{.\^{}}\FloatTok{2}\OperatorTok{;}
+\VariableTok{histogram}\NormalTok{(}\VariableTok{Y}\OperatorTok{,} \FloatTok{100}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Normalization\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}pdf\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+\VariableTok{y} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\FloatTok{0.01}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \FloatTok{200}\NormalTok{)}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{y}\OperatorTok{,} \FloatTok{1}\OperatorTok{./}\NormalTok{(}\FloatTok{2}\OperatorTok{*}\VariableTok{sqrt}\NormalTok{(}\VariableTok{y}\NormalTok{))}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r{-}\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{legend}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Empirical\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Theory: 1/(2√y)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Y = X²\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}f\_Y(y)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\PSsection{2.12}{نکات کلیدی}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{متغیرهای تصادفی} خروجی‌های آزمایش را به اعداد برای تحلیل ریاضی تبدیل می‌کنند
+\item
+  \lr{\mbox{\textbf{\lr{\mbox{PMF}}}}} احتمال واقعی را برای متغیرهای تصادفی گسسته می‌دهد (ارتفاع میله‌ها جمعاً 1 می‌شود)
+\item
+  \lr{\mbox{\textbf{\lr{\mbox{PDF}}}}} چگالی احتمال را برای متغیرهای تصادفی پیوسته می‌دهد (مساحت احتمال را می‌دهد، نه ارتفاع)
+\item
+  \lr{\mbox{\textbf{\lr{\mbox{CDF}}}}} به‌طور کلی کار می‌کند \lr{—} احتمال تجمعی \lr{$P(X \le x)$} را می‌دهد
+\item
+  \textbf{تبدیل‌ها} به ما امکان می‌دهند توزیع توابعی از متغیرهای تصادفی را استخراج کنیم
+\item
+  \textbf{روش \lr{\mbox{CDF}}} (نخست \lr{\mbox{CDF}} را بیابید، سپس مشتق بگیرید) اغلب ایمن‌ترین رویکرد برای تبدیل‌ها است
+\end{enumerate}
+
+\emph{ماژول بعدی: {ماژول 3 \lr{—} توزیع‌های مهم احتمال}}

@@ -1,0 +1,202 @@
+% ============================================================
+%  ProbAndStats — cover illustration for every topic
+%  Drawn in a 21cm × ~5.5cm strip (origin = bottom-left of the strip)
+% ============================================================
+\tikzset{
+  PSaF/.style={fill=PSnavy!6},
+  PSaL/.style={draw=PSteal!45, line width=1.4pt},
+  PSaG/.style={draw=PSgold!70, line width=1.2pt},
+  PSaDot/.style={fill=PSteal!45},
+}
+
+% default (book, syllabus): histogram + bell curve
+\newcommand{\PSartdefault}{%
+  \foreach \x/\h in {1/0.3,2/0.7,3/1.4,4/2.5,5/3.8,6/5.0,7/5.6,8/5.0,9/3.8,10/2.5,11/1.4,12/0.7,13/0.3}{
+    \fill[PSnavy!5] ({\x*1.5-0.62},0) rectangle ({\x*1.5+0.62},\h);}
+  \draw[PSaL, domain=0:21, samples=120, smooth] plot (\x, {5.9*exp(-((\x-10.5)^2)/(2*2.6^2))});}
+
+% 1 — Probability: Venn diagram of three events
+\expandafter\def\csname PSart@1\endcsname{%
+  \draw[PSnavy!18, line width=0.9pt, rounded corners=3mm] (4.2,0.1) rectangle (16.8,5.6);
+  \foreach \c/\px/\py in {PSteal/8.9/2.3, PSnavy/12.1/2.3, PSgold/10.5/3.4}{
+    \fill[\c, fill opacity=0.10] (\px,\py) circle (1.9);
+    \draw[\c!60, line width=1.3pt] (\px,\py) circle (1.9);}
+  \node[text=PSteal!70, font=\Large\bfseries] at (7.6,1.7) {$A$};
+  \node[text=PSnavy!70, font=\Large\bfseries] at (13.4,1.7) {$B$};
+  \node[text=PSgold!90!black, font=\Large\bfseries] at (10.5,4.7) {$C$};
+  \node[text=PSnavy!45, font=\large] at (4.9,5) {$\Omega$};}
+
+% 2 — One random variable: PMF stems + CDF staircase
+\expandafter\def\csname PSart@2\endcsname{%
+  \draw[PSnavy!25, line width=0.8pt] (0.5,0.2) -- (20.5,0.2);
+  \foreach \x/\h in {2/0.4,3.5/1.2,5/2.4,6.5/3.6,8/4.4,9.5/4.8,11/4.4,12.5/3.6,14/2.6,15.5/1.7,17/1.0,18.5/0.5}{
+    \draw[PSgold!70, line width=1.6pt] (\x,0.2) -- (\x,{\h+0.2});
+    \fill[PSteal!55] (\x,{\h+0.2}) circle (0.17);}
+  \draw[PSnavy!20, line width=1.1pt]
+    (0.5,0.35) -- (2,0.35) -- (2,0.6) -- (3.5,0.6) -- (3.5,1.0) -- (5,1.0) -- (5,1.6) -- (6.5,1.6)
+    -- (6.5,2.3) -- (8,2.3) -- (8,3.0) -- (9.5,3.0) -- (9.5,3.7) -- (11,3.7) -- (11,4.3) -- (12.5,4.3)
+    -- (12.5,4.75) -- (14,4.75) -- (14,5.05) -- (15.5,5.05) -- (15.5,5.25) -- (20.5,5.25);}
+
+% 3 — Important distributions: normal, exponential, uniform
+\expandafter\def\csname PSart@3\endcsname{%
+  \draw[PSnavy!25, line width=0.8pt] (0.5,0.2) -- (20.5,0.2);
+  \fill[PSnavy!6, domain=1:10, samples=80, smooth] (1,0.2) -- plot (\x,{0.2+4.8*exp(-((\x-5.5)^2)/(2*1.3^2))}) -- (10,0.2) -- cycle;
+  \draw[PSaL, domain=1:10, samples=80, smooth] plot (\x,{0.2+4.8*exp(-((\x-5.5)^2)/(2*1.3^2))});
+  \fill[PSgold!12, domain=10.8:16, samples=60, smooth] (10.8,0.2) -- plot (\x,{0.2+4.2*exp(-(\x-10.8)/1.2)}) -- (16,0.2) -- cycle;
+  \draw[PSaG, domain=10.8:16, samples=60, smooth] plot (\x,{0.2+4.2*exp(-(\x-10.8)/1.2)});
+  \fill[PSnavy!8] (16.8,0.2) rectangle (20,2.6);
+  \draw[PSnavy!40, line width=1.3pt] (16.3,0.2) -- (16.8,0.2) -- (16.8,2.6) -- (20,2.6) -- (20,0.2) -- (20.5,0.2);}
+
+% 4 — Expectation: skewed density balanced on its mean
+\expandafter\def\csname PSart@4\endcsname{%
+  \draw[PSnavy!25, line width=0.8pt] (1,0.7) -- (20,0.7);
+  \fill[PSnavy!6, domain=2:19, samples=100, smooth] (2,0.7) -- plot (\x,{0.7+0.55*(\x-2)^2*exp(-(\x-2)/2.3)/1}) -- (19,0.7) -- cycle;
+  \draw[PSaL, domain=2:19, samples=100, smooth] plot (\x,{0.7+0.55*(\x-2)^2*exp(-(\x-2)/2.3)});
+  \draw[PSgold!80!black, dashed, line width=1.2pt] (8.9,0.7) -- (8.9,5.3);
+  \fill[PSgold!75] (8.9,0.7) -- (8.35,0) -- (9.45,0) -- cycle;
+  \node[text=PSgold!80!black, font=\large] at (9.9,5.1) {$E[X]$};}
+
+% 5 — Functions of a RV: y = g(x) transforms one density into another
+\expandafter\def\csname PSart@5\endcsname{%
+  \draw[PSnavy!30, line width=0.9pt, -stealth] (6,0.3) -- (16.5,0.3);
+  \draw[PSnavy!30, line width=0.9pt, -stealth] (6,0.3) -- (6,5.6);
+  \draw[PSaG, domain=6.3:15.5, samples=60, smooth] plot (\x,{0.3+5*(1-exp(-(\x-6.3)/2.6))});
+  \fill[PSteal!12, domain=7:14, samples=60, smooth] (7,0.3) -- plot (\x,{0.3+1.2*exp(-((\x-10.5)^2)/(2*1.1^2))}) -- (14,0.3) -- cycle;
+  \draw[PSteal!55, line width=1.2pt, domain=7:14, samples=60, smooth] plot (\x,{0.3+1.2*exp(-((\x-10.5)^2)/(2*1.1^2))});
+  \fill[PSnavy!10, domain=1.5:5.2, samples=60, smooth] (6,1.5) -- plot ({6-1.3*exp(-((\x-3.6)^2)/(2*0.55^2))},\x) -- (6,5.2) -- cycle;
+  \draw[PSnavy!45, line width=1.2pt, domain=1.5:5.2, samples=60, smooth] plot ({6-1.3*exp(-((\x-3.6)^2)/(2*0.55^2))},\x);
+  \foreach \x in {9.4,10.5,11.6}{
+    \pgfmathsetmacro{\y}{0.3+5*(1-exp(-(\x-6.3)/2.6))}
+    \draw[PSnavy!30, dashed] (\x,0.3) -- (\x,\y) -- (6,\y);}
+  \node[text=PSgold!80!black, font=\large] at (17,5) {$Y=g(X)$};}
+
+% 6 — Two random variables: joint-density contours
+\expandafter\def\csname PSart@6\endcsname{%
+  \begin{scope}[shift={(10.5,2.8)}, rotate=25]
+    \foreach \r/\o in {3.6/5,2.9/8,2.2/12,1.5/17,0.8/24}{
+      \fill[PSnavy!\o] (0,0) ellipse ({\r} and {\r*0.48});
+      \draw[PSteal!45, line width=1pt] (0,0) ellipse ({\r} and {\r*0.48});}
+  \end{scope}
+  \draw[PSnavy!25, line width=0.8pt, -stealth] (4,0.2) -- (17,0.2);
+  \draw[PSnavy!25, line width=0.8pt, -stealth] (4,0.2) -- (4,5.6);
+  \node[text=PSnavy!45] at (17.3,0.5) {$x$};
+  \node[text=PSnavy!45] at (4.4,5.5) {$y$};}
+
+% 7 — Functions of two RVs: convolution of two uniforms gives a triangle
+\expandafter\def\csname PSart@7\endcsname{%
+  \draw[PSnavy!25, line width=0.8pt] (0.5,0.4) -- (20.5,0.4);
+  \fill[PSnavy!8] (1.5,0.4) rectangle (5,3);
+  \draw[PSnavy!45, line width=1.3pt] (1.5,0.4) -- (1.5,3) -- (5,3) -- (5,0.4);
+  \node[text=PSgold!80!black, font=\huge] at (6.4,1.8) {$\ast$};
+  \fill[PSteal!10] (7.8,0.4) rectangle (11.3,3);
+  \draw[PSteal!55, line width=1.3pt] (7.8,0.4) -- (7.8,3) -- (11.3,3) -- (11.3,0.4);
+  \node[text=PSgold!80!black, font=\huge] at (12.7,1.8) {$=$};
+  \fill[PSgold!15] (14,0.4) -- (17,5) -- (20,0.4) -- cycle;
+  \draw[PSaG] (14,0.4) -- (17,5) -- (20,0.4);}
+
+% 8 — Conditional expectation: scatter with the regression curve E[Y|X]
+\expandafter\def\csname PSart@8\endcsname{%
+  \pgfmathsetseed{8}
+  \foreach \i in {1,...,90}{
+    \pgfmathsetmacro{\x}{1.5+18*rnd}
+    \pgfmathsetmacro{\y}{0.6+0.22*\x+0.9*sin(\x*25)+1.1*rand}
+    \fill[PSnavy!22] (\x,\y) circle (0.09);}
+  \draw[PSaG, domain=1.5:19.5, samples=80, smooth] plot (\x,{0.6+0.22*\x+0.9*sin(\x*25)});
+  \node[text=PSgold!80!black, font=\large] at (19.2,5.5) {$E[Y\,|\,X]$};}
+
+% 9 — Covariance & correlation: positive and negative clouds
+\expandafter\def\csname PSart@9\endcsname{%
+  \pgfmathsetseed{9}
+  \foreach \i in {1,...,70}{
+    \pgfmathsetmacro{\t}{rand}
+    \fill[PSteal!40] ({5.2+3.6*\t+0.6*rand},{2.8+2.2*\t+0.55*rand}) circle (0.09);
+    \pgfmathsetmacro{\s}{rand}
+    \fill[PSnavy!30] ({15.8+3.6*\s+0.6*rand},{2.8-2.2*\s+0.55*rand}) circle (0.09);}
+  \node[text=PSteal!70, font=\large] at (5.2,5.6) {$\rho>0$};
+  \node[text=PSnavy!55, font=\large] at (15.8,5.6) {$\rho<0$};}
+
+% 10 — Multiple random variables: random vector in 3-D
+\expandafter\def\csname PSart@10\endcsname{%
+  \begin{scope}[shift={(10.5,1.3)}]
+    \draw[PSnavy!30, line width=0.9pt, -stealth] (0,0) -- (5,0);
+    \draw[PSnavy!30, line width=0.9pt, -stealth] (0,0) -- (0,4.4);
+    \draw[PSnavy!30, line width=0.9pt, -stealth] (0,0) -- (-3.6,-1.2);
+    \fill[PSteal!10, rotate=20] (1.2,1.6) ellipse (2.4 and 1.1);
+    \draw[PSteal!50, line width=1.2pt, rotate=20] (1.2,1.6) ellipse (2.4 and 1.1);
+    \draw[PSgold!80, line width=1.6pt, -stealth] (0,0) -- (1.9,2.5);
+    \node[text=PSgold!80!black, font=\large] at (2.5,2.8) {$\mathbf{X}$};
+    \node[text=PSnavy!45] at (5.3,0.2) {$X_1$};
+    \node[text=PSnavy!45] at (0.4,4.5) {$X_2$};
+    \node[text=PSnavy!45] at (-3.9,-1) {$X_3$};
+  \end{scope}}
+
+% 11 — Central limit theorem: sums become Gaussian
+\expandafter\def\csname PSart@11\endcsname{%
+  \draw[PSnavy!25, line width=0.8pt] (0.5,0.4) -- (20.5,0.4);
+  \fill[PSnavy!7] (1.2,0.4) rectangle (5.2,2.2);
+  \draw[PSnavy!40, line width=1.2pt] (1.2,0.4) -- (1.2,2.2) -- (5.2,2.2) -- (5.2,0.4);
+  \node[text=PSnavy!50] at (3.2,2.7) {$n=1$};
+  \fill[PSnavy!7] (7,0.4) -- (9.3,3.6) -- (11.6,0.4) -- cycle;
+  \draw[PSnavy!40, line width=1.2pt] (7,0.4) -- (9.3,3.6) -- (11.6,0.4);
+  \node[text=PSnavy!50] at (9.3,4.1) {$n=2$};
+  \foreach \x/\h in {13.6/0.3,14.3/0.9,15/2.0,15.7/3.4,16.4/4.4,17.1/4.4,17.8/3.4,18.5/2.0,19.2/0.9,19.9/0.3}{
+    \fill[PSnavy!6] ({\x-0.3},0.4) rectangle ({\x+0.3},{0.4+\h});}
+  \draw[PSaL, domain=13:20.5, samples=80, smooth] plot (\x,{0.4+4.6*exp(-((\x-16.75)^2)/(2*1.2^2))});
+  \node[text=PSteal!70] at (16.75,5.4) {$n=30$};}
+
+% 12 — Introduction to statistics: box plots of three samples
+\expandafter\def\csname PSart@12\endcsname{%
+  \foreach \c/\lo/\q/\m/\t/\hi in {5/0.6/1.8/2.6/3.4/4.6, 10.5/1.2/2.4/3.1/4.2/5.4, 16/0.4/1.3/1.9/2.8/3.8}{
+    \draw[PSnavy!35, line width=1.1pt] (\c,\lo) -- (\c,\q) (\c,\t) -- (\c,\hi)
+      ({\c-0.5},\lo) -- ({\c+0.5},\lo) ({\c-0.5},\hi) -- ({\c+0.5},\hi);
+    \fill[PSteal!10] ({\c-1.1},\q) rectangle ({\c+1.1},\t);
+    \draw[PSteal!55, line width=1.2pt] ({\c-1.1},\q) rectangle ({\c+1.1},\t);
+    \draw[PSgold!80, line width=1.8pt] ({\c-1.1},\m) -- ({\c+1.1},\m);}
+  \draw[PSnavy!25, line width=0.8pt] (1.5,0.1) -- (19.5,0.1);}
+
+% 13 — Parameter estimation: likelihood and its maximiser
+\expandafter\def\csname PSart@13\endcsname{%
+  \draw[PSnavy!25, line width=0.8pt, -stealth] (2,0.3) -- (19.5,0.3);
+  \fill[PSnavy!6, domain=2.5:19, samples=100, smooth] (2.5,0.3) -- plot (\x,{0.3+4.6*((\x-2.5)/6)^3*exp(-3*((\x-2.5)/6-1))}) -- (19,0.3) -- cycle;
+  \draw[PSaL, domain=2.5:19, samples=100, smooth] plot (\x,{0.3+4.6*((\x-2.5)/6)^3*exp(-3*((\x-2.5)/6-1))});
+  \draw[PSgold!80!black, dashed, line width=1.2pt] (8.5,0.3) -- (8.5,4.9);
+  \fill[PSgold!85] (8.5,4.9) circle (0.16);
+  \node[text=PSgold!80!black, font=\large] at (8.5,5.5) {$\hat\theta_{\mathrm{MLE}}$};
+  \node[text=PSteal!65, font=\large] at (14.5,3.2) {$L(\theta)$};}
+
+% 14 — Confidence intervals: repeated intervals around the true mean
+\expandafter\def\csname PSart@14\endcsname{%
+  \pgfmathsetseed{14}
+  \draw[PSgold!80!black, line width=1.4pt] (10.5,0) -- (10.5,5.7);
+  \node[text=PSgold!80!black, font=\large] at (11.2,5.5) {$\mu$};
+  \foreach \i in {0,...,10}{
+    \pgfmathsetmacro{\c}{10.5+1.6*rand}
+    \pgfmathsetmacro{\w}{2.2+0.5*rnd}
+    \pgfmathsetmacro{\y}{0.3+0.48*\i}
+    \ifnum\i=6 \def\col{PSrose!60}\pgfmathsetmacro{\c}{13.4}\else\def\col{PSteal!50}\fi
+    \draw[\col, line width=1.5pt] ({\c-\w},\y) -- ({\c+\w},\y);
+    \fill[\col] (\c,\y) circle (0.1);}}
+
+% 15 — Hypothesis testing: H0 vs H1 with rejection region
+\expandafter\def\csname PSart@15\endcsname{%
+  \draw[PSnavy!25, line width=0.8pt] (0.5,0.3) -- (20.5,0.3);
+  \fill[PSrose!18, domain=11.3:16, samples=50, smooth] (11.3,0.3) -- plot (\x,{0.3+4.8*exp(-((\x-8)^2)/(2*1.7^2))}) -- (16,0.3) -- cycle;
+  \draw[PSnavy!45, line width=1.3pt, domain=1.5:16, samples=100, smooth] plot (\x,{0.3+4.8*exp(-((\x-8)^2)/(2*1.7^2))});
+  \draw[PSaL, domain=6:20, samples=100, smooth] plot (\x,{0.3+4.8*exp(-((\x-13.5)^2)/(2*1.7^2))});
+  \draw[PSgold!80!black, dashed, line width=1.2pt] (11.3,0.3) -- (11.3,5.4);
+  \node[text=PSnavy!55, font=\large] at (8,5.5) {$H_0$};
+  \node[text=PSteal!70, font=\large] at (13.5,5.5) {$H_1$};
+  \node[text=PSrose!70] at (12.3,0.75) {$\alpha$};}
+
+% 16 — Engineering applications: signal in noise
+\expandafter\def\csname PSart@16\endcsname{%
+  \pgfmathsetseed{16}
+  \draw[PSnavy!20, line width=0.9pt, domain=0.5:20.5, samples=260]
+    plot (\x,{2.9+1.7*sin(\x*55)+0.45*rand});
+  \draw[PSaG, domain=0.5:20.5, samples=160, smooth] plot (\x,{2.9+1.7*sin(\x*55)});
+  \foreach \x in {1.5,4.8,8.1,11.3,14.6,17.9}{ \fill[PSteal!50] (\x,{2.9+1.7*sin(\x*55)}) circle (0.13); }}
+
+% dispatcher: art for the current module (\PSmodnum), default otherwise
+\makeatletter
+\newcommand{\PSartdraw}{\ifcsname PSart@\PSmodnum\endcsname\csname PSart@\PSmodnum\endcsname\else\PSartdefault\fi}
+\makeatother

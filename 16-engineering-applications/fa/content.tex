@@ -1,0 +1,557 @@
+\begin{PSbox}[unbreakable]{obj}{اهداف یادگیری}
+
+این ماژول پایانی، تمام ماژول‌های پیشین را در کاربردهای واقعی مهندسی برق یکپارچه می‌کند. دانشجویان قادر خواهند بود:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  مدل‌سازی احتمالاتی را در سیستم‌های مخابراتی به کار ببرند
+\item
+  مسایل پردازش سیگنال را به‌صورت آماری تحلیل کنند
+\item
+  تغییرات قطعات الکترونیکی را مدل کنند
+\item
+  قابلیت اطمینان سیستم‌های قدرت را ارزیابی کنند
+\item
+  عدم‌قطعیت اندازه‌گیری در سیستم‌های کنترل را مدیریت کنند
+\item
+  احتمال/آمار را به مبانی یادگیری ماشین مرتبط کنند
+\end{enumerate}
+
+\end{PSbox}
+
+\PSsection{16.1}{مخابرات}
+
+\PSsubsection{\PSnum{16.1.1} برآورد \lr{\mbox{BER}} و بازه‌های اطمینان}
+
+\textbf{مسیله:} برآورد نرخ خطای بیت یک لینک مخابراتی.
+
+\textbf{مدل:} هر بیت یک آزمایش برنولی با احتمال خطای \lr{$p$} است (همان \lr{\mbox{BER}}).
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$n$} بیت ارسال‌شده، \lr{$k$} خطا مشاهده‌شده
+\item
+  \lr{$\hat{p} = \frac{k}{n}$} (برآوردگر \lr{\mbox{MLE}} برای \lr{\mbox{BER}})
+\item
+  بازه اطمینان 95\%: \lr{$\hat{p} \pm 1.96\sqrt{\frac{\hat{p}(1-\hat{p})}{n}}$}
+\end{itemize}
+
+\textbf{\lr{\mbox{MATLAB}}: شبیه‌سازی \lr{\mbox{BER}} و بازه اطمینان}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% BER Estimation with Confidence Interval}
+\VariableTok{EbN0\_dB} \OperatorTok{=} \FloatTok{8}\OperatorTok{;} \VariableTok{EbN0} \OperatorTok{=} \FloatTok{10}\OperatorTok{\^{}}\NormalTok{(}\VariableTok{EbN0\_dB}\OperatorTok{/}\FloatTok{10}\NormalTok{)}\OperatorTok{;}
+\VariableTok{N\_bits} \OperatorTok{=} \FloatTok{1e6}\OperatorTok{;}
+
+\CommentTok{\% BPSK transmission}
+\VariableTok{bits} \OperatorTok{=} \FloatTok{2}\OperatorTok{*}\VariableTok{randi}\NormalTok{([}\FloatTok{0}\OperatorTok{,}\FloatTok{1}\NormalTok{]}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \VariableTok{N\_bits}\NormalTok{) }\OperatorTok{{-}} \FloatTok{1}\OperatorTok{;}
+\VariableTok{noise} \OperatorTok{=}\NormalTok{ (}\FloatTok{1}\OperatorTok{/}\VariableTok{sqrt}\NormalTok{(}\FloatTok{2}\OperatorTok{*}\VariableTok{EbN0}\NormalTok{)) }\OperatorTok{*} \VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N\_bits}\NormalTok{)}\OperatorTok{;}
+\VariableTok{received} \OperatorTok{=} \VariableTok{bits} \OperatorTok{+} \VariableTok{noise}\OperatorTok{;}
+\VariableTok{decisions} \OperatorTok{=} \VariableTok{sign}\NormalTok{(}\VariableTok{received}\NormalTok{)}\OperatorTok{;}
+\VariableTok{errors} \OperatorTok{=} \VariableTok{sum}\NormalTok{(}\VariableTok{decisions} \OperatorTok{\textasciitilde{}=} \VariableTok{bits}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{BER\_hat} \OperatorTok{=} \VariableTok{errors} \OperatorTok{/} \VariableTok{N\_bits}\OperatorTok{;}
+\VariableTok{BER\_theory} \OperatorTok{=} \VariableTok{qfunc}\NormalTok{(}\VariableTok{sqrt}\NormalTok{(}\FloatTok{2}\OperatorTok{*}\VariableTok{EbN0}\NormalTok{))}\OperatorTok{;}
+
+\CommentTok{\% 95\% Confidence Interval}
+\VariableTok{margin} \OperatorTok{=} \FloatTok{1.96} \OperatorTok{*} \VariableTok{sqrt}\NormalTok{(}\VariableTok{BER\_hat}\OperatorTok{*}\NormalTok{(}\FloatTok{1}\OperatorTok{{-}}\VariableTok{BER\_hat}\NormalTok{)}\OperatorTok{/}\VariableTok{N\_bits}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}BER estimate: \%.4e\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{BER\_hat}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}BER theory:   \%.4e\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{BER\_theory}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}95\%\% CI: [\%.4e, \%.4e]\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{BER\_hat}\OperatorTok{{-}}\VariableTok{margin}\OperatorTok{,} \VariableTok{BER\_hat}\OperatorTok{+}\VariableTok{margin}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\PSsubsection{\PSnum{16.1.2} مدل‌سازی نویز \lr{\mbox{AWGN}}}
+
+نویز گاوسی سفید جمع‌شونده \lr{\mbox{(AWGN)}} مدل نویز بنیادی است:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{توزیع:} \lr{$N\left(0,\, \frac{N_{0}}{2}\right)$} در هر بُعد
+\item
+  \textbf{چرا گاوسی؟} \lr{\mbox{CLT}} \lr{—} نویز حرارتی جمع سهم‌های بسیاری از الکترون‌ها است
+\item
+  \textbf{مشخصه‌سازی:} کاملاً با چگالی طیفی توان \lr{$N_{0}$} یا واریانس \lr{$\sigma^{2} = N_{0}B$} توصیف می‌شود (\lr{$B$} = پهنای‌باند)
+\end{itemize}
+
+\PSsubsection{\PSnum{16.1.3} کانال محوشدگی رایلی}
+
+\textbf{مدل:} ضریب کانال \lr{$h = h_{I} + j \cdot h_{Q}$} که در آن \lr{$h_{I},\, h_{Q} \sim N(0,\, \sigma^{2})$} و مستقل هستند.
+
+\begin{itemize}
+\tightlist
+\item
+  پوش \lr{$\lvert h\rvert \sim \mathrm{Rayleigh}(\sigma)$}
+\item
+  توان \lr{$\lvert h\rvert^{2} \sim \mathrm{Exponential}\left(\frac{1}{2\sigma^{2}}\right)$}
+\item
+  \textbf{احتمال قطع:} \lr{$P(\lvert h\rvert^{2} < \gamma_{\mathrm{th}}) = 1 - \exp \left(-\frac{\gamma_{\mathrm{th}}}{2\sigma^{2}}\right)$}
+\end{itemize}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Rayleigh Fading: Outage Probability}
+\VariableTok{sigma} \OperatorTok{=} \FloatTok{1}\OperatorTok{;}
+\VariableTok{SNR\_avg\_dB} \OperatorTok{=} \FloatTok{10}\OperatorTok{;}    \CommentTok{\% Average SNR in dB}
+\VariableTok{SNR\_avg} \OperatorTok{=} \FloatTok{10}\OperatorTok{\^{}}\NormalTok{(}\VariableTok{SNR\_avg\_dB}\OperatorTok{/}\FloatTok{10}\NormalTok{)}\OperatorTok{;}
+\VariableTok{SNR\_threshold\_dB} \OperatorTok{=} \FloatTok{5}\OperatorTok{;}  \CommentTok{\% Minimum required SNR}
+\VariableTok{gamma\_th} \OperatorTok{=} \FloatTok{10}\OperatorTok{\^{}}\NormalTok{(}\VariableTok{SNR\_threshold\_dB}\OperatorTok{/}\FloatTok{10}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Analytical outage probability}
+\VariableTok{P\_outage} \OperatorTok{=} \FloatTok{1} \OperatorTok{{-}} \VariableTok{exp}\NormalTok{(}\OperatorTok{{-}}\VariableTok{gamma\_th} \OperatorTok{/} \VariableTok{SNR\_avg}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Outage Probability (analytical): \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{P\_outage}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Simulation}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+\VariableTok{h} \OperatorTok{=}\NormalTok{ (}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\VariableTok{N}\NormalTok{) }\OperatorTok{+} \FloatTok{1j}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\VariableTok{N}\NormalTok{)) }\OperatorTok{/} \VariableTok{sqrt}\NormalTok{(}\FloatTok{2}\NormalTok{)}\OperatorTok{;}  \CommentTok{\% Rayleigh fading}
+\VariableTok{SNR\_inst} \OperatorTok{=} \VariableTok{SNR\_avg} \OperatorTok{*} \VariableTok{abs}\NormalTok{(}\VariableTok{h}\NormalTok{)}\OperatorTok{.\^{}}\FloatTok{2}\OperatorTok{;}
+\VariableTok{P\_outage\_sim} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{SNR\_inst} \OperatorTok{\textless{}} \VariableTok{gamma\_th}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Outage Probability (simulated): \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{P\_outage\_sim}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\PSsubsection{\PSnum{16.1.4} محوشدگی رایسی}
+
+هنگامی که مؤلفه خط دید \lr{\mbox{(LOS)}} وجود دارد:
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$h = h_{\mathrm{LOS}} + h_{\mathrm{scatter}}$}
+\item
+  \lr{$\lvert h\rvert \sim \mathrm{Rician}(\nu,\, \sigma)$} که در آن \lr{$K = \frac{\nu^{2}}{2\sigma^{2}}$} ضریب \lr{$K$} است
+\end{itemize}
+
+ضریب \lr{\mbox{$K$: $K = 0$}} (رایلی) \lr{$\to K = \infty$} (بدون محوشدگی، \lr{\mbox{AWGN}})
+
+\PSsubsection{\PSnum{16.1.5} آماره‌های \lr{\mbox{SNR}}}
+
+\textbf{\lr{\mbox{SNR}} لحظه‌ای:} \lr{$\gamma = \lvert h\rvert^{2} \times \frac{E_{s}}{N_{0}}$}
+
+برای رایلی: \lr{$\gamma \sim \mathrm{Exponential}(\bar{\gamma})$} که در آن \lr{\mbox{$\bar{\gamma}$ = SNR}} میانگین
+
+\textbf{میانگین \lr{\mbox{BER}} در محوشدگی:}\PSdisplay{\bar{P}_e = \int_0^\infty P_e(\gamma) \cdot f_\gamma(\gamma) \, d\gamma}
+
+برای \lr{\mbox{BPSK}} در کانال رایلی: \lr{$\bar{P}_{e} = \frac{1}{2}\left(1 - \sqrt{\frac{\bar{\gamma}}{1+\bar{\gamma}}}\right)$}
+
+\PSsection{16.2}{پردازش سیگنال}
+
+\PSsubsection{\PSnum{16.2.1} مشخصه‌سازی نویز اندازه‌گیری}
+
+\textbf{مسیله:} مشخصه‌سازی نویز در سیگنال اندازه‌گیری‌شده \lr{$x(t) = s(t) + n(t)$}.
+
+\textbf{رویکرد:}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  نمونه‌های فقط‌نویز (در غیاب سیگنال) را جمع کنید
+\item
+  آماره‌های نویز را برآورد کنید: \lr{$\hat{\mu}_{n}$}، \lr{$\hat{\sigma}^{2}_{n}$}
+\item
+  گاوسی‌بودن را آزمون کنید (هیستوگرام، نمودار \lr{\mbox{QQ}})
+\item
+  \lr{\mbox{SNR}} را محاسبه کنید: \lr{$\mathrm{SNR} = \frac{P_{\mathrm{signal}}}{\hat{\sigma}^{2}_{n}}$}
+\end{enumerate}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Noise Characterization}
+\VariableTok{fs} \OperatorTok{=} \FloatTok{1000}\OperatorTok{;}  \VariableTok{T} \OperatorTok{=} \FloatTok{10}\OperatorTok{;}  \CommentTok{\% 1kHz sample rate, 10 seconds}
+\VariableTok{t} \OperatorTok{=} \FloatTok{0}\OperatorTok{:}\FloatTok{1}\OperatorTok{/}\VariableTok{fs}\OperatorTok{:}\VariableTok{T}\OperatorTok{{-}}\FloatTok{1}\OperatorTok{/}\VariableTok{fs}\OperatorTok{;}
+\VariableTok{N\_samples} \OperatorTok{=} \VariableTok{length}\NormalTok{(}\VariableTok{t}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Simulate: known signal + noise}
+\VariableTok{signal} \OperatorTok{=} \FloatTok{2}\OperatorTok{*}\VariableTok{sin}\NormalTok{(}\FloatTok{2}\OperatorTok{*}\VariableTok{pi}\OperatorTok{*}\FloatTok{5}\OperatorTok{*}\VariableTok{t}\NormalTok{)}\OperatorTok{;}  \CommentTok{\% 5 Hz sine wave}
+\VariableTok{noise} \OperatorTok{=} \FloatTok{0.5}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N\_samples}\NormalTok{)}\OperatorTok{;}
+\VariableTok{measured} \OperatorTok{=} \VariableTok{signal} \OperatorTok{+} \VariableTok{noise}\OperatorTok{;}
+
+\CommentTok{\% Estimate noise from signal{-}free segments (or residuals)}
+\CommentTok{\% Here: subtract known signal}
+\VariableTok{noise\_estimate} \OperatorTok{=} \VariableTok{measured} \OperatorTok{{-}} \VariableTok{signal}\OperatorTok{;}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Noise Statistics:\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}  Mean: \%.4f (should be \textasciitilde{}0)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{noise\_estimate}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}  Std:  \%.4f (true: 0.5)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{std}\NormalTok{(}\VariableTok{noise\_estimate}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}  SNR:  \%.1f dB\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \FloatTok{10}\OperatorTok{*}\VariableTok{log10}\NormalTok{(}\VariableTok{var}\NormalTok{(}\VariableTok{signal}\NormalTok{)}\OperatorTok{/}\VariableTok{var}\NormalTok{(}\VariableTok{noise\_estimate}\NormalTok{)))}\OperatorTok{;}
+
+\CommentTok{\% Gaussianity test}
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{subplot}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\FloatTok{2}\OperatorTok{,}\FloatTok{1}\NormalTok{)}\OperatorTok{;} \VariableTok{histogram}\NormalTok{(}\VariableTok{noise\_estimate}\OperatorTok{,} \FloatTok{50}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Normalization\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}pdf\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{hold} \VariableTok{on}\OperatorTok{;} \VariableTok{x} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\OperatorTok{{-}}\FloatTok{2}\OperatorTok{,}\FloatTok{2}\OperatorTok{,}\FloatTok{200}\NormalTok{)}\OperatorTok{;} \VariableTok{plot}\NormalTok{(}\VariableTok{x}\OperatorTok{,} \VariableTok{normpdf}\NormalTok{(}\VariableTok{x}\OperatorTok{,}\FloatTok{0}\OperatorTok{,}\FloatTok{0.5}\NormalTok{)}\OperatorTok{,}\SpecialStringTok{\textquotesingle{}r\textquotesingle{}}\OperatorTok{,}\SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Noise Histogram vs Gaussian\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{subplot}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\FloatTok{2}\OperatorTok{,}\FloatTok{2}\NormalTok{)}\OperatorTok{;} \VariableTok{qqplot}\NormalTok{(}\VariableTok{noise\_estimate}\NormalTok{)}\OperatorTok{;} \VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}QQ Plot\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\PSsubsection{\PSnum{16.2.2} آشکارسازی مبتنی بر همبستگی}
+
+\textbf{مسیله:} آشکارسازی یک سیگنال معلوم در نویز.
+
+\textbf{روش:} سیگنال دریافتی را با الگوی معلوم همبسته کنید. تحت \lr{$H_{0}$} (فقط نویز)، خروجی همبسته‌ساز توزیع معلومی دارد \lr{\mbox{\ensuremath{\to}}} آستانه را تعیین کنید.
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Correlation Detector}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100}\OperatorTok{;}  \CommentTok{\% Signal length}
+\VariableTok{s} \OperatorTok{=} \VariableTok{ones}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\VariableTok{N}\NormalTok{)}\OperatorTok{/}\VariableTok{sqrt}\NormalTok{(}\VariableTok{N}\NormalTok{)}\OperatorTok{;}  \CommentTok{\% Known signal template (normalized)}
+\VariableTok{sigma\_n} \OperatorTok{=} \FloatTok{1}\OperatorTok{;}
+
+\CommentTok{\% H0: noise only; H1: signal + noise}
+\VariableTok{N\_trials} \OperatorTok{=} \FloatTok{10000}\OperatorTok{;}
+\VariableTok{y\_H0} \OperatorTok{=} \VariableTok{zeros}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N\_trials}\NormalTok{)}\OperatorTok{;}  \VariableTok{y\_H1} \OperatorTok{=} \VariableTok{zeros}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N\_trials}\NormalTok{)}\OperatorTok{;}
+\VariableTok{A} \OperatorTok{=} \FloatTok{2}\OperatorTok{;}  \CommentTok{\% Signal amplitude}
+
+\KeywordTok{for} \VariableTok{i} \OperatorTok{=} \FloatTok{1}\OperatorTok{:}\VariableTok{N\_trials}
+    \VariableTok{n} \OperatorTok{=} \VariableTok{sigma\_n} \OperatorTok{*} \VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{y\_H0}\NormalTok{(}\VariableTok{i}\NormalTok{) }\OperatorTok{=} \VariableTok{s} \OperatorTok{*} \VariableTok{n}\OperatorTok{\textquotesingle{};}              \CommentTok{\% Correlator output under H0}
+    \VariableTok{y\_H1}\NormalTok{(}\VariableTok{i}\NormalTok{) }\OperatorTok{=} \VariableTok{s} \OperatorTok{*}\NormalTok{ (}\VariableTok{A}\OperatorTok{*}\VariableTok{s} \OperatorTok{+} \VariableTok{n}\NormalTok{)}\OperatorTok{\textquotesingle{};}     \CommentTok{\% Correlator output under H1}
+\KeywordTok{end}
+
+\CommentTok{\% Set threshold for P\_FA = 0.01}
+\VariableTok{threshold} \OperatorTok{=} \VariableTok{sigma\_n}\OperatorTok{/}\VariableTok{sqrt}\NormalTok{(}\VariableTok{N}\NormalTok{) }\OperatorTok{*} \VariableTok{norminv}\NormalTok{(}\FloatTok{0.99}\NormalTok{)}\OperatorTok{;}
+\VariableTok{P\_FA} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{y\_H0} \OperatorTok{\textgreater{}} \VariableTok{threshold}\NormalTok{)}\OperatorTok{;}
+\VariableTok{P\_D} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{y\_H1} \OperatorTok{\textgreater{}} \VariableTok{threshold}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P\_FA = \%.4f (target: 0.01)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{P\_FA}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P\_D = \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{P\_D}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\PSsection{16.3}{الکترونیک}
+
+\PSsubsection{\PSnum{16.3.1} مدل‌سازی رواداری قطعه}
+
+\textbf{مسیله:} مقاومت‌ها مقدار نامی \lr{$R_{0}$} با رواداری ساخت دارند.
+
+\textbf{مدل:} \lr{$R \sim N(R_{0},\, \sigma_{R}^{2})$} که در آن \lr{$\sigma_{R}$} به رده رواداری بستگی دارد.
+
+برای رواداری \lr{$\pm 5\%$} (\PSnum{99.7\%} در محدوده): \lr{$3\sigma = 0.05R_{0} \to \sigma = 0.0167R_{0}$}
+
+\PSsubsection{\PSnum{16.3.2} تحلیل مدار با مونت‌کارلو}
+
+\textbf{مسیله:} یک تقسیم‌کننده ولتاژ از \lr{$R_{1}$} و \lr{$R_{2}$} استفاده می‌کند. توزیع ولتاژ خروجی چیست؟
+
+\lr{$\displaystyle V_{\mathrm{out}} = V_{\mathrm{in}} \times \frac{R_{2}}{R_{1} + R_{2}}$}
+
+با تصادفی‌بودن \lr{$R_{1}$} و \lr{\mbox{$R_{2}$: $V_{\mathrm{out}}$}} یک متغیر تصادفی است!
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Monte Carlo: Voltage Divider with Tolerant Components}
+\VariableTok{V\_in} \OperatorTok{=} \FloatTok{5}\OperatorTok{;}         \CommentTok{\% Input voltage}
+\VariableTok{R1\_nom} \OperatorTok{=} \FloatTok{10e3}\OperatorTok{;}    \VariableTok{R2\_nom} \OperatorTok{=} \FloatTok{10e3}\OperatorTok{;}   \CommentTok{\% 10kΩ each}
+\VariableTok{tol} \OperatorTok{=} \FloatTok{0.05}\OperatorTok{;}       \CommentTok{\% 5\% tolerance}
+\VariableTok{sigma\_R} \OperatorTok{=} \VariableTok{tol} \OperatorTok{*} \VariableTok{R1\_nom} \OperatorTok{/} \FloatTok{3}\OperatorTok{;}  \CommentTok{\% 3{-}sigma = 5\%}
+
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+\VariableTok{R1} \OperatorTok{=} \VariableTok{R1\_nom} \OperatorTok{+} \VariableTok{sigma\_R}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{R2} \OperatorTok{=} \VariableTok{R2\_nom} \OperatorTok{+} \VariableTok{sigma\_R}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{V\_out} \OperatorTok{=} \VariableTok{V\_in} \OperatorTok{*} \VariableTok{R2} \OperatorTok{./}\NormalTok{ (}\VariableTok{R1} \OperatorTok{+} \VariableTok{R2}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Nominal V\_out = \%.3f V\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{V\_in} \OperatorTok{*} \VariableTok{R2\_nom}\OperatorTok{/}\NormalTok{(}\VariableTok{R1\_nom}\OperatorTok{+}\VariableTok{R2\_nom}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Mean V\_out = \%.4f V\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{V\_out}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Std V\_out = \%.4f V\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{std}\NormalTok{(}\VariableTok{V\_out}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}99.7\%\% range: [\%.3f, \%.3f] V\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \OperatorTok{...}
+    \VariableTok{mean}\NormalTok{(}\VariableTok{V\_out}\NormalTok{)}\OperatorTok{{-}}\FloatTok{3}\OperatorTok{*}\VariableTok{std}\NormalTok{(}\VariableTok{V\_out}\NormalTok{)}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{V\_out}\NormalTok{)}\OperatorTok{+}\FloatTok{3}\OperatorTok{*}\VariableTok{std}\NormalTok{(}\VariableTok{V\_out}\NormalTok{))}\OperatorTok{;}
+
+\CommentTok{\% Yield: fraction within ±2\% of nominal}
+\VariableTok{V\_nom} \OperatorTok{=} \FloatTok{2.5}\OperatorTok{;}
+\VariableTok{yield} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{abs}\NormalTok{(}\VariableTok{V\_out} \OperatorTok{{-}} \VariableTok{V\_nom}\NormalTok{) }\OperatorTok{\textless{}} \FloatTok{0.02}\OperatorTok{*}\VariableTok{V\_nom}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Yield (±2\%\%): \%.2f\%\%\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \FloatTok{100}\OperatorTok{*}\VariableTok{yield}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\PSsubsection{\PSnum{16.3.3} انتشار عدم‌قطعیت اندازه‌گیری}
+
+اگر \lr{$Z = f(X,\, Y)$} و \lr{$X$}، \lr{$Y$} عدم‌قطعیت‌های کوچک داشته باشند:
+
+\PSdisplay{\sigma_Z^2 \approx \left(\frac{\partial f}{\partial X}\right)^2 \sigma_X^2 + \left(\frac{\partial f}{\partial Y}\right)^2 \sigma_Y^2}
+
+\textbf{مثال:} توان \lr{$P = \frac{V^{2}}{R}$. $\sigma_{P}^{2} \approx \frac{2\,\mathrm{V}}{R}^{2}\sigma_{V}^{2} + \frac{V^{2}}{R^{2}}^{2}\sigma_{R}^{2}$}
+
+\PSsection{16.4}{سیستم‌های قدرت}
+
+\PSsubsection{\PSnum{16.4.1} عدم‌قطعیت بار}
+
+\textbf{مسیله:} بار اوج نامعین است. مدل: \lr{$L \sim N(\mu_{L},\, \sigma_{L}^{2})$}
+
+پرسش طراحی: چه ظرفیت \lr{$C$} تضمین می‌کند \lr{$P(\text{\rl{بار}} > \text{\rl{ظرفیت}}) < 0.01$}؟
+
+\lr{$C = \mu_{L} + 2.326\sigma_{L}$} (برای احتمال تخطی 1\%)
+
+\PSsubsection{\PSnum{16.4.2} قابلیت اطمینان سیستم}
+
+\textbf{سیستم سری:} همه قطعات باید کار کنند.
+
+\lr{$R_{\mathrm{sys}} = R_{1} \times R_{2} \times \ldots \times R_{n}$} (برای قطعات مستقل)
+
+\textbf{سیستم موازی:} حداقل یکی باید کار کند.
+
+\lr{$R_{\mathrm{sys}} = 1 - (1-R_{1})(1-R_{2})\ldots (1-R_{n})$}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Reliability Analysis: Series{-}Parallel System}
+\CommentTok{\% System: Two subsystems in series, each with 3 parallel redundant units}
+\VariableTok{R\_unit} \OperatorTok{=} \FloatTok{0.95}\OperatorTok{;}  \CommentTok{\% Individual component reliability}
+\VariableTok{n\_parallel} \OperatorTok{=} \FloatTok{3}\OperatorTok{;}
+\VariableTok{n\_series} \OperatorTok{=} \FloatTok{2}\OperatorTok{;}
+
+\CommentTok{\% Each parallel subsystem}
+\VariableTok{R\_subsystem} \OperatorTok{=} \FloatTok{1} \OperatorTok{{-}}\NormalTok{ (}\FloatTok{1} \OperatorTok{{-}} \VariableTok{R\_unit}\NormalTok{)}\OperatorTok{\^{}}\VariableTok{n\_parallel}\OperatorTok{;}
+\CommentTok{\% Series combination}
+\VariableTok{R\_system} \OperatorTok{=} \VariableTok{R\_subsystem}\OperatorTok{\^{}}\VariableTok{n\_series}\OperatorTok{;}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Unit reliability: \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{R\_unit}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Subsystem (3 parallel): \%.6f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{R\_subsystem}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}System (2 in series): \%.6f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{R\_system}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Monte Carlo verification}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+\VariableTok{sys\_works} \OperatorTok{=} \VariableTok{true}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\KeywordTok{for} \VariableTok{s} \OperatorTok{=} \FloatTok{1}\OperatorTok{:}\VariableTok{n\_series}
+    \VariableTok{sub\_works} \OperatorTok{=} \VariableTok{false}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+    \KeywordTok{for} \VariableTok{p} \OperatorTok{=} \FloatTok{1}\OperatorTok{:}\VariableTok{n\_parallel}
+        \VariableTok{unit\_works} \OperatorTok{=} \VariableTok{rand}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{) }\OperatorTok{\textless{}} \VariableTok{R\_unit}\OperatorTok{;}
+        \VariableTok{sub\_works} \OperatorTok{=} \VariableTok{sub\_works} \OperatorTok{|} \VariableTok{unit\_works}\OperatorTok{;}
+    \KeywordTok{end}
+    \VariableTok{sys\_works} \OperatorTok{=} \VariableTok{sys\_works} \OperatorTok{\&} \VariableTok{sub\_works}\OperatorTok{;}
+\KeywordTok{end}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}System reliability (sim): \%.6f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{sys\_works}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\PSsection{16.5}{سیستم‌های کنترل}
+
+\PSsubsection{\PSnum{16.5.1} اثرهای نویز حسگر}
+
+\textbf{مسیله:} یک سیستم کنترل از قرایت‌های نویزی حسگر استفاده می‌کند.
+
+اندازه‌گیری: \lr{$y(k) = x(k) + n(k)$} که در آن \lr{$n \sim N(0,\, \sigma^{2}_{n})$}
+
+کنترل‌کننده روی \lr{$y(k)$} عمل می‌کند \lr{\mbox{\ensuremath{\to}}} خطای ردیابی شامل سهم نویز می‌شود.
+
+\textbf{رویکردهای حل:}
+
+\begin{itemize}
+\tightlist
+\item
+  میانگین‌گیری (فیلتر پایین‌گذر): نویز را به اندازه \lr{$\sqrt{n}$} کاهش می‌دهد
+\item
+  فیلتر کالمن: تلفیق بهینه پیش‌بینی مدل و اندازه‌گیری
+\end{itemize}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Noisy Sensor in Control Loop: Effect of Averaging}
+\VariableTok{true\_value} \OperatorTok{=} \FloatTok{10}\OperatorTok{;}    \CommentTok{\% Constant being measured}
+\VariableTok{sigma\_n} \OperatorTok{=} \FloatTok{0.5}\OperatorTok{;}      \CommentTok{\% Sensor noise std dev}
+\VariableTok{N\_measurements} \OperatorTok{=} \FloatTok{1000}\OperatorTok{;}
+
+\CommentTok{\% Raw measurements}
+\VariableTok{measurements} \OperatorTok{=} \VariableTok{true\_value} \OperatorTok{+} \VariableTok{sigma\_n}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N\_measurements}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Moving average filter (window size M)}
+\VariableTok{M\_values} \OperatorTok{=}\NormalTok{ [}\FloatTok{1}\OperatorTok{,} \FloatTok{5}\OperatorTok{,} \FloatTok{10}\OperatorTok{,} \FloatTok{20}\OperatorTok{,} \FloatTok{50}\NormalTok{]}\OperatorTok{;}
+\VariableTok{figure}\OperatorTok{;} \VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+\KeywordTok{for} \VariableTok{M} \OperatorTok{=} \VariableTok{M\_values}
+    \VariableTok{filtered} \OperatorTok{=} \VariableTok{movmean}\NormalTok{(}\VariableTok{measurements}\OperatorTok{,} \VariableTok{M}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{plot}\NormalTok{(}\VariableTok{filtered}\NormalTok{(}\FloatTok{100}\OperatorTok{:}\FloatTok{500}\NormalTok{))}\OperatorTok{;}
+\KeywordTok{end}
+\VariableTok{yline}\NormalTok{(}\VariableTok{true\_value}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}k{-}{-}\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{legend}\NormalTok{(}\VariableTok{arrayfun}\NormalTok{(}\OperatorTok{@}\NormalTok{(}\VariableTok{m}\NormalTok{) }\VariableTok{sprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}M=\%d, σ=\%.3f\textquotesingle{}}\OperatorTok{,} \VariableTok{m}\OperatorTok{,} \VariableTok{sigma\_n}\OperatorTok{/}\VariableTok{sqrt}\NormalTok{(}\VariableTok{m}\NormalTok{))}\OperatorTok{,} \OperatorTok{...}
+    \VariableTok{M\_values}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}UniformOutput\textquotesingle{}}\OperatorTok{,} \VariableTok{false}\NormalTok{))}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Sample\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Estimate\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Noise Reduction by Averaging\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\PSsubsection{\PSnum{16.5.2} عدم‌قطعیت پارامتر}
+
+مدل سیستم: \lr{$G(s) = \frac{K}{\tau s + 1}$} که در آن \lr{$K$} و \lr{$\tau$} نامعین هستند.
+
+رویکرد مونت‌کارلو: \lr{$K$} و \lr{$\tau$} را از توزیع‌هایشان نمونه‌گیری کنید، پاسخ سیستم را بارها شبیه‌سازی کنید و آماره‌های خروجی را محاسبه کنید.
+
+\PSsection{16.6}{ارتباط با یادگیری ماشین / هوش مصنوعی}
+
+\PSsubsection{\PSnum{16.6.1} نمونه‌گیری و جمع‌آوری داده}
+
+\begin{itemize}
+\tightlist
+\item
+  داده آموزش = نمونه‌ای از جامعه
+\item
+  داده آزمون = نمونه مستقل برای اعتبارسنجی
+\item
+  فرض \lr{\mbox{i.i.d}}. زیربنای بیشتر نظریه یادگیری ماشین است
+\end{itemize}
+
+\PSsubsection{\PSnum{16.6.2} برآورد به‌عنوان بنیاد یادگیری ماشین}
+
+\begin{itemize}
+\tightlist
+\item
+  رگرسیون خطی = \lr{\mbox{MLE}} تحت فرض نویز گاوسی
+\item
+  آموزش شبکه عصبی = \lr{\mbox{MLE}} (یا \lr{\mbox{MAP}}) برای پارامترهای مدل
+\item
+  کمینه‌سازی تابع هزینه = اصل بیشینه درست‌نمایی
+\end{itemize}
+
+\PSsubsection{\PSnum{16.6.3} توزیع‌های احتمال در یادگیری ماشین}
+
+\begin{itemize}
+\tightlist
+\item
+  مدل‌های مولد: یادگیری مستقیم \lr{$P(X)$}
+\item
+  مدل‌های مخلوط گاوسی: جمع وزنی گاوسی‌ها
+\item
+  خودرمزگذارهای تغییرپذیر: متغیرهای نهفته با پیشین‌های گاوسی
+\end{itemize}
+
+\PSsubsection{\PSnum{16.6.4} توازن اریبی-واریانس}
+
+\PSdisplay{\PSmtext{Test Error} = \PSmtext{Bias}^2 + \PSmtext{Variance} + \PSmtext{Irreducible Noise}}
+
+این دقیقاً همان تجزیه \lr{\mbox{MSE}} از نظریه برآورد است (ماژول 13)!
+
+\begin{itemize}
+\tightlist
+\item
+  اریبی زیاد: کم‌برازش (مدل بسیار ساده)
+\item
+  واریانس زیاد: بیش‌برازش (مدل بسیار پیچیده)
+\item
+  بهینه: توازن میان این دو
+\end{itemize}
+
+\PSsubsection{\PSnum{16.6.5} اطمینان و عدم‌قطعیت در پیش‌بینی‌ها}
+
+\begin{itemize}
+\tightlist
+\item
+  بازه‌های اطمینان برای پیش‌بینی‌های مدل
+\item
+  شبکه‌های عصبی بیزی: توزیع پسین روی وزن‌ها \lr{\mbox{\ensuremath{\to}}} عدم‌قطعیت پیش‌بینی
+\item
+  کالیبراسیون: احتمال‌های پیش‌بینی‌شده باید با فراوانی‌های مشاهده‌شده همخوانی داشته باشند
+\end{itemize}
+
+\PSsection{16.7}{پروژه جامع \lr{\mbox{MATLAB}}: تحلیل سیستم مخابراتی}
+
+\tcbset{PScodemode/.style={breakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Complete Communication System Statistical Analysis}
+\CommentTok{\% Simulate BPSK over Rayleigh fading with AWGN}
+\CommentTok{\% Apply estimation, CI, and hypothesis testing}
+
+\CommentTok{\% System parameters}
+\VariableTok{N\_bits} \OperatorTok{=} \FloatTok{1e5}\OperatorTok{;}
+\VariableTok{EbN0\_dB} \OperatorTok{=} \FloatTok{10}\OperatorTok{;}
+\VariableTok{EbN0} \OperatorTok{=} \FloatTok{10}\OperatorTok{\^{}}\NormalTok{(}\VariableTok{EbN0\_dB}\OperatorTok{/}\FloatTok{10}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Generate channel and signal}
+\VariableTok{bits} \OperatorTok{=} \VariableTok{randi}\NormalTok{([}\FloatTok{0}\OperatorTok{,}\FloatTok{1}\NormalTok{]}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \VariableTok{N\_bits}\NormalTok{)}\OperatorTok{;}
+\VariableTok{symbols} \OperatorTok{=} \FloatTok{2}\OperatorTok{*}\VariableTok{bits} \OperatorTok{{-}} \FloatTok{1}\OperatorTok{;}  \CommentTok{\% BPSK: ±1}
+
+\CommentTok{\% Rayleigh fading channel}
+\VariableTok{h} \OperatorTok{=}\NormalTok{ (}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\VariableTok{N\_bits}\NormalTok{) }\OperatorTok{+} \FloatTok{1j}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\VariableTok{N\_bits}\NormalTok{)) }\OperatorTok{/} \VariableTok{sqrt}\NormalTok{(}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{h\_mag} \OperatorTok{=} \VariableTok{abs}\NormalTok{(}\VariableTok{h}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% AWGN noise}
+\VariableTok{noise\_var} \OperatorTok{=} \FloatTok{1}\OperatorTok{/}\NormalTok{(}\FloatTok{2}\OperatorTok{*}\VariableTok{EbN0}\NormalTok{)}\OperatorTok{;}
+\VariableTok{noise} \OperatorTok{=} \VariableTok{sqrt}\NormalTok{(}\VariableTok{noise\_var}\NormalTok{) }\OperatorTok{*} \VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N\_bits}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Received signal (with fading)}
+\VariableTok{received} \OperatorTok{=} \VariableTok{h\_mag} \OperatorTok{.*} \VariableTok{symbols} \OperatorTok{+} \VariableTok{noise}\OperatorTok{;}
+
+\CommentTok{\% Detection (coherent, known channel)}
+\VariableTok{detected} \OperatorTok{=} \VariableTok{sign}\NormalTok{(}\VariableTok{real}\NormalTok{(}\VariableTok{received} \OperatorTok{./} \VariableTok{h\_mag}\NormalTok{))}\OperatorTok{;}  \CommentTok{\% Zero{-}forcing}
+\VariableTok{errors} \OperatorTok{=} \VariableTok{sum}\NormalTok{(}\VariableTok{detected} \OperatorTok{\textasciitilde{}=} \VariableTok{symbols}\NormalTok{)}\OperatorTok{;}
+\VariableTok{BER\_measured} \OperatorTok{=} \VariableTok{errors} \OperatorTok{/} \VariableTok{N\_bits}\OperatorTok{;}
+
+\CommentTok{\% {-}{-}{-} Statistical Analysis {-}{-}{-}}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}=== Communication System Statistical Analysis ===\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Eb/N0 = \%d dB, N = \%d bits\textbackslash{}n\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{EbN0\_dB}\OperatorTok{,} \VariableTok{N\_bits}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% 1. BER Estimation}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}1. BER ESTIMATION\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}   Measured BER: \%.4e (\%d errors)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{BER\_measured}\OperatorTok{,} \VariableTok{errors}\NormalTok{)}\OperatorTok{;}
+\VariableTok{BER\_theory\_rayleigh} \OperatorTok{=} \FloatTok{0.5}\OperatorTok{*}\NormalTok{(}\FloatTok{1} \OperatorTok{{-}} \VariableTok{sqrt}\NormalTok{(}\VariableTok{EbN0}\OperatorTok{/}\NormalTok{(}\FloatTok{1}\OperatorTok{+}\VariableTok{EbN0}\NormalTok{)))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}   Theory (Rayleigh): \%.4e\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{BER\_theory\_rayleigh}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% 2. Confidence Interval}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}\textbackslash{}n2. CONFIDENCE INTERVAL (95\%\%)\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{margin} \OperatorTok{=} \FloatTok{1.96}\OperatorTok{*}\VariableTok{sqrt}\NormalTok{(}\VariableTok{BER\_measured}\OperatorTok{*}\NormalTok{(}\FloatTok{1}\OperatorTok{{-}}\VariableTok{BER\_measured}\NormalTok{)}\OperatorTok{/}\VariableTok{N\_bits}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}   CI: [\%.4e, \%.4e]\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{BER\_measured}\OperatorTok{{-}}\VariableTok{margin}\OperatorTok{,} \VariableTok{BER\_measured}\OperatorTok{+}\VariableTok{margin}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}   Theory in CI? \%s\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \OperatorTok{...}
+    \VariableTok{string}\NormalTok{(}\VariableTok{BER\_theory\_rayleigh} \OperatorTok{\textgreater{}=} \VariableTok{BER\_measured}\OperatorTok{{-}}\VariableTok{margin} \OperatorTok{\&} \OperatorTok{...}
+           \VariableTok{BER\_theory\_rayleigh} \OperatorTok{\textless{}=} \VariableTok{BER\_measured}\OperatorTok{+}\VariableTok{margin}\NormalTok{))}\OperatorTok{;}
+
+\CommentTok{\% 3. Channel Statistics}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}\textbackslash{}n3. CHANNEL STATISTICS\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}   Mean |h|: \%.3f (theory: \%.3f)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{h\_mag}\NormalTok{)}\OperatorTok{,} \VariableTok{sqrt}\NormalTok{(}\VariableTok{pi}\OperatorTok{/}\FloatTok{4}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}   Var |h|²: \%.3f (theory: \%.3f)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{var}\NormalTok{(}\VariableTok{h\_mag}\OperatorTok{.\^{}}\FloatTok{2}\NormalTok{)}\OperatorTok{,} \FloatTok{1}\OperatorTok{{-}}\NormalTok{(}\VariableTok{pi}\OperatorTok{/}\FloatTok{4}\NormalTok{))}\OperatorTok{;}
+
+\CommentTok{\% 4. Outage Probability}
+\VariableTok{SNR\_threshold} \OperatorTok{=} \FloatTok{3}\OperatorTok{;}  \CommentTok{\% dB}
+\VariableTok{gamma\_th} \OperatorTok{=} \FloatTok{10}\OperatorTok{\^{}}\NormalTok{(}\VariableTok{SNR\_threshold}\OperatorTok{/}\FloatTok{10}\NormalTok{)}\OperatorTok{;}
+\VariableTok{P\_outage\_sim} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{EbN0}\OperatorTok{*}\VariableTok{h\_mag}\OperatorTok{.\^{}}\FloatTok{2} \OperatorTok{\textless{}} \VariableTok{gamma\_th}\NormalTok{)}\OperatorTok{;}
+\VariableTok{P\_outage\_theory} \OperatorTok{=} \FloatTok{1} \OperatorTok{{-}} \VariableTok{exp}\NormalTok{(}\OperatorTok{{-}}\VariableTok{gamma\_th}\OperatorTok{/}\VariableTok{EbN0}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}\textbackslash{}n4. OUTAGE PROBABILITY (threshold = \%d dB)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{SNR\_threshold}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}   Simulated: \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{P\_outage\_sim}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}   Theory:    \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{P\_outage\_theory}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\PSsection{16.8}{نقاط یکپارچه‌سازی کلیدی}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}cc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{ماژول} & \PSth{کاربرد در مهندسی برق} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+1. احتمال & احتمال‌های رویداد، تشخیص عیب \\
+2. متغیرهای تصادفی & مدل‌سازی کمیت‌های نامعین \\
+3. توزیع‌ها & انتخاب مدل‌های نویز/محوشدگی/خرابی \\
+4. گشتاورها & توان سیگنال، توان نویز، \lr{\mbox{SNR}} \\
+5. تبدیل‌ها & تبدیل به \lr{\mbox{dB}}، توان از ولتاژ \\
+\lr{$6-7$}. مشترک/توابع & سیگنال+نویز، ترکیب‌های سیستم \\
+8. شرطی & عملکرد در وضعیت‌های مختلف \\
+9. همبستگی & کانال‌های \lr{\mbox{MIMO}}، آرایه‌های حسگر \\
+10. چند متغیر تصادفی & پردازش برداری، شکل‌دهی پرتو \\
+11. \lr{\mbox{CLT}} & چرا نویز گاوسی است، میانگین‌گیری \\
+12. آمار & برآورد پارامترهای سیستم \\
+13. برآورد & \lr{\mbox{MLE}} برای پارامترهای کانال/نویز \\
+14. اطمینان & کمّی‌سازی عدم‌قطعیت اندازه‌گیری \\
+15. فرض & کنترل کیفیت، مقایسه عملکرد \\
+\end{longtable}
+}
+
+\emph{پایان ماژول‌های درس. برای راهنماهای تصمیم، مرجع \lr{\mbox{MATLAB}} و برگه فرمول به {مطالب تکمیلی} مراجعه کنید.}

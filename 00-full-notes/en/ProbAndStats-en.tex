@@ -1,0 +1,443 @@
+% !TEX program = xelatex
+% Engineering Probability & Statistics — Fall 2026-2027 (English)
+% Instructor: Amin Azari — compile with XeLaTeX (or tectonic).
+\documentclass[11pt]{article}
+\def\PSroot{../../template}
+\input{\PSroot/probstats-en}
+\begin{document}
+\PScoverpage{Complete Lecture Notes}{Modules 1-16}{جزوه کامل درس - ماژول‌های ۱ تا ۱۶}
+\PSsetmodule{}{\PSlangContents}{}
+\begin{PSbooktoc}
+\PStocmodule{PSmod:1}{Module 1\quad Probability}
+\PStocitemk{1}{1}{1.1}{Introduction: Why Probability in Engineering?}
+\PStocitemk{1}{2}{1.2}{Random Experiments}
+\PStocitemk{1}{3}{1.3}{Sample Spaces}
+\PStocitemk{1}{4}{1.4}{Events}
+\PStocitemk{1}{5}{1.5}{Probability Axioms}
+\PStocitemk{1}{6}{1.6}{Probability Rules}
+\PStocitemk{1}{7}{1.7}{Conditional Probability}
+\PStocitemk{1}{8}{1.8}{Independence}
+\PStocitemk{1}{9}{1.9}{Bayes’ Theorem}
+\PStocitemk{1}{10}{1.10}{Total Probability Theorem}
+\PStocitemk{1}{11}{1.11}{MATLAB Examples}
+\PStocitemk{1}{12}{1.12}{Summary: Key Distinctions}
+\PStocitemk{1}{13}{1.13}{Practice Problems}
+\PStocitemk{1}{14}{1.14}{Key Takeaways}
+\PStocmodule{PSmod:2}{Module 2\quad One Random Variable and Its Functions}
+\PStocitemk{2}{1}{2.1}{Introduction: Why Random Variables?}
+\PStocitemk{2}{2}{2.2}{Definition of a Random Variable}
+\PStocitemk{2}{3}{2.3}{Discrete Random Variables}
+\PStocitemk{2}{4}{2.4}{Continuous Random Variables}
+\PStocitemk{2}{5}{2.5}{Probability Mass Function (PMF)}
+\PStocitemk{2}{6}{2.6}{Probability Density Function (PDF)}
+\PStocitemk{2}{7}{2.7}{Cumulative Distribution Function (CDF)}
+\PStocitemk{2}{8}{2.8}{KEY DISTINCTION: Mass vs. Density vs. Cumulative}
+\PStocitemk{2}{9}{2.9}{Transformations of Random Variables}
+\PStocitemk{2}{10}{2.10}{MATLAB Examples}
+\PStocitemk{2}{11}{2.11}{Practice Problems}
+\PStocitemk{2}{12}{2.12}{Key Takeaways}
+\PStocmodule{PSmod:3}{Module 3\quad Important Probability Distributions}
+\PStocitemk{3}{1}{3.1}{Introduction: Choosing the Right Distribution}
+\PStocitemk{3}{2}{3.2}{Bernoulli Distribution}
+\PStocitemk{3}{3}{3.3}{Binomial Distribution}
+\PStocitemk{3}{4}{3.4}{Geometric Distribution}
+\PStocitemk{3}{5}{3.5}{Negative Binomial Distribution}
+\PStocitemk{3}{6}{3.6}{Poisson Distribution}
+\PStocitemk{3}{7}{3.7}{Uniform Distribution (Continuous)}
+\PStocitemk{3}{8}{3.8}{Exponential Distribution}
+\PStocitemk{3}{9}{3.9}{Gaussian (Normal) Distribution}
+\PStocitemk{3}{10}{3.10}{Gamma Distribution}
+\PStocitemk{3}{11}{3.11}{Rayleigh Distribution}
+\PStocitemk{3}{12}{3.12}{Chi-Square Distribution}
+\PStocitemk{3}{13}{3.13}{Distribution Selection Guide}
+\PStocitemk{3}{14}{3.14}{Summary Table}
+\PStocitemk{3}{15}{3.15}{Practice Problems}
+\PStocmodule{PSmod:4}{Module 4\quad Expectation and Moments}
+\PStocitemk{4}{1}{4.1}{Introduction: Why Summary Statistics?}
+\PStocitemk{4}{2}{4.2}{Expected Value (Mean)}
+\PStocitemk{4}{3}{4.3}{Expected Value of a Function: $E[g(X)]$}
+\PStocitemk{4}{4}{4.4}{Variance}
+\PStocitemk{4}{5}{4.5}{Standard Deviation}
+\PStocitemk{4}{6}{4.6}{Properties of Expectation}
+\PStocitemk{4}{7}{4.7}{Properties of Variance}
+\PStocitemk{4}{8}{4.8}{Higher-Order Moments}
+\PStocitemk{4}{9}{4.9}{Moment Generating Function (MGF)}
+\PStocitemk{4}{10}{4.10}{Engineering Applications of Moments}
+\PStocitemk{4}{11}{4.11}{MATLAB Examples}
+\PStocitemk{4}{12}{4.12}{Practice Problems}
+\PStocitemk{4}{13}{4.13}{Key Takeaways}
+\PStocmodule{PSmod:5}{Module 5\quad Important Random-Variable Functions}
+\PStocitemk{5}{1}{5.1}{Introduction: Why Transform Random Variables?}
+\PStocitemk{5}{2}{5.2}{Linear Transformations: $Y$ = aX $+ b$}
+\PStocitemk{5}{3}{5.3}{General Monotonic Transformations}
+\PStocitemk{5}{4}{5.4}{Nonlinear Transformations: Non-Monotonic Case}
+\PStocitemk{5}{5}{5.5}{The Jacobian Method}
+\PStocitemk{5}{6}{5.6}{Engineering Application: Rayleigh from Gaussian}
+\PStocitemk{5}{7}{5.7}{MATLAB Examples}
+\PStocitemk{5}{8}{5.8}{Practice Problems}
+\PStocmodule{PSmod:6}{Module 6\quad Two Random Variables}
+\PStocitemk{6}{1}{6.1}{Introduction: Why Study Joint Distributions?}
+\PStocitemk{6}{2}{6.2}{Joint PMF (Discrete Case)}
+\PStocitemk{6}{3}{6.3}{Joint PDF (Continuous Case)}
+\PStocitemk{6}{4}{6.4}{Joint CDF}
+\PStocitemk{6}{5}{6.5}{Marginal Distributions}
+\PStocitemk{6}{6}{6.6}{Conditional Distributions}
+\PStocitemk{6}{7}{6.7}{Independence of Two Random Variables}
+\PStocitemk{6}{8}{6.8}{Conditional Expectation}
+\PStocitemk{6}{9}{6.9}{MATLAB Examples}
+\PStocitemk{6}{10}{6.10}{Practice Problems}
+\PStocmodule{PSmod:7}{Module 7\quad Functions of Two Random Variables}
+\PStocitemk{7}{1}{7.1}{Introduction}
+\PStocitemk{7}{2}{7.2}{Sum of Two Random Variables: $Z = X + Y$}
+\PStocitemk{7}{3}{7.3}{Difference: $Z = X - Y$}
+\PStocitemk{7}{4}{7.4}{Product: $Z$ = XY}
+\PStocitemk{7}{5}{7.5}{Ratio: $Z = \frac{X}{Y}$}
+\PStocitemk{7}{6}{7.6}{Maximum: $Z = \max (X,\, Y)$}
+\PStocitemk{7}{7}{7.7}{Minimum: $Z = \min (X,\, Y)$}
+\PStocitemk{7}{8}{7.8}{General Bivariate Transformation (Jacobian Method)}
+\PStocitemk{7}{9}{7.9}{MATLAB Examples}
+\PStocitemk{7}{10}{7.10}{Practice Problems}
+\PStocmodule{PSmod:8}{Module 8\quad Conditional Expectation and Variance}
+\PStocitemk{8}{1}{8.1}{Introduction}
+\PStocitemk{8}{2}{8.2}{Conditional Expectation $E[X \mid Y = y]$}
+\PStocitemk{8}{3}{8.3}{Conditional Variance $\operatorname{Var}(X \mid Y = y)$}
+\PStocitemk{8}{4}{8.4}{Law of Total Expectation (Tower Property)}
+\PStocitemk{8}{5}{8.5}{Law of Total Variance}
+\PStocitemk{8}{6}{8.6}{MATLAB Examples}
+\PStocitemk{8}{7}{8.7}{Practice Problems}
+\PStocmodule{PSmod:9}{Module 9\quad Covariance and Correlation}
+\PStocitemk{9}{1}{9.1}{Introduction: Measuring Linear Relationships}
+\PStocitemk{9}{2}{9.2}{Covariance}
+\PStocitemk{9}{3}{9.3}{Correlation Coefficient}
+\PStocitemk{9}{4}{9.4}{Cross-Correlation}
+\PStocitemk{9}{5}{9.5}{Independence vs. Uncorrelatedness}
+\PStocitemk{9}{6}{9.6}{Correlation Matrix}
+\PStocitemk{9}{7}{9.7}{Variance of Linear Combinations}
+\PStocitemk{9}{8}{9.8}{MATLAB Examples}
+\PStocitemk{9}{9}{9.9}{Practice Problems}
+\PStocmodule{PSmod:10}{Module 10\quad Multiple Random Variables}
+\PStocitemk{10}{1}{10.1}{Introduction: From 2 to $N$ Variables}
+\PStocitemk{10}{2}{10.2}{Joint Distributions for $N$ Random Variables}
+\PStocitemk{10}{3}{10.3}{Random Vectors}
+\PStocitemk{10}{4}{10.4}{Mean Vector}
+\PStocitemk{10}{5}{10.5}{Covariance Matrix}
+\PStocitemk{10}{6}{10.6}{Multivariate Gaussian Distribution}
+\PStocitemk{10}{7}{10.7}{Linear Transformations of Random Vectors}
+\PStocitemk{10}{8}{10.8}{MATLAB Examples}
+\PStocitemk{10}{9}{10.9}{Practice Problems}
+\PStocmodule{PSmod:11}{Module 11\quad Central Limit Theorem}
+\PStocitemk{11}{1}{11.1}{Introduction: Why Is the Gaussian Everywhere?}
+\PStocitemk{11}{2}{11.2}{Law of Large Numbers (LLN)}
+\PStocitemk{11}{3}{11.3}{Central Limit Theorem (CLT)}
+\PStocitemk{11}{4}{11.4}{Rate of Convergence}
+\PStocitemk{11}{5}{11.5}{Visual Demonstration}
+\PStocitemk{11}{6}{11.6}{Engineering Significance}
+\PStocitemk{11}{7}{11.7}{MATLAB Monte Carlo Demonstrations}
+\PStocitemk{11}{8}{11.8}{Approximations Using CLT}
+\PStocitemk{11}{9}{11.9}{Practice Problems}
+\PStocmodule{PSmod:12}{Module 12\quad Introduction to Statistics}
+\PStocitemk{12}{1}{12.1}{Introduction: From Probability to Statistics}
+\PStocitemk{12}{2}{12.2}{Population vs. Sample}
+\PStocitemk{12}{3}{12.3}{Parameter vs. Statistic}
+\PStocitemk{12}{4}{12.4}{Random Sample}
+\PStocitemk{12}{5}{12.5}{Sampling Distributions}
+\PStocitemk{12}{6}{12.6}{Sample Mean $\bar{X}$}
+\PStocitemk{12}{7}{12.7}{Sample Variance $S^{2}$}
+\PStocitemk{12}{8}{12.8}{Sample Standard Deviation}
+\PStocitemk{12}{9}{12.9}{Connection to CLT}
+\PStocitemk{12}{10}{12.10}{MATLAB Examples}
+\PStocitemk{12}{11}{12.11}{Practice Problems}
+\PStocmodule{PSmod:13}{Module 13\quad Parameter Estimation}
+\PStocitemk{13}{1}{13.1}{Introduction}
+\PStocitemk{13}{2}{13.2}{Estimator vs. Estimate}
+\PStocitemk{13}{3}{13.3}{Properties of Estimators}
+\PStocitemk{13}{4}{13.4}{Method of Moments (MoM)}
+\PStocitemk{13}{5}{13.5}{Maximum Likelihood Estimation (MLE)}
+\PStocitemk{13}{6}{13.6}{Engineering Examples}
+\PStocitemk{13}{7}{13.7}{Comparing Estimators}
+\PStocitemk{13}{8}{13.8}{MATLAB Examples}
+\PStocitemk{13}{9}{13.9}{Practice Problems}
+\PStocmodule{PSmod:14}{Module 14\quad Confidence Intervals}
+\PStocitemk{14}{1}{14.1}{Introduction: Why Point Estimates Aren’t Enough}
+\PStocitemk{14}{2}{14.2}{Correct Interpretation of Confidence Intervals}
+\PStocitemk{14}{3}{14.3}{CI for Mean — Known Variance (Z-interval)}
+\PStocitemk{14}{4}{14.4}{CI for Mean — Unknown Variance (t-interval)}
+\PStocitemk{14}{5}{14.5}{CI for Variance}
+\PStocitemk{14}{6}{14.6}{CI for Proportions}
+\PStocitemk{14}{7}{14.7}{Factors Affecting CI Width}
+\PStocitemk{14}{8}{14.8}{Sample Size Determination}
+\PStocitemk{14}{9}{14.9}{MATLAB Demonstrations}
+\PStocitemk{14}{10}{14.10}{Practice Problems}
+\PStocmodule{PSmod:15}{Module 15\quad Hypothesis Testing}
+\PStocitemk{15}{1}{15.1}{Introduction: Making Decisions from Data}
+\PStocitemk{15}{2}{15.2}{Framework}
+\PStocitemk{15}{3}{15.3}{Types of Errors}
+\PStocitemk{15}{4}{15.4}{Significance Level $\alpha$}
+\PStocitemk{15}{5}{15.5}{Power of a Test}
+\PStocitemk{15}{6}{15.6}{The p-value}
+\PStocitemk{15}{7}{15.7}{One-Sided vs. Two-Sided Tests}
+\PStocitemk{15}{8}{15.8}{Tests for Means}
+\PStocitemk{15}{9}{15.9}{Test for Variance (Chi-Square Test)}
+\PStocitemk{15}{10}{15.10}{Step-by-Step Hypothesis Testing Procedure}
+\PStocitemk{15}{11}{15.11}{Engineering Examples}
+\PStocitemk{15}{12}{15.12}{MATLAB Examples}
+\PStocitemk{15}{13}{15.13}{Practice Problems}
+\PStocmodule{PSmod:16}{Module 16\quad Engineering Statistical Applications}
+\PStocitemk{16}{1}{16.1}{Communications}
+\PStocitemk{16}{2}{16.2}{Signal Processing}
+\PStocitemk{16}{3}{16.3}{Electronics}
+\PStocitemk{16}{4}{16.4}{Power Systems}
+\PStocitemk{16}{5}{16.5}{Control Systems}
+\PStocitemk{16}{6}{16.6}{Machine Learning / AI Connections}
+\PStocitemk{16}{7}{16.7}{Comprehensive MATLAB Project: Communication System Analysis}
+\PStocitemk{16}{8}{16.8}{Key Integration Points}
+\end{PSbooktoc}
+\clearpage
+\PSmoduleopener{1}{Probability}{احتمال}
+\begin{PSminitoc}
+\PStocitem{1}{1.1}{Introduction: Why Probability in Engineering?}
+\PStocitem{2}{1.2}{Random Experiments}
+\PStocitem{3}{1.3}{Sample Spaces}
+\PStocitem{4}{1.4}{Events}
+\PStocitem{5}{1.5}{Probability Axioms}
+\PStocitem{6}{1.6}{Probability Rules}
+\PStocitem{7}{1.7}{Conditional Probability}
+\PStocitem{8}{1.8}{Independence}
+\PStocitem{9}{1.9}{Bayes’ Theorem}
+\PStocitem{10}{1.10}{Total Probability Theorem}
+\PStocitem{11}{1.11}{MATLAB Examples}
+\PStocitem{12}{1.12}{Summary: Key Distinctions}
+\PStocitem{13}{1.13}{Practice Problems}
+\PStocitem{14}{1.14}{Key Takeaways}
+\end{PSminitoc}
+\clearpage
+\input{../../01-probability/en/content}
+\PSmoduleopener{2}{One Random Variable and Its Functions}{یک متغیر تصادفی و توابع آن}
+\begin{PSminitoc}
+\PStocitem{1}{2.1}{Introduction: Why Random Variables?}
+\PStocitem{2}{2.2}{Definition of a Random Variable}
+\PStocitem{3}{2.3}{Discrete Random Variables}
+\PStocitem{4}{2.4}{Continuous Random Variables}
+\PStocitem{5}{2.5}{Probability Mass Function (PMF)}
+\PStocitem{6}{2.6}{Probability Density Function (PDF)}
+\PStocitem{7}{2.7}{Cumulative Distribution Function (CDF)}
+\PStocitem{8}{2.8}{KEY DISTINCTION: Mass vs. Density vs. Cumulative}
+\PStocitem{9}{2.9}{Transformations of Random Variables}
+\PStocitem{10}{2.10}{MATLAB Examples}
+\PStocitem{11}{2.11}{Practice Problems}
+\PStocitem{12}{2.12}{Key Takeaways}
+\end{PSminitoc}
+\clearpage
+\input{../../02-one-random-variable/en/content}
+\PSmoduleopener{3}{Important Probability Distributions}{توزیع‌های مهم احتمال}
+\begin{PSminitoc}
+\PStocitem{1}{3.1}{Introduction: Choosing the Right Distribution}
+\PStocitem{2}{3.2}{Bernoulli Distribution}
+\PStocitem{3}{3.3}{Binomial Distribution}
+\PStocitem{4}{3.4}{Geometric Distribution}
+\PStocitem{5}{3.5}{Negative Binomial Distribution}
+\PStocitem{6}{3.6}{Poisson Distribution}
+\PStocitem{7}{3.7}{Uniform Distribution (Continuous)}
+\PStocitem{8}{3.8}{Exponential Distribution}
+\PStocitem{9}{3.9}{Gaussian (Normal) Distribution}
+\PStocitem{10}{3.10}{Gamma Distribution}
+\PStocitem{11}{3.11}{Rayleigh Distribution}
+\PStocitem{12}{3.12}{Chi-Square Distribution}
+\PStocitem{13}{3.13}{Distribution Selection Guide}
+\PStocitem{14}{3.14}{Summary Table}
+\PStocitem{15}{3.15}{Practice Problems}
+\end{PSminitoc}
+\clearpage
+\input{../../03-important-distributions/en/content}
+\PSmoduleopener{4}{Expectation and Moments}{امید ریاضی و گشتاورها}
+\begin{PSminitoc}
+\PStocitem{1}{4.1}{Introduction: Why Summary Statistics?}
+\PStocitem{2}{4.2}{Expected Value (Mean)}
+\PStocitem{3}{4.3}{Expected Value of a Function: $E[g(X)]$}
+\PStocitem{4}{4.4}{Variance}
+\PStocitem{5}{4.5}{Standard Deviation}
+\PStocitem{6}{4.6}{Properties of Expectation}
+\PStocitem{7}{4.7}{Properties of Variance}
+\PStocitem{8}{4.8}{Higher-Order Moments}
+\PStocitem{9}{4.9}{Moment Generating Function (MGF)}
+\PStocitem{10}{4.10}{Engineering Applications of Moments}
+\PStocitem{11}{4.11}{MATLAB Examples}
+\PStocitem{12}{4.12}{Practice Problems}
+\PStocitem{13}{4.13}{Key Takeaways}
+\end{PSminitoc}
+\clearpage
+\input{../../04-expectation-moments/en/content}
+\PSmoduleopener{5}{Important Random-Variable Functions}{توابع مهم متغیر تصادفی}
+\begin{PSminitoc}
+\PStocitem{1}{5.1}{Introduction: Why Transform Random Variables?}
+\PStocitem{2}{5.2}{Linear Transformations: $Y$ = aX $+ b$}
+\PStocitem{3}{5.3}{General Monotonic Transformations}
+\PStocitem{4}{5.4}{Nonlinear Transformations: Non-Monotonic Case}
+\PStocitem{5}{5.5}{The Jacobian Method}
+\PStocitem{6}{5.6}{Engineering Application: Rayleigh from Gaussian}
+\PStocitem{7}{5.7}{MATLAB Examples}
+\PStocitem{8}{5.8}{Practice Problems}
+\end{PSminitoc}
+\clearpage
+\input{../../05-rv-functions/en/content}
+\PSmoduleopener{6}{Two Random Variables}{دو متغیر تصادفی}
+\begin{PSminitoc}
+\PStocitem{1}{6.1}{Introduction: Why Study Joint Distributions?}
+\PStocitem{2}{6.2}{Joint PMF (Discrete Case)}
+\PStocitem{3}{6.3}{Joint PDF (Continuous Case)}
+\PStocitem{4}{6.4}{Joint CDF}
+\PStocitem{5}{6.5}{Marginal Distributions}
+\PStocitem{6}{6.6}{Conditional Distributions}
+\PStocitem{7}{6.7}{Independence of Two Random Variables}
+\PStocitem{8}{6.8}{Conditional Expectation}
+\PStocitem{9}{6.9}{MATLAB Examples}
+\PStocitem{10}{6.10}{Practice Problems}
+\end{PSminitoc}
+\clearpage
+\input{../../06-two-random-variables/en/content}
+\PSmoduleopener{7}{Functions of Two Random Variables}{توابع دو متغیر تصادفی}
+\begin{PSminitoc}
+\PStocitem{1}{7.1}{Introduction}
+\PStocitem{2}{7.2}{Sum of Two Random Variables: $Z = X + Y$}
+\PStocitem{3}{7.3}{Difference: $Z = X - Y$}
+\PStocitem{4}{7.4}{Product: $Z$ = XY}
+\PStocitem{5}{7.5}{Ratio: $Z = \frac{X}{Y}$}
+\PStocitem{6}{7.6}{Maximum: $Z = \max (X,\, Y)$}
+\PStocitem{7}{7.7}{Minimum: $Z = \min (X,\, Y)$}
+\PStocitem{8}{7.8}{General Bivariate Transformation (Jacobian Method)}
+\PStocitem{9}{7.9}{MATLAB Examples}
+\PStocitem{10}{7.10}{Practice Problems}
+\end{PSminitoc}
+\clearpage
+\input{../../07-functions-two-rv/en/content}
+\PSmoduleopener{8}{Conditional Expectation and Variance}{امید ریاضی و واریانس شرطی}
+\begin{PSminitoc}
+\PStocitem{1}{8.1}{Introduction}
+\PStocitem{2}{8.2}{Conditional Expectation $E[X \mid Y = y]$}
+\PStocitem{3}{8.3}{Conditional Variance $\operatorname{Var}(X \mid Y = y)$}
+\PStocitem{4}{8.4}{Law of Total Expectation (Tower Property)}
+\PStocitem{5}{8.5}{Law of Total Variance}
+\PStocitem{6}{8.6}{MATLAB Examples}
+\PStocitem{7}{8.7}{Practice Problems}
+\end{PSminitoc}
+\clearpage
+\input{../../08-conditional-expectation/en/content}
+\PSmoduleopener{9}{Covariance and Correlation}{کوواریانس و همبستگی}
+\begin{PSminitoc}
+\PStocitem{1}{9.1}{Introduction: Measuring Linear Relationships}
+\PStocitem{2}{9.2}{Covariance}
+\PStocitem{3}{9.3}{Correlation Coefficient}
+\PStocitem{4}{9.4}{Cross-Correlation}
+\PStocitem{5}{9.5}{Independence vs. Uncorrelatedness}
+\PStocitem{6}{9.6}{Correlation Matrix}
+\PStocitem{7}{9.7}{Variance of Linear Combinations}
+\PStocitem{8}{9.8}{MATLAB Examples}
+\PStocitem{9}{9.9}{Practice Problems}
+\end{PSminitoc}
+\clearpage
+\input{../../09-covariance-correlation/en/content}
+\PSmoduleopener{10}{Multiple Random Variables}{چند متغیر تصادفی}
+\begin{PSminitoc}
+\PStocitem{1}{10.1}{Introduction: From 2 to $N$ Variables}
+\PStocitem{2}{10.2}{Joint Distributions for $N$ Random Variables}
+\PStocitem{3}{10.3}{Random Vectors}
+\PStocitem{4}{10.4}{Mean Vector}
+\PStocitem{5}{10.5}{Covariance Matrix}
+\PStocitem{6}{10.6}{Multivariate Gaussian Distribution}
+\PStocitem{7}{10.7}{Linear Transformations of Random Vectors}
+\PStocitem{8}{10.8}{MATLAB Examples}
+\PStocitem{9}{10.9}{Practice Problems}
+\end{PSminitoc}
+\clearpage
+\input{../../10-multiple-random-variables/en/content}
+\PSmoduleopener{11}{Central Limit Theorem}{قضیه حد مرکزی}
+\begin{PSminitoc}
+\PStocitem{1}{11.1}{Introduction: Why Is the Gaussian Everywhere?}
+\PStocitem{2}{11.2}{Law of Large Numbers (LLN)}
+\PStocitem{3}{11.3}{Central Limit Theorem (CLT)}
+\PStocitem{4}{11.4}{Rate of Convergence}
+\PStocitem{5}{11.5}{Visual Demonstration}
+\PStocitem{6}{11.6}{Engineering Significance}
+\PStocitem{7}{11.7}{MATLAB Monte Carlo Demonstrations}
+\PStocitem{8}{11.8}{Approximations Using CLT}
+\PStocitem{9}{11.9}{Practice Problems}
+\end{PSminitoc}
+\clearpage
+\input{../../11-central-limit-theorem/en/content}
+\PSmoduleopener{12}{Introduction to Statistics}{مقدمه‌ای بر آمار}
+\begin{PSminitoc}
+\PStocitem{1}{12.1}{Introduction: From Probability to Statistics}
+\PStocitem{2}{12.2}{Population vs. Sample}
+\PStocitem{3}{12.3}{Parameter vs. Statistic}
+\PStocitem{4}{12.4}{Random Sample}
+\PStocitem{5}{12.5}{Sampling Distributions}
+\PStocitem{6}{12.6}{Sample Mean $\bar{X}$}
+\PStocitem{7}{12.7}{Sample Variance $S^{2}$}
+\PStocitem{8}{12.8}{Sample Standard Deviation}
+\PStocitem{9}{12.9}{Connection to CLT}
+\PStocitem{10}{12.10}{MATLAB Examples}
+\PStocitem{11}{12.11}{Practice Problems}
+\end{PSminitoc}
+\clearpage
+\input{../../12-intro-statistics/en/content}
+\PSmoduleopener{13}{Parameter Estimation}{برآورد پارامتر}
+\begin{PSminitoc}
+\PStocitem{1}{13.1}{Introduction}
+\PStocitem{2}{13.2}{Estimator vs. Estimate}
+\PStocitem{3}{13.3}{Properties of Estimators}
+\PStocitem{4}{13.4}{Method of Moments (MoM)}
+\PStocitem{5}{13.5}{Maximum Likelihood Estimation (MLE)}
+\PStocitem{6}{13.6}{Engineering Examples}
+\PStocitem{7}{13.7}{Comparing Estimators}
+\PStocitem{8}{13.8}{MATLAB Examples}
+\PStocitem{9}{13.9}{Practice Problems}
+\end{PSminitoc}
+\clearpage
+\input{../../13-parameter-estimation/en/content}
+\PSmoduleopener{14}{Confidence Intervals}{بازه‌های اطمینان}
+\begin{PSminitoc}
+\PStocitem{1}{14.1}{Introduction: Why Point Estimates Aren’t Enough}
+\PStocitem{2}{14.2}{Correct Interpretation of Confidence Intervals}
+\PStocitem{3}{14.3}{CI for Mean — Known Variance (Z-interval)}
+\PStocitem{4}{14.4}{CI for Mean — Unknown Variance (t-interval)}
+\PStocitem{5}{14.5}{CI for Variance}
+\PStocitem{6}{14.6}{CI for Proportions}
+\PStocitem{7}{14.7}{Factors Affecting CI Width}
+\PStocitem{8}{14.8}{Sample Size Determination}
+\PStocitem{9}{14.9}{MATLAB Demonstrations}
+\PStocitem{10}{14.10}{Practice Problems}
+\end{PSminitoc}
+\clearpage
+\input{../../14-confidence-intervals/en/content}
+\PSmoduleopener{15}{Hypothesis Testing}{آزمون فرض}
+\begin{PSminitoc}
+\PStocitem{1}{15.1}{Introduction: Making Decisions from Data}
+\PStocitem{2}{15.2}{Framework}
+\PStocitem{3}{15.3}{Types of Errors}
+\PStocitem{4}{15.4}{Significance Level $\alpha$}
+\PStocitem{5}{15.5}{Power of a Test}
+\PStocitem{6}{15.6}{The p-value}
+\PStocitem{7}{15.7}{One-Sided vs. Two-Sided Tests}
+\PStocitem{8}{15.8}{Tests for Means}
+\PStocitem{9}{15.9}{Test for Variance (Chi-Square Test)}
+\PStocitem{10}{15.10}{Step-by-Step Hypothesis Testing Procedure}
+\PStocitem{11}{15.11}{Engineering Examples}
+\PStocitem{12}{15.12}{MATLAB Examples}
+\PStocitem{13}{15.13}{Practice Problems}
+\end{PSminitoc}
+\clearpage
+\input{../../15-hypothesis-testing/en/content}
+\PSmoduleopener{16}{Engineering Statistical Applications}{کاربردهای آماری مهندسی}
+\begin{PSminitoc}
+\PStocitem{1}{16.1}{Communications}
+\PStocitem{2}{16.2}{Signal Processing}
+\PStocitem{3}{16.3}{Electronics}
+\PStocitem{4}{16.4}{Power Systems}
+\PStocitem{5}{16.5}{Control Systems}
+\PStocitem{6}{16.6}{Machine Learning / AI Connections}
+\PStocitem{7}{16.7}{Comprehensive MATLAB Project: Communication System Analysis}
+\PStocitem{8}{16.8}{Key Integration Points}
+\end{PSminitoc}
+\clearpage
+\input{../../16-engineering-applications/en/content}
+\end{document}

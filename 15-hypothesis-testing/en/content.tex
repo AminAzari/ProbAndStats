@@ -1,0 +1,506 @@
+\begin{PSbox}[unbreakable]{obj}{Learning Objectives}
+
+After completing this module, students will be able to:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Formulate null and alternative hypotheses for engineering problems
+\item
+  Identify Type I and Type II errors and their engineering consequences
+\item
+  Compute test statistics and p-values
+\item
+  Perform Z-tests and t-tests for means
+\item
+  Correctly interpret p-values (and avoid common misconceptions)
+\item
+  Choose between one-sided and two-sided tests
+\end{enumerate}
+
+\end{PSbox}
+
+\PSsection{15.1}{Introduction: Making Decisions from Data}
+
+\textbf{Engineering question:} ``Is this sensor biased?'' ``Did the process change?'' ``Does the new algorithm perform better?''
+
+We need a \textbf{systematic framework} to answer such questions from data, while controlling the probability of making errors.
+
+\PSsection{15.2}{Framework}
+
+\PSsubsection{Null Hypothesis $H_{0}$}
+
+The \textbf{default assumption} — typically ``nothing changed'' or ``no effect'':
+
+\begin{itemize}
+\tightlist
+\item
+  $H_{0}: \mu = \mu_{0}$ (sensor is not biased)
+\item
+  $H_{0}: \mu_{1} = \mu_{2}$ (two methods perform equally)
+\item
+  $H_{0}: \sigma^{2} = \sigma_{0}^{2}$ (variance hasn’t changed)
+\end{itemize}
+
+\PSsubsection{Alternative Hypothesis $H_{1}$}
+
+What we want to \textbf{detect} or prove:
+
+\begin{itemize}
+\tightlist
+\item
+  $H_{1}: \mu \ne \mu_{0}$ (sensor IS biased — two-sided)
+\item
+  $H_{1}: \mu > \mu_{0}$ (performance improved — one-sided)
+\item
+  $H_{1}: \sigma^{2} > \sigma_{0}^{2}$ (variance increased)
+\end{itemize}
+
+\PSsubsection{Decision}
+
+Based on data, either:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Reject $H_{0}$} \ensuremath{\to} evidence supports $H_{1}$
+\item
+  \textbf{Fail to reject $H_{0}$} \ensuremath{\to} insufficient evidence against $H_{0}$
+\end{itemize}
+
+\begin{PSquote}
+
+\PSwarn{} ``Fail to reject $H_{0}$'' \ensuremath{\neq} ``$H_{0}$ is true''. Absence of evidence \ensuremath{\neq} evidence of absence.
+
+\end{PSquote}
+
+\PSsection{15.3}{Types of Errors}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy} & \PSth{$H_{0}$ True (reality)} & \PSth{$H_{1}$ True (reality)} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{Reject $H_{0}$} (decision) & Type I Error $(\alpha)$ & Correct! (Power $= 1-\beta$) \\
+\textbf{Fail to reject $H_{0}$} (decision) & Correct! & Type II Error $(\beta)$ \\
+\end{longtable}
+}
+
+\PSsubsection{Type I Error (False Alarm) — probability $\alpha$}
+
+Rejecting $H_{0}$ when it’s actually true. ``Crying wolf.''
+
+Engineering analogy: Declaring a process has changed when it hasn’t \ensuremath{\to} unnecessary recalibration.
+
+\PSsubsection{Type II Error (Missed Detection) — probability $\beta$}
+
+Failing to reject $H_{0}$ when $H_{1}$ is actually true. ``Missing the signal.''
+
+Engineering analogy: Failing to detect a sensor bias \ensuremath{\to} biased measurements continue.
+
+\PSsubsection{Engineering Analogy: Radar Detection}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}cc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{Statistical Term} & \PSth{Radar Equivalent} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+$H_{0}$: no target & No aircraft present \\
+$H_{1}$: target present & Aircraft present \\
+Type I error $(\alpha)$ & False alarm \\
+Type II error $(\beta)$ & Missed detection \\
+Power $(1-\beta)$ & Probability of detection \\
+\end{longtable}
+}
+
+\PSsubsection{The Tradeoff}
+
+Reducing $\alpha$ (fewer false alarms) \ensuremath{\to} increases $\beta$ (more missed detections), and vice versa.
+
+Fix $\alpha$ (significance level), then maximize power $= 1 - \beta$.
+
+\PSsection{15.4}{Significance Level $\alpha$}
+
+The \textbf{maximum acceptable Type I error rate}, chosen BEFORE looking at data.
+
+Common choices: $\alpha = 0.05,\, 0.01,\, 0.10$
+
+\textbf{Choosing $\alpha$:} Consider the cost of a false alarm:
+
+\begin{itemize}
+\tightlist
+\item
+  $\alpha = 0.01$: Very conservative (e.g., medical device safety)
+\item
+  $\alpha = 0.05$: Standard in most engineering/science
+\item
+  $\alpha = 0.10$: More tolerant (exploratory analysis)
+\end{itemize}
+
+\PSsection{15.5}{Power of a Test}
+
+\PSdisplay{\text{Power} = 1 - \beta = P(\text{reject } H_0 | H_1 \text{ is true})}
+
+Power depends on:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Effect size:} Larger true difference \ensuremath{\to} easier to detect \ensuremath{\to} more power
+\item
+  \textbf{Sample size $n$:} More data \ensuremath{\to} more power
+\item
+  \textbf{Significance level $\alpha$:} Larger $\alpha$ \ensuremath{\to} more power (but more false alarms)
+\item
+  \textbf{Variability $\sigma$:} Less noise \ensuremath{\to} more power
+\end{enumerate}
+
+\PSsection{15.6}{The p-value}
+
+\begin{PSbox}[unbreakable]{def}{Definition}
+
+The \textbf{p-value} is the probability of obtaining a test statistic \textbf{as extreme or more extreme} than the observed value, \textbf{assuming $H_{0}$ is true}.
+
+\PSdisplay{p\text{-value} = P(\text{data this extreme or more} | H_0 \text{ true})}
+
+\end{PSbox}
+
+\PSsubsection{Decision Rule}
+
+\begin{itemize}
+\tightlist
+\item
+  If p-value $< \alpha$ \ensuremath{\to} Reject $H_{0}$
+\item
+  If p-value $\ge \alpha$ \ensuremath{\to} Fail to reject $H_{0}$
+\end{itemize}
+
+\PSsubsection{\PSyes{} CORRECT Interpretation}
+
+\begin{PSquote}
+
+``The p-value is the probability of seeing data this extreme (or more) if $H_{0}$ were true. A small p-value means the data is unlikely under $H_{0}$.''
+
+\end{PSquote}
+
+\PSsubsection{\PSno{} WRONG Interpretation}
+
+\begin{PSquote}
+
+$\sim \sim "\text{The}$ p-value is the probability that $H_{0}$ is $\mathrm{true}." \sim \sim$
+
+\end{PSquote}
+
+\textbf{Why wrong:} $H_{0}$ is either true or false (fixed). The p-value says nothing about $P(H_{0}\ \text{true})$. It measures how surprising the data is under $H_{0}$.
+
+\PSsubsection{Calibration}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}cc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{p-value} & \PSth{Evidence against $H_{0}$} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textgreater{} 0.10 & Weak or none \\
+0.05 – 0.10 & Marginal \\
+0.01 – 0.05 & Moderate \\
+0.001 – 0.01 & Strong \\
+\textless{} 0.001 & Very strong \\
+\end{longtable}
+}
+
+\PSsection{15.7}{One-Sided vs. Two-Sided Tests}
+
+\PSsubsection{Two-Sided ($H_{1}$: $\mu \ne \mu_{0}$)}
+
+Used when deviation in \textbf{either} direction is important.
+
+\begin{itemize}
+\tightlist
+\item
+  Reject if $\lvert T\rvert > t_{\alpha /2, n-1}$
+\item
+  p-value $= 2 \cdot P(T > \lvert t_{\text{obs}}\rvert)$
+\end{itemize}
+
+\PSsubsection{One-Sided ($H_{1}$: $\mu > \mu_{0}$ or $H_{1}: \mu < \mu_{0}$)}
+
+Used when only one direction of deviation matters.
+
+\begin{itemize}
+\tightlist
+\item
+  $H_{1}: \mu > \mu_{0}$: Reject if $T > t_{\alpha, n-1}$
+\item
+  $H_{1}: \mu < \mu_{0}$: Reject if $T < -t_{\alpha, n-1}$
+\end{itemize}
+
+\PSsubsection{When to Use Which}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 2\tabcolsep) * \real{0.4762}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 2\tabcolsep) * \real{0.5238}}@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{Scenario} & \PSth{Test Type} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Is the sensor biased (either direction)? & Two-sided \\
+Does the new algorithm IMPROVE BER? & One-sided ($H_{1}$: $\mathrm{BER} < \mathrm{BER}_{\mathrm{old}}$) \\
+Has noise power INCREASED? & One-sided ($H_{1}$: $\sigma^{2} > \sigma_{0}^{2}$) \\
+Did the process mean CHANGE? & Two-sided \\
+\end{longtable}
+}
+
+\PSsection{15.8}{Tests for Means}
+
+\PSsubsection{One-Sample Z-Test ($\sigma$ known)}
+
+Test: $H_{0}: \mu = \mu_{0}$
+
+Test statistic: $Z = \frac{\bar{X} - \mu_{0}}{\frac{\sigma}{\sqrt{n}}}$
+
+Under $H_{0}: Z \sim N(0,\,1)$
+
+\PSsubsection{One-Sample t-Test ($\sigma$ unknown)}
+
+Test: $H_{0}: \mu = \mu_{0}$
+
+Test statistic: $T = \frac{\bar{X} - \mu_{0}}{\frac{S}{\sqrt{n}}}$
+
+Under $H_{0}: T \sim t(n-1)$
+
+\PSsubsection{Two-Sample t-Test (comparing two means)}
+
+Test: $H_{0}: \mu_{1} = \mu_{2}$
+
+Test statistic: $T = \frac{\bar{X}_{1} - \bar{X}_{2}}{\sqrt{\frac{S_{1}^{2}}{n_{1}} + \frac{S_{2}^{2}}{n_{2}}}}$
+
+Approximate $df$ by Welch-Satterthwaite formula.
+
+\PSsection{15.9}{Test for Variance (Chi-Square Test)}
+
+\PSsubsection{One-Sample Test}
+
+$H_{0}: \sigma^{2} = \sigma_{0}^{2}$
+
+Test statistic: $\chi^{2} = \frac{(n-1)S^{2}}{\sigma_{0}^{2}}$
+
+Under $H_{0}: \chi^{2} \sim \chi^{2}(n-1)$
+
+\PSsubsection{Decision}
+
+\begin{itemize}
+\tightlist
+\item
+  $H_{1}: \sigma^{2} > \sigma_{0}^{2}$: Reject if $\chi^{2} > \chi^{2}_{\alpha, n-1}$
+\item
+  $H_{1}: \sigma^{2} \ne \sigma_{0}^{2}$: Reject if $\chi^{2} < \chi^{2}_{1-\alpha /2, n-1}$ or $\chi^{2} > \chi^{2}_{\alpha /2, n-1}$
+\end{itemize}
+
+\PSsection{15.10}{Step-by-Step Hypothesis Testing Procedure}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{State hypotheses:} $H_{0}$ and $H_{1}$
+\item
+  \textbf{Choose significance level:} $\alpha$ (e.g., 0.05)
+\item
+  \textbf{Select test statistic:} $Z,\, t$, or $\chi^{2}$ depending on scenario
+\item
+  \textbf{Determine critical value(s)} or compute p-value
+\item
+  \textbf{Compute test statistic} from data
+\item
+  \textbf{Make decision:} Reject $H_{0}$ if test statistic in critical region (or $p < \alpha$)
+\item
+  \textbf{State conclusion} in engineering terms
+\end{enumerate}
+
+\PSsection{15.11}{Engineering Examples}
+
+\begin{PSbox}[unbreakable]{ex}{Example 1: Is a Sensor Biased?}
+
+A sensor should read 0V with no input. 20 measurements give $\bar{X} = 0.012\,\mathrm{V},\, S = 0.03\,\mathrm{V}$.
+
+$H_{0}: \mu = 0$ (no bias), $H_{1}: \mu \ne 0$ (biased), $\alpha = 0.05$
+
+$\displaystyle T = \frac{0.012 - 0}{\frac{0.03}{\sqrt{20}}} = \frac{0.012}{0.00671} = 1.789$
+
+$t_{0.025, 19} = 2.093$. Since $\lvert T\rvert = 1.789 < 2.093$ \ensuremath{\to} \textbf{Fail to reject $H_{0}$.}
+
+p-value $= 2 \cdot P(t(19) > 1.789) \approx 0.090$. Not significant at 5\% level.
+
+Conclusion: Insufficient evidence to conclude the sensor is biased.
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{Example 2: Did Manufacturing Process Change?}
+
+Before: $\mu_{0} = 100\,\Omega$ (established). After modification: $n = 30,\, \bar{X} = 101.2\,\Omega,\, S = 3.5\,\Omega$.
+
+$H_{0}: \mu = 100,\, H_{1}: \mu \ne 100,\, \alpha = 0.05$
+
+$\displaystyle T = \frac{101.2 - 100}{\frac{3.5}{\sqrt{30}}} = \frac{1.2}{0.639} = 1.878$
+
+$t_{0.025, 29} = 2.045$. $\lvert T\rvert = 1.878 < 2.045$ \ensuremath{\to} \textbf{Fail to reject $H_{0}$.}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{Example 3: Does New Algorithm Improve BER?}
+
+Old algorithm: $\mathrm{BER}_{0} = 10^{-3}$. New algorithm tested: $n = 50000$ bits, 38 errors.
+
+$\displaystyle \mathrm{BER}_{\mathrm{new}} = \frac{38}{50000} = 7.6 \times 10^{-4}$
+
+$H_{0}: p = 0.001,\, H_{1}: p < 0.001$ (improvement), $\alpha = 0.05$
+
+$\displaystyle Z = \frac{\hat{p} - p_{0}}{\sqrt{\frac{p_{0}(1-p_{0})}{n}}} = \frac{0.00076 - 0.001}{\sqrt{0.001 \times \frac{0.999}{50000}}} = -\frac{0.00024}{0.000141} = -1.70$
+
+p-value $= P(Z < -1.70) = 0.0446 < 0.05$ \ensuremath{\to} \textbf{Reject $H_{0}$.}
+
+Conclusion: Evidence supports that the new algorithm has lower BER.
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{Example 4: Has Noise Power Increased?}
+
+Historical: $\sigma_{0}^{2} = 0.04\,\mathrm{V}^{2}$. New measurements: $n = 25,\, S^{2} = 0.058\,\mathrm{V}^{2}$.
+
+$H_{0}: \sigma^{2} = 0.04,\, H_{1}: \sigma^{2} > 0.04,\, \alpha = 0.05$
+
+$\displaystyle \chi^{2} = \frac{(24)(0.058)}{0.04} = 34.8$
+
+$\chi^{2}_{0.05, 24} = 36.415$. Since $34.8 < 36.415$ \ensuremath{\to} \textbf{Fail to reject $H_{0}$.}
+
+\end{PSbox}
+
+\PSsection{15.12}{MATLAB Examples}
+
+\begin{PSbox}[unbreakable]{ex}{Example 1: One-Sample t-test}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Is the sensor biased? One{-}sample t{-}test}
+\VariableTok{data} \OperatorTok{=}\NormalTok{ [}\FloatTok{0.012}\OperatorTok{,} \OperatorTok{{-}}\FloatTok{0.005}\OperatorTok{,} \FloatTok{0.031}\OperatorTok{,} \FloatTok{0.008}\OperatorTok{,} \OperatorTok{{-}}\FloatTok{0.012}\OperatorTok{,} \FloatTok{0.022}\OperatorTok{,} \FloatTok{0.015}\OperatorTok{,} \OperatorTok{...}
+        \FloatTok{0.003}\OperatorTok{,} \FloatTok{0.028}\OperatorTok{,} \OperatorTok{{-}}\FloatTok{0.001}\OperatorTok{,} \FloatTok{0.018}\OperatorTok{,} \FloatTok{0.009}\OperatorTok{,} \FloatTok{0.025}\OperatorTok{,} \OperatorTok{{-}}\FloatTok{0.008}\OperatorTok{,} \OperatorTok{...}
+        \FloatTok{0.014}\OperatorTok{,} \FloatTok{0.007}\OperatorTok{,} \FloatTok{0.020}\OperatorTok{,} \FloatTok{0.011}\OperatorTok{,} \OperatorTok{{-}}\FloatTok{0.003}\OperatorTok{,} \FloatTok{0.019}\NormalTok{]}\OperatorTok{;}
+
+\VariableTok{mu\_0} \OperatorTok{=} \FloatTok{0}\OperatorTok{;}  \CommentTok{\% Hypothesized mean (no bias)}
+\NormalTok{[}\VariableTok{h}\OperatorTok{,} \VariableTok{p\_value}\OperatorTok{,} \VariableTok{ci}\OperatorTok{,} \VariableTok{stats}\NormalTok{] }\OperatorTok{=} \VariableTok{ttest}\NormalTok{(}\VariableTok{data}\OperatorTok{,} \VariableTok{mu\_0}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Test result: H = \%d (1=reject H₀)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{h}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}p{-}value = \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{p\_value}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}t{-}statistic = \%.3f, df = \%d\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{stats}\NormalTok{.}\VariableTok{tstat}\OperatorTok{,} \VariableTok{stats}\NormalTok{.}\VariableTok{df}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}95\%\% CI for μ: [\%.4f, \%.4f]\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{ci}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{Example 2: Two-Sample t-test}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Compare two algorithms: is there a significant difference?}
+\VariableTok{BER\_algo1} \OperatorTok{=}\NormalTok{ [}\FloatTok{0.0012}\OperatorTok{,} \FloatTok{0.0008}\OperatorTok{,} \FloatTok{0.0015}\OperatorTok{,} \FloatTok{0.0010}\OperatorTok{,} \FloatTok{0.0013}\OperatorTok{,} \OperatorTok{...}
+             \FloatTok{0.0011}\OperatorTok{,} \FloatTok{0.0009}\OperatorTok{,} \FloatTok{0.0014}\OperatorTok{,} \FloatTok{0.0012}\OperatorTok{,} \FloatTok{0.0010}\NormalTok{]}\OperatorTok{;}
+\VariableTok{BER\_algo2} \OperatorTok{=}\NormalTok{ [}\FloatTok{0.0007}\OperatorTok{,} \FloatTok{0.0009}\OperatorTok{,} \FloatTok{0.0006}\OperatorTok{,} \FloatTok{0.0008}\OperatorTok{,} \FloatTok{0.0005}\OperatorTok{,} \OperatorTok{...}
+             \FloatTok{0.0008}\OperatorTok{,} \FloatTok{0.0007}\OperatorTok{,} \FloatTok{0.0006}\OperatorTok{,} \FloatTok{0.0009}\OperatorTok{,} \FloatTok{0.0007}\NormalTok{]}\OperatorTok{;}
+
+\NormalTok{[}\VariableTok{h}\OperatorTok{,} \VariableTok{p\_value}\OperatorTok{,} \VariableTok{ci}\OperatorTok{,} \VariableTok{stats}\NormalTok{] }\OperatorTok{=} \VariableTok{ttest2}\NormalTok{(}\VariableTok{BER\_algo1}\OperatorTok{,} \VariableTok{BER\_algo2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Two{-}sample t{-}test:\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}  H = \%d (1=reject H₀: means are equal)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{h}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}  p{-}value = \%.4e\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{p\_value}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}  t{-}stat = \%.3f, df = \%.1f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{stats}\NormalTok{.}\VariableTok{tstat}\OperatorTok{,} \VariableTok{stats}\NormalTok{.}\VariableTok{df}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}  Mean diff: \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{BER\_algo1}\NormalTok{) }\OperatorTok{{-}} \VariableTok{mean}\NormalTok{(}\VariableTok{BER\_algo2}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{Example 3: Power Analysis}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Power: How likely are we to detect a true difference?}
+\VariableTok{mu\_0} \OperatorTok{=} \FloatTok{0}\OperatorTok{;}          \CommentTok{\% Null hypothesis mean}
+\VariableTok{mu\_true} \OperatorTok{=} \FloatTok{0.015}\OperatorTok{;}   \CommentTok{\% True mean (sensor has bias of 15mV)}
+\VariableTok{sigma} \OperatorTok{=} \FloatTok{0.03}\OperatorTok{;}      \CommentTok{\% Known std dev}
+\VariableTok{alpha} \OperatorTok{=} \FloatTok{0.05}\OperatorTok{;}
+
+\VariableTok{n\_values} \OperatorTok{=} \FloatTok{5}\OperatorTok{:}\FloatTok{5}\OperatorTok{:}\FloatTok{100}\OperatorTok{;}
+\VariableTok{power} \OperatorTok{=} \VariableTok{zeros}\NormalTok{(}\VariableTok{size}\NormalTok{(}\VariableTok{n\_values}\NormalTok{))}\OperatorTok{;}
+
+\KeywordTok{for} \VariableTok{i} \OperatorTok{=} \FloatTok{1}\OperatorTok{:}\VariableTok{length}\NormalTok{(}\VariableTok{n\_values}\NormalTok{)}
+    \VariableTok{n} \OperatorTok{=} \VariableTok{n\_values}\NormalTok{(}\VariableTok{i}\NormalTok{)}\OperatorTok{;}
+    \CommentTok{\% Critical value for two{-}sided test}
+    \VariableTok{z\_crit} \OperatorTok{=} \VariableTok{norminv}\NormalTok{(}\FloatTok{1}\OperatorTok{{-}}\VariableTok{alpha}\OperatorTok{/}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+    \CommentTok{\% Power = P(reject | mu\_true)}
+    \CommentTok{\% Reject when |Z| \textgreater{} z\_crit, where Z \textasciitilde{} N((mu\_true{-}mu\_0)/(sigma/sqrt(n)), 1)}
+    \VariableTok{ncp} \OperatorTok{=}\NormalTok{ (}\VariableTok{mu\_true} \OperatorTok{{-}} \VariableTok{mu\_0}\NormalTok{) }\OperatorTok{/}\NormalTok{ (}\VariableTok{sigma}\OperatorTok{/}\VariableTok{sqrt}\NormalTok{(}\VariableTok{n}\NormalTok{))}\OperatorTok{;}  \CommentTok{\% Non{-}centrality parameter}
+    \VariableTok{power}\NormalTok{(}\VariableTok{i}\NormalTok{) }\OperatorTok{=} \FloatTok{1} \OperatorTok{{-}} \VariableTok{normcdf}\NormalTok{(}\VariableTok{z\_crit} \OperatorTok{{-}} \VariableTok{ncp}\NormalTok{) }\OperatorTok{+} \VariableTok{normcdf}\NormalTok{(}\OperatorTok{{-}}\VariableTok{z\_crit} \OperatorTok{{-}} \VariableTok{ncp}\NormalTok{)}\OperatorTok{;}
+\KeywordTok{end}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{n\_values}\OperatorTok{,} \VariableTok{power}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}b{-}o\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Sample Size n\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Power (1 {-} β)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\VariableTok{sprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Power vs Sample Size (true bias = \%.0f mV)\textquotesingle{}}\OperatorTok{,} \VariableTok{mu\_true}\OperatorTok{*}\FloatTok{1000}\NormalTok{))}\OperatorTok{;}
+\VariableTok{grid} \VariableTok{on}\OperatorTok{;}
+\VariableTok{yline}\NormalTok{(}\FloatTok{0.8}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r{-}{-}\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Desired Power = 0.8\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Need n ≈ \%d for 80\%\% power\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{n\_values}\NormalTok{(}\VariableTok{find}\NormalTok{(}\VariableTok{power} \OperatorTok{\textgreater{}=} \FloatTok{0.8}\OperatorTok{,} \FloatTok{1}\NormalTok{)))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\PSsection{15.13}{Practice Problems}
+
+\begin{PSbox}[unbreakable]{prob}{Problem 1}
+
+A manufacturing spec requires mean resistance = 100\ensuremath{\Omega}. A sample of 16 resistors gives $\bar{X} = 101.5\,\Omega,\, S = 3\,\Omega$. At $\alpha = 0.05$, is there evidence the process has drifted?
+
+\PSsolution{} $H_{0}: \mu = 100,\, H_{1}: \mu \ne 100$. $T = \frac{101.5-100}{\frac{3}{4}} = 2.0$. $t_{0.025,15} = 2.131$. $\lvert T\rvert = 2.0 < 2.131$ \ensuremath{\to} Fail to reject. p-value $\approx 0.064 > 0.05$.
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{Problem 2}
+
+Average packet delay was 5ms. After network upgrade, 40 measurements give $\bar{X} = 4.6\,\mathrm{ms},\, S = 1.2\,\mathrm{ms}$. Test if delay decreased at $\alpha = 0.01$.
+
+\PSsolution{} $H_{0}: \mu = 5,\, H_{1}: \mu < 5$. $T = \frac{4.6-5}{\frac{1.2}{\sqrt{40}}} = -\frac{0.4}{0.190} = -2.11$. $t_{0.01,39} \approx -2.426$. $T = -2.11 > -2.426$ \ensuremath{\to} Fail to reject at 1\% level. (Would reject at 5\% since $t_{0.05,39} \approx -1.685.$)
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{Problem 3}
+
+Explain why ``$p = 0.04$ means there is only a 4\% chance $H_{0}$ is true'' is WRONG.
+
+\PSsolution{} The p-value is $P(\text{data this extreme}\ \mid H_{0}\ \text{true})$, NOT $P(H_{0}\ \text{true}\ \mid \text{data})$. It conditions on $H_{0}$ being true and asks about data extremity. To get $P(H_{0}\ \text{true}\ \mid \text{data})$ would require Bayesian analysis with a prior. The p-value is a property of the data-generating process under $H_{0}$, not a posterior probability about $H_{0}$.
+
+\emph{Next Module: {Module 16 — Engineering Statistical Applications}}
+
+\end{PSbox}

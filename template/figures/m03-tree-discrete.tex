@@ -1,0 +1,23 @@
+% Module 3 — decision tree for discrete distributions
+\input{\PSroot/figures/PStree-styles}
+\begin{tikzpicture}[PStree]
+  \node[PSroot] (root) at (0,0) {\PSL{Is the random variable discrete (countable outcomes)?}{آیا متغیر تصادفی گسسته است (خروجی‌های شمارا)؟}};
+  \draw[PStrunk] (0.35,-0.3) -- (0.35,-6.25);
+  \foreach \y/\en/\fa/\res in {
+      -1.25/{Only two outcomes (success/failure)?}/{فقط دو خروجی (موفقیت/شکست)؟}/{$\mathrm{Bernoulli}(p)$},
+      -2.5/{Fixed $n$ trials, counting successes?}/{$n$ آزمایش ثابت، شمارش موفقیت‌ها؟}/{$\mathrm{Binomial}(n,p)$},
+      -3.75/{Counting trials until FIRST success?}/{شمارش آزمایش‌ها تا نخستین موفقیت؟}/{$\mathrm{Geometric}(p)$},
+      -5.0/{Counting trials until $r$-th success?}/{شمارش آزمایش‌ها تا $r$‌امین موفقیت؟}/{$\mathrm{Negative\ Binomial}(r,p)$}}{
+    \node[PSq] (q) at (0.85,\y) {\PSL{\en}{\fa}};
+    \draw[PStrunk] (0.35,\y) -- (q.\PSstart);
+    \node[PSr] (r) at (8.1,\y) {\res};
+    \draw[PSarrow] (q.\PSend) -- node[PSyes] {\PSL{YES}{بله}} (r.\PSstart);
+  }
+  % last branch: a second question before the result
+  \node[PSq] (q5) at (0.85,-6.25) {\PSL{Counting events in a fixed interval?}{شمارش رخدادها در یک بازه ثابت؟}};
+  \draw[PStrunk] (0.35,-6.25) -- (q5.\PSstart);
+  \node[PSq=3.4cm] (c5) at (8.1,-6.25) {\PSL{Events independent and rare?}{رخدادها مستقل و نادر؟}};
+  \draw[PSarrow] (q5.\PSend) -- (c5.\PSstart);
+  \node[PSr] (r5) at (12.3,-6.25) {$\mathrm{Poisson}(\lambda)$};
+  \draw[PSarrow] (c5.\PSend) -- (r5.\PSstart);
+\end{tikzpicture}

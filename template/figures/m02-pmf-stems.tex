@@ -1,0 +1,12 @@
+% Module 2 — PMF drawn as vertical lines (impulses): heights as in the notes
+\begin{tikzpicture}
+\begin{axis}[PSplot, width=8.6cm, height=5.6cm,
+  xmin=-0.6, xmax=4.8, ymin=0, ymax=0.47,
+  xtick={0,1,2,3,4}, ytick={0.1,0.2,0.3,0.4},
+  yticklabel style={/pgf/number format/fixed, /pgf/number format/precision=1},
+  ymajorgrids, xlabel={$x$}, ylabel={$p_X(x)$}]
+  \addplot+[ycomb, draw=PSgold!85!black, line width=1.8pt,
+    mark=*, mark size=3pt, mark options={fill=PSteal, draw=PSteal}]
+    coordinates {(0,0.3) (1,0.4) (2,0.2) (3,0.1)};
+\end{axis}
+\end{tikzpicture}

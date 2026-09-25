@@ -1,0 +1,362 @@
+\begin{PSbox}[unbreakable]{obj}{Learning Objectives}
+
+After completing this module, students will be able to:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Compute conditional expectations and variances
+\item
+  Apply the Law of Total Expectation
+\item
+  Apply the Law of Total Variance
+\item
+  Use these tools for engineering analysis across multiple operating conditions
+\end{enumerate}
+
+\end{PSbox}
+
+\PSsection{8.1}{Introduction}
+
+Many engineering systems operate under \textbf{different conditions} (channel states, modes, environments). We often need the \textbf{overall average performance} computed from conditional performance in each state.
+
+\begin{itemize}
+\tightlist
+\item
+  What is the average BER when the channel randomly switches between good and bad?
+\item
+  What is the overall measurement variance when the sensor operates in different environments?
+\end{itemize}
+
+\PSsection{8.2}{Conditional Expectation $E[X \mid Y = y]$}
+
+\begin{PSbox}[unbreakable]{def}{Definition}
+
+\textbf{Continuous:}\PSdisplay{E[X|Y=y] = \int_{-\infty}^{\infty} x \cdot f_{X|Y}(x|y) \, dx}
+
+\textbf{Discrete:}\PSdisplay{E[X|Y=y] = \sum_x x \cdot p_{X|Y}(x|y)}
+
+\end{PSbox}
+
+\PSsubsection{Interpretation}
+
+$E[X \mid Y = y]$ is the \textbf{average value of $X$} when we know $Y = y$. It is a function of $y$.
+
+\PSsubsection{$E[X \mid Y]$ as a Random Variable}
+
+When $Y$ is itself random, $E[X \mid Y]$ is a \textbf{random variable} — it takes the value $E[X \mid Y = y]$ when $Y = y$.
+
+\begin{PSbox}[unbreakable]{ex}{Engineering Example}
+
+Average received power given channel state:
+
+\begin{itemize}
+\tightlist
+\item
+  Good channel $(Y = 1)$: $E[P \mid Y = 1] = 10$ mW
+\item
+  Poor channel $(Y = 0)$: $E[P \mid Y = 0] = 1$ mW
+\item
+  $P(Y = 1) = 0.7,\, P(Y = 0) = 0.3$
+\end{itemize}
+
+\end{PSbox}
+
+\PSsection{8.3}{Conditional Variance $\operatorname{Var}(X \mid Y = y)$}
+
+\begin{PSbox}[unbreakable]{def}{Definition}
+
+\PSdisplay{\text{Var}(X|Y=y) = E[(X - E[X|Y=y])^2 | Y=y] = E[X^2|Y=y] - (E[X|Y=y])^2}
+
+\end{PSbox}
+
+\PSsubsection{Interpretation}
+
+The conditional variance measures the \textbf{remaining uncertainty in $X$} after $Y$ is known.
+
+\begin{PSbox}[unbreakable]{ex}{Engineering Example}
+
+Measurement precision depends on temperature:
+
+\begin{itemize}
+\tightlist
+\item
+  At $T = 20^{\circ}C$: $\operatorname{Var}(X \mid T = 20) = 0.01$ (high precision)
+\item
+  At $T = 80^{\circ}C$: $\operatorname{Var}(X \mid T = 80) = 0.09$ (low precision due to thermal effects)
+\end{itemize}
+
+\end{PSbox}
+
+\PSsection{8.4}{Law of Total Expectation (Tower Property)}
+
+\PSsubsection{Statement}
+
+\PSdisplay{E[X] = E[E[X|Y]]}
+
+\textbf{Discrete version:}\PSdisplay{E[X] = \sum_y E[X|Y=y] \cdot P(Y=y)}
+
+\textbf{Continuous version:}\PSdisplay{E[X] = \int_{-\infty}^{\infty} E[X|Y=y] \cdot f_Y(y) \, dy}
+
+\PSsubsection{Proof (Discrete)}
+
+$E[E[X \mid Y]] = \sum_{y} E[X \mid Y = y] \cdot P(Y = y)$\PSbr{}$= \sum_{y} \left[\sum_{x} x \cdot P(X = x \mid Y = y)\right] \cdot P(Y = y)$\PSbr{}$= \sum_{x} \Sigma_{y} x \cdot P(X = x,\, Y = y)$\PSbr{}$= \sum_{x} x \cdot P(X = x) = E[X]$ \PSyes{}
+
+\PSsubsection{Interpretation}
+
+The \textbf{overall average} equals the \textbf{weighted average of conditional averages}, weighted by the probability of each condition.
+
+\begin{PSbox}[unbreakable]{ex}{Engineering Example: Average BER Across Channel States}
+
+A wireless system switches between three modes:
+
+\begin{itemize}
+\tightlist
+\item
+  Mode 1 (60\% of time): $\mathrm{BER} = 10^{-6}$
+\item
+  Mode 2 (30\% of time): $\mathrm{BER} = 10^{-4}$
+\item
+  Mode 3 (10\% of time): $\mathrm{BER} = 10^{-2}$
+\end{itemize}
+
+Overall $\mathrm{BER} = E[\mathrm{BER}] = 0.6(10^{-6}) + 0.3(10^{-4}) + 0.1(10^{-2})$\PSbr{}$= 0.6 \times 10^{-6} + 30 \times 10^{-6} + 10000 \times 10^{-6} \approx 1.003 \times 10^{-3}$
+
+\textbf{Engineering insight:} The overall BER is dominated by the worst mode, even though it occurs only 10\% of the time.
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{Engineering Example: Average Lifetime with Defect Types}
+
+Components are defect-free (90\%) or have a hidden defect (10\%):
+
+\begin{itemize}
+\tightlist
+\item
+  Defect-free: $E[T \mid \text{good}] = 10000$ hours
+\item
+  With defect: $E[T \mid \text{defect}] = 500$ hours
+\end{itemize}
+
+$E[T] = 0.9(10000) + 0.1(500) = 9050$ hours
+
+\end{PSbox}
+
+\PSsection{8.5}{Law of Total Variance}
+
+\PSsubsection{Statement}
+
+\PSdisplay{\text{Var}(X) = E[\text{Var}(X|Y)] + \text{Var}(E[X|Y])}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.2222}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.2222}}
+  >{\centering\arraybackslash}p{(0.965\linewidth - 4\tabcolsep) * \real{0.5556}}@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{Term} & \PSth{Name} & \PSth{Interpretation} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+$\operatorname{Var}(X)$ & Total variance & Overall uncertainty in $X$ \\
+$E[\operatorname{Var}(X \mid Y)]$ & Expected conditional variance & Average ``within-group'' variability \\
+$\operatorname{Var}(E[X \mid Y])$ & Variance of conditional means & ``Between-group'' variability \\
+\end{longtable}
+}
+
+\PSsubsection{Proof}
+
+$\operatorname{Var}(X) = E[X^{2}] - (E[X])^{2}$
+
+$E[X^{2}] = E[E[X^{2} \mid Y]]$ (tower property)\PSbr{}$= E[\operatorname{Var}(X \mid Y) + (E[X \mid Y])^{2}]$\PSbr{}$= E[\operatorname{Var}(X \mid Y)] + E[(E[X \mid Y])^{2}]$
+
+$(E[X])^{2} = (E[E[X \mid Y]])^{2}$
+
+$\operatorname{Var}(X) = E[\operatorname{Var}(X \mid Y)] + E[(E[X \mid Y])^{2}] - (E[E[X \mid Y]])^{2}$\PSbr{}$= E[\operatorname{Var}(X \mid Y)] + \operatorname{Var}(E[X \mid Y])$ \PSyes{}
+
+\PSsubsection{Interpretation: Decomposition of Uncertainty}
+
+Total uncertainty = Average uncertainty within each condition + Variability of the mean across conditions
+
+\begin{PSbox}[unbreakable]{ex}{Engineering Example: Sensor in Two Environments}
+
+A sensor operates indoors ($Y = 1$, prob 0.6) and outdoors ($Y = 2$, prob 0.4):
+
+\begin{itemize}
+\tightlist
+\item
+  Indoor: $E[X \mid Y = 1] = 25^{\circ}C,\, \operatorname{Var}(X \mid Y = 1) = 1$
+\item
+  Outdoor: $E[X \mid Y = 2] = 15^{\circ}C,\, \operatorname{Var}(X \mid Y = 2) = 16$
+\end{itemize}
+
+**$E[\operatorname{Var}(X \mid Y)] \ast \ast = 0.6(1) + 0.4(16) = 7.0$ (average within-condition variance)
+
+**$\operatorname{Var}(E[X \mid Y]) \ast \ast = E[(E[X \mid Y])^{2}] - (E[E[X \mid Y]])^{2}$\PSbr{}$= 0.6(25^{2}) + 0.4(15^{2}) - [0.6(25) + 0.4(15)]^{2} = 375 + 90 - (21)^{2} = 465 - 441 = 24$
+
+**$\operatorname{Var}(X) \ast \ast = 7.0 + 24.0 = 31.0$
+
+Most variance comes from the \textbf{between-condition} difference (24 out of 31).
+
+\end{PSbox}
+
+\PSsection{8.6}{MATLAB Examples}
+
+\begin{PSbox}[unbreakable]{ex}{Example 1: Law of Total Expectation}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Average BER across channel states}
+\CommentTok{\% State probabilities and conditional BERs}
+\VariableTok{p\_state} \OperatorTok{=}\NormalTok{ [}\FloatTok{0.6}\OperatorTok{,} \FloatTok{0.3}\OperatorTok{,} \FloatTok{0.1}\NormalTok{]}\OperatorTok{;}
+\VariableTok{BER\_cond} \OperatorTok{=}\NormalTok{ [}\FloatTok{1e{-}6}\OperatorTok{,} \FloatTok{1e{-}4}\OperatorTok{,} \FloatTok{1e{-}2}\NormalTok{]}\OperatorTok{;}
+
+\CommentTok{\% Total expectation}
+\VariableTok{BER\_overall} \OperatorTok{=} \VariableTok{sum}\NormalTok{(}\VariableTok{p\_state} \OperatorTok{.*} \VariableTok{BER\_cond}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Overall BER = \%.4e\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{BER\_overall}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Simulation verification}
+\VariableTok{N} \OperatorTok{=} \FloatTok{1000000}\OperatorTok{;}
+\VariableTok{states} \OperatorTok{=} \VariableTok{randsample}\NormalTok{(}\FloatTok{1}\OperatorTok{:}\FloatTok{3}\OperatorTok{,} \VariableTok{N}\OperatorTok{,} \VariableTok{true}\OperatorTok{,} \VariableTok{p\_state}\NormalTok{)}\OperatorTok{;}
+\VariableTok{errors} \OperatorTok{=} \VariableTok{rand}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\VariableTok{N}\NormalTok{) }\OperatorTok{\textless{}} \VariableTok{BER\_cond}\NormalTok{(}\VariableTok{states}\NormalTok{)}\OperatorTok{;}
+\VariableTok{BER\_sim} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{errors}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Simulated BER = \%.4e\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{BER\_sim}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{Example 2: Law of Total Variance}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Total Variance Decomposition: Sensor Example}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+\VariableTok{p\_indoor} \OperatorTok{=} \FloatTok{0.6}\OperatorTok{;}
+
+\CommentTok{\% Generate environment (1=indoor, 2=outdoor)}
+\VariableTok{env} \OperatorTok{=}\NormalTok{ (}\VariableTok{rand}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\VariableTok{N}\NormalTok{) }\OperatorTok{\textgreater{}} \VariableTok{p\_indoor}\NormalTok{) }\OperatorTok{+} \FloatTok{1}\OperatorTok{;}
+
+\CommentTok{\% Generate measurements conditional on environment}
+\VariableTok{X} \OperatorTok{=} \VariableTok{zeros}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{X}\NormalTok{(}\VariableTok{env}\OperatorTok{==}\FloatTok{1}\NormalTok{) }\OperatorTok{=} \FloatTok{25} \OperatorTok{+} \FloatTok{1}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{sum}\NormalTok{(}\VariableTok{env}\OperatorTok{==}\FloatTok{1}\NormalTok{))}\OperatorTok{;}    \CommentTok{\% Indoor: N(25, 1)}
+\VariableTok{X}\NormalTok{(}\VariableTok{env}\OperatorTok{==}\FloatTok{2}\NormalTok{) }\OperatorTok{=} \FloatTok{15} \OperatorTok{+} \FloatTok{4}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{sum}\NormalTok{(}\VariableTok{env}\OperatorTok{==}\FloatTok{2}\NormalTok{))}\OperatorTok{;}    \CommentTok{\% Outdoor: N(15, 16)}
+
+\CommentTok{\% Total variance}
+\VariableTok{total\_var} \OperatorTok{=} \VariableTok{var}\NormalTok{(}\VariableTok{X}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% E[Var(X|Y)]}
+\VariableTok{within\_var} \OperatorTok{=} \VariableTok{p\_indoor}\OperatorTok{*}\VariableTok{var}\NormalTok{(}\VariableTok{X}\NormalTok{(}\VariableTok{env}\OperatorTok{==}\FloatTok{1}\NormalTok{)) }\OperatorTok{+}\NormalTok{ (}\FloatTok{1}\OperatorTok{{-}}\VariableTok{p\_indoor}\NormalTok{)}\OperatorTok{*}\VariableTok{var}\NormalTok{(}\VariableTok{X}\NormalTok{(}\VariableTok{env}\OperatorTok{==}\FloatTok{2}\NormalTok{))}\OperatorTok{;}
+
+\CommentTok{\% Var(E[X|Y])}
+\VariableTok{cond\_means} \OperatorTok{=}\NormalTok{ [}\VariableTok{mean}\NormalTok{(}\VariableTok{X}\NormalTok{(}\VariableTok{env}\OperatorTok{==}\FloatTok{1}\NormalTok{))}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{X}\NormalTok{(}\VariableTok{env}\OperatorTok{==}\FloatTok{2}\NormalTok{))]}\OperatorTok{;}
+\VariableTok{between\_var} \OperatorTok{=} \VariableTok{p\_indoor}\OperatorTok{*}\VariableTok{cond\_means}\NormalTok{(}\FloatTok{1}\NormalTok{)}\OperatorTok{\^{}}\FloatTok{2} \OperatorTok{+}\NormalTok{ (}\FloatTok{1}\OperatorTok{{-}}\VariableTok{p\_indoor}\NormalTok{)}\OperatorTok{*}\VariableTok{cond\_means}\NormalTok{(}\FloatTok{2}\NormalTok{)}\OperatorTok{\^{}}\FloatTok{2} \OperatorTok{...}
+              \OperatorTok{{-}}\NormalTok{ (}\VariableTok{p\_indoor}\OperatorTok{*}\VariableTok{cond\_means}\NormalTok{(}\FloatTok{1}\NormalTok{) }\OperatorTok{+}\NormalTok{ (}\FloatTok{1}\OperatorTok{{-}}\VariableTok{p\_indoor}\NormalTok{)}\OperatorTok{*}\VariableTok{cond\_means}\NormalTok{(}\FloatTok{2}\NormalTok{))}\OperatorTok{\^{}}\FloatTok{2}\OperatorTok{;}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Total Var(X) = \%.2f (theory: 31.0)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{total\_var}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}E[Var(X|Y)]  = \%.2f (theory: 7.0)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{within\_var}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Var(E[X|Y])  = \%.2f (theory: 24.0)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{between\_var}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Sum           = \%.2f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{within\_var} \OperatorTok{+} \VariableTok{between\_var}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{Example 3: Conditional Expectation as Best Predictor}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% E[X|Y] as a function of Y}
+\CommentTok{\% Joint: X = Y + N, Y \textasciitilde{} Uniform(0,10), N \textasciitilde{} N(0, 1)}
+\VariableTok{N\_samp} \OperatorTok{=} \FloatTok{50000}\OperatorTok{;}
+\VariableTok{Y} \OperatorTok{=} \FloatTok{10}\OperatorTok{*}\VariableTok{rand}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N\_samp}\NormalTok{)}\OperatorTok{;}
+\VariableTok{X} \OperatorTok{=} \VariableTok{Y} \OperatorTok{+} \VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N\_samp}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Estimate E[X|Y=y] for various y}
+\VariableTok{y\_bins} \OperatorTok{=} \FloatTok{0}\OperatorTok{:}\FloatTok{0.5}\OperatorTok{:}\FloatTok{10}\OperatorTok{;}
+\VariableTok{E\_X\_given\_Y} \OperatorTok{=} \VariableTok{zeros}\NormalTok{(}\VariableTok{size}\NormalTok{(}\VariableTok{y\_bins}\NormalTok{)}\OperatorTok{{-}}\NormalTok{[}\FloatTok{0} \FloatTok{1}\NormalTok{])}\OperatorTok{;}
+\KeywordTok{for} \VariableTok{i} \OperatorTok{=} \FloatTok{1}\OperatorTok{:}\VariableTok{length}\NormalTok{(}\VariableTok{y\_bins}\NormalTok{)}\OperatorTok{{-}}\FloatTok{1}
+    \VariableTok{mask} \OperatorTok{=} \VariableTok{Y} \OperatorTok{\textgreater{}=} \VariableTok{y\_bins}\NormalTok{(}\VariableTok{i}\NormalTok{) }\OperatorTok{\&} \VariableTok{Y} \OperatorTok{\textless{}} \VariableTok{y\_bins}\NormalTok{(}\VariableTok{i}\OperatorTok{+}\FloatTok{1}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{E\_X\_given\_Y}\NormalTok{(}\VariableTok{i}\NormalTok{) }\OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{X}\NormalTok{(}\VariableTok{mask}\NormalTok{))}\OperatorTok{;}
+\KeywordTok{end}
+\VariableTok{y\_centers} \OperatorTok{=}\NormalTok{ (}\VariableTok{y\_bins}\NormalTok{(}\FloatTok{1}\OperatorTok{:}\KeywordTok{end}\OperatorTok{{-}}\FloatTok{1}\NormalTok{) }\OperatorTok{+} \VariableTok{y\_bins}\NormalTok{(}\FloatTok{2}\OperatorTok{:}\KeywordTok{end}\NormalTok{))}\OperatorTok{/}\FloatTok{2}\OperatorTok{;}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{scatter}\NormalTok{(}\VariableTok{Y}\NormalTok{(}\FloatTok{1}\OperatorTok{:}\FloatTok{5000}\NormalTok{)}\OperatorTok{,} \VariableTok{X}\NormalTok{(}\FloatTok{1}\OperatorTok{:}\FloatTok{5000}\NormalTok{)}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}b\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}.\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{y\_centers}\OperatorTok{,} \VariableTok{E\_X\_given\_Y}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r{-}\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{3}\NormalTok{)}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{y\_centers}\OperatorTok{,} \VariableTok{y\_centers}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}g{-}{-}\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Y\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}X\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{legend}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Data (X,Y)\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}E[X|Y] (estimated)\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}E[X|Y] = Y (theory)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Conditional Expectation\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\PSsection{8.7}{Practice Problems}
+
+\begin{PSbox}[unbreakable]{prob}{Problem 1}
+
+A digital link operates over two channel types:
+
+\begin{itemize}
+\tightlist
+\item
+  Type $A$ (prob 0.7): $E[\text{delay}\ \mid A] = 5\,\mathrm{ms},\, \operatorname{Var}(\text{delay}\ \mid A) = 2$
+\item
+  Type $B$ (prob 0.3): $E[\text{delay}\ \mid B] = 20\,\mathrm{ms},\, \operatorname{Var}(\text{delay}\ \mid B) = 25$
+\end{itemize}
+
+Find (a) $E[\text{delay}]$, (b) $\operatorname{Var}(\text{delay})$.
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\alph{enumi})}
+\tightlist
+\item
+  $E[D] = 0.7(5) + 0.3(20) = 3.5 + 6 = 9.5$ ms
+\item
+  $E[\operatorname{Var}(D \mid \text{type})] = 0.7(2) + 0.3(25) = 1.4 + 7.5 = 8.9$\PSbr{}$\operatorname{Var}(E[D \mid \text{type}]) = 0.7(5^{2}) + 0.3(20^{2}) - 9.5^{2} = 17.5 + 120 - 90.25 = 47.25$\PSbr{}$\operatorname{Var}(D) = 8.9 + 47.25 = 56.15$
+\end{enumerate}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{Problem 2}
+
+A random number $N$ of components are tested. $N \sim \mathrm{Poisson}(10)$. Each has independent failure probability $p = 0.05$. Let $X$ = number of failures. Find $E[X]$ and $\operatorname{Var}(X)$.
+
+\PSsolution{} $X \mid N \sim \mathrm{Binomial}(N,\, 0.05)$. $E[X \mid N] = 0.05\,\mathrm{N}$. $\operatorname{Var}(X \mid N) = N(0.05)(0.95) = 0.0475\,\mathrm{N}$.\PSbr{}$E[X] = E[E[X \mid N]] = E[0.05\,\mathrm{N}] = 0.05(10) = 0.5$\PSbr{}$\operatorname{Var}(X) = E[\operatorname{Var}(X \mid N)] + \operatorname{Var}(E[X \mid N]) = E[0.0475\,\mathrm{N}] + \operatorname{Var}(0.05\,\mathrm{N}) = 0.0475(10) + 0.05^{2}(10) = 0.475 + 0.025 = 0.5$
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{Problem 3}
+
+Write MATLAB code to verify Problem 2 by simulation.
+
+\PSsolution{} 
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\VariableTok{N\_trials} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;} \VariableTok{p} \OperatorTok{=} \FloatTok{0.05}\OperatorTok{;} \VariableTok{lambda} \OperatorTok{=} \FloatTok{10}\OperatorTok{;}
+\VariableTok{N} \OperatorTok{=} \VariableTok{poissrnd}\NormalTok{(}\VariableTok{lambda}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \VariableTok{N\_trials}\NormalTok{)}\OperatorTok{;}
+\VariableTok{X} \OperatorTok{=} \VariableTok{binornd}\NormalTok{(}\VariableTok{N}\OperatorTok{,} \VariableTok{p}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}E[X]: theory=0.5, sim=\%.3f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{X}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Var(X): theory=0.5, sim=\%.3f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{var}\NormalTok{(}\VariableTok{X}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{Next Module: {Module 9 — Covariance and Correlation}}
+
+\end{PSbox}

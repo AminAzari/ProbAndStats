@@ -1,0 +1,557 @@
+\begin{PSbox}[unbreakable]{obj}{Learning Objectives}
+
+This capstone module integrates ALL previous modules into real Electrical Engineering applications. Students will be able to:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Apply probabilistic modeling to communication systems
+\item
+  Analyze signal processing problems statistically
+\item
+  Model electronic component variations
+\item
+  Assess power system reliability
+\item
+  Handle measurement uncertainty in control systems
+\item
+  Connect probability/statistics to machine learning foundations
+\end{enumerate}
+
+\end{PSbox}
+
+\PSsection{16.1}{Communications}
+
+\PSsubsection{16.1.1 BER Estimation and Confidence Intervals}
+
+\textbf{Problem:} Estimate the Bit Error Rate of a communication link.
+
+\textbf{Model:} Each bit is a Bernoulli trial with error probability $p$ (the BER).
+
+\begin{itemize}
+\tightlist
+\item
+  $n$ bits transmitted, $k$ errors observed
+\item
+  $\hat{p} = \frac{k}{n}$ (MLE of BER)
+\item
+  95\% CI: $\hat{p} \pm 1.96\sqrt{\frac{\hat{p}(1-\hat{p})}{n}}$
+\end{itemize}
+
+\textbf{MATLAB: BER Simulation and CI}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% BER Estimation with Confidence Interval}
+\VariableTok{EbN0\_dB} \OperatorTok{=} \FloatTok{8}\OperatorTok{;} \VariableTok{EbN0} \OperatorTok{=} \FloatTok{10}\OperatorTok{\^{}}\NormalTok{(}\VariableTok{EbN0\_dB}\OperatorTok{/}\FloatTok{10}\NormalTok{)}\OperatorTok{;}
+\VariableTok{N\_bits} \OperatorTok{=} \FloatTok{1e6}\OperatorTok{;}
+
+\CommentTok{\% BPSK transmission}
+\VariableTok{bits} \OperatorTok{=} \FloatTok{2}\OperatorTok{*}\VariableTok{randi}\NormalTok{([}\FloatTok{0}\OperatorTok{,}\FloatTok{1}\NormalTok{]}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \VariableTok{N\_bits}\NormalTok{) }\OperatorTok{{-}} \FloatTok{1}\OperatorTok{;}
+\VariableTok{noise} \OperatorTok{=}\NormalTok{ (}\FloatTok{1}\OperatorTok{/}\VariableTok{sqrt}\NormalTok{(}\FloatTok{2}\OperatorTok{*}\VariableTok{EbN0}\NormalTok{)) }\OperatorTok{*} \VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N\_bits}\NormalTok{)}\OperatorTok{;}
+\VariableTok{received} \OperatorTok{=} \VariableTok{bits} \OperatorTok{+} \VariableTok{noise}\OperatorTok{;}
+\VariableTok{decisions} \OperatorTok{=} \VariableTok{sign}\NormalTok{(}\VariableTok{received}\NormalTok{)}\OperatorTok{;}
+\VariableTok{errors} \OperatorTok{=} \VariableTok{sum}\NormalTok{(}\VariableTok{decisions} \OperatorTok{\textasciitilde{}=} \VariableTok{bits}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{BER\_hat} \OperatorTok{=} \VariableTok{errors} \OperatorTok{/} \VariableTok{N\_bits}\OperatorTok{;}
+\VariableTok{BER\_theory} \OperatorTok{=} \VariableTok{qfunc}\NormalTok{(}\VariableTok{sqrt}\NormalTok{(}\FloatTok{2}\OperatorTok{*}\VariableTok{EbN0}\NormalTok{))}\OperatorTok{;}
+
+\CommentTok{\% 95\% Confidence Interval}
+\VariableTok{margin} \OperatorTok{=} \FloatTok{1.96} \OperatorTok{*} \VariableTok{sqrt}\NormalTok{(}\VariableTok{BER\_hat}\OperatorTok{*}\NormalTok{(}\FloatTok{1}\OperatorTok{{-}}\VariableTok{BER\_hat}\NormalTok{)}\OperatorTok{/}\VariableTok{N\_bits}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}BER estimate: \%.4e\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{BER\_hat}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}BER theory:   \%.4e\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{BER\_theory}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}95\%\% CI: [\%.4e, \%.4e]\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{BER\_hat}\OperatorTok{{-}}\VariableTok{margin}\OperatorTok{,} \VariableTok{BER\_hat}\OperatorTok{+}\VariableTok{margin}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\PSsubsection{16.1.2 AWGN Noise Modeling}
+
+Additive White Gaussian Noise is the fundamental noise model:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Distribution:} $N\left(0,\, \frac{N_{0}}{2}\right)$ per dimension
+\item
+  \textbf{Why Gaussian?} CLT — thermal noise is sum of many electron contributions
+\item
+  \textbf{Characterization:} Fully described by power spectral density $N_{0}$ or variance $\sigma^{2} = N_{0}B$ (B = bandwidth)
+\end{itemize}
+
+\PSsubsection{16.1.3 Rayleigh Fading Channel}
+
+\textbf{Model:} Channel coefficient $h = h_{I} + j \cdot h_{Q}$ where $h_{I},\, h_{Q} \sim N(0,\, \sigma^{2})$ independent.
+
+\begin{itemize}
+\tightlist
+\item
+  Envelope $\lvert h\rvert \sim \mathrm{Rayleigh}(\sigma)$
+\item
+  Power $\lvert h\rvert^{2} \sim \mathrm{Exponential}\left(\frac{1}{2\sigma^{2}}\right)$
+\item
+  \textbf{Outage probability:} $P(\lvert h\rvert^{2} < \gamma_{\mathrm{th}}) = 1 - \exp \left(-\frac{\gamma_{\mathrm{th}}}{2\sigma^{2}}\right)$
+\end{itemize}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Rayleigh Fading: Outage Probability}
+\VariableTok{sigma} \OperatorTok{=} \FloatTok{1}\OperatorTok{;}
+\VariableTok{SNR\_avg\_dB} \OperatorTok{=} \FloatTok{10}\OperatorTok{;}    \CommentTok{\% Average SNR in dB}
+\VariableTok{SNR\_avg} \OperatorTok{=} \FloatTok{10}\OperatorTok{\^{}}\NormalTok{(}\VariableTok{SNR\_avg\_dB}\OperatorTok{/}\FloatTok{10}\NormalTok{)}\OperatorTok{;}
+\VariableTok{SNR\_threshold\_dB} \OperatorTok{=} \FloatTok{5}\OperatorTok{;}  \CommentTok{\% Minimum required SNR}
+\VariableTok{gamma\_th} \OperatorTok{=} \FloatTok{10}\OperatorTok{\^{}}\NormalTok{(}\VariableTok{SNR\_threshold\_dB}\OperatorTok{/}\FloatTok{10}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Analytical outage probability}
+\VariableTok{P\_outage} \OperatorTok{=} \FloatTok{1} \OperatorTok{{-}} \VariableTok{exp}\NormalTok{(}\OperatorTok{{-}}\VariableTok{gamma\_th} \OperatorTok{/} \VariableTok{SNR\_avg}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Outage Probability (analytical): \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{P\_outage}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Simulation}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+\VariableTok{h} \OperatorTok{=}\NormalTok{ (}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\VariableTok{N}\NormalTok{) }\OperatorTok{+} \FloatTok{1j}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\VariableTok{N}\NormalTok{)) }\OperatorTok{/} \VariableTok{sqrt}\NormalTok{(}\FloatTok{2}\NormalTok{)}\OperatorTok{;}  \CommentTok{\% Rayleigh fading}
+\VariableTok{SNR\_inst} \OperatorTok{=} \VariableTok{SNR\_avg} \OperatorTok{*} \VariableTok{abs}\NormalTok{(}\VariableTok{h}\NormalTok{)}\OperatorTok{.\^{}}\FloatTok{2}\OperatorTok{;}
+\VariableTok{P\_outage\_sim} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{SNR\_inst} \OperatorTok{\textless{}} \VariableTok{gamma\_th}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Outage Probability (simulated): \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{P\_outage\_sim}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\PSsubsection{16.1.4 Rician Fading}
+
+When a line-of-sight (LOS) component exists:
+
+\begin{itemize}
+\tightlist
+\item
+  $h = h_{\mathrm{LOS}} + h_{\mathrm{scatter}}$
+\item
+  $\lvert h\rvert \sim \mathrm{Rician}(\nu,\, \sigma)$ where $K = \frac{\nu^{2}}{2\sigma^{2}}$ is the K-factor
+\end{itemize}
+
+K-factor: $K = 0$ (Rayleigh) $\to K = \infty$ (no fading, AWGN)
+
+\PSsubsection{16.1.5 SNR Statistics}
+
+\textbf{Instantaneous SNR:} $\gamma = \lvert h\rvert^{2} \times \frac{E_{s}}{N_{0}}$
+
+For Rayleigh: $\gamma \sim \mathrm{Exponential}(\bar{\gamma})$ where $\bar{\gamma}$ = average SNR
+
+\textbf{Average BER over fading:}\PSdisplay{\bar{P}_e = \int_0^\infty P_e(\gamma) \cdot f_\gamma(\gamma) \, d\gamma}
+
+For BPSK over Rayleigh: $\bar{P}_{e} = \frac{1}{2}\left(1 - \sqrt{\frac{\bar{\gamma}}{1+\bar{\gamma}}}\right)$
+
+\PSsection{16.2}{Signal Processing}
+
+\PSsubsection{16.2.1 Measurement Noise Characterization}
+
+\textbf{Problem:} Characterize noise in measured signal $x(t) = s(t) + n(t)$.
+
+\textbf{Approach:}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Collect noise-only samples (signal absent)
+\item
+  Estimate noise statistics: $\hat{\mu}_{n},\, \hat{\sigma}^{2}_{n}$
+\item
+  Test for Gaussianity (histogram, QQ-plot)
+\item
+  Compute SNR: $\mathrm{SNR} = \frac{P_{\mathrm{signal}}}{\hat{\sigma}^{2}_{n}}$
+\end{enumerate}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Noise Characterization}
+\VariableTok{fs} \OperatorTok{=} \FloatTok{1000}\OperatorTok{;}  \VariableTok{T} \OperatorTok{=} \FloatTok{10}\OperatorTok{;}  \CommentTok{\% 1kHz sample rate, 10 seconds}
+\VariableTok{t} \OperatorTok{=} \FloatTok{0}\OperatorTok{:}\FloatTok{1}\OperatorTok{/}\VariableTok{fs}\OperatorTok{:}\VariableTok{T}\OperatorTok{{-}}\FloatTok{1}\OperatorTok{/}\VariableTok{fs}\OperatorTok{;}
+\VariableTok{N\_samples} \OperatorTok{=} \VariableTok{length}\NormalTok{(}\VariableTok{t}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Simulate: known signal + noise}
+\VariableTok{signal} \OperatorTok{=} \FloatTok{2}\OperatorTok{*}\VariableTok{sin}\NormalTok{(}\FloatTok{2}\OperatorTok{*}\VariableTok{pi}\OperatorTok{*}\FloatTok{5}\OperatorTok{*}\VariableTok{t}\NormalTok{)}\OperatorTok{;}  \CommentTok{\% 5 Hz sine wave}
+\VariableTok{noise} \OperatorTok{=} \FloatTok{0.5}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N\_samples}\NormalTok{)}\OperatorTok{;}
+\VariableTok{measured} \OperatorTok{=} \VariableTok{signal} \OperatorTok{+} \VariableTok{noise}\OperatorTok{;}
+
+\CommentTok{\% Estimate noise from signal{-}free segments (or residuals)}
+\CommentTok{\% Here: subtract known signal}
+\VariableTok{noise\_estimate} \OperatorTok{=} \VariableTok{measured} \OperatorTok{{-}} \VariableTok{signal}\OperatorTok{;}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Noise Statistics:\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}  Mean: \%.4f (should be \textasciitilde{}0)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{noise\_estimate}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}  Std:  \%.4f (true: 0.5)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{std}\NormalTok{(}\VariableTok{noise\_estimate}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}  SNR:  \%.1f dB\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \FloatTok{10}\OperatorTok{*}\VariableTok{log10}\NormalTok{(}\VariableTok{var}\NormalTok{(}\VariableTok{signal}\NormalTok{)}\OperatorTok{/}\VariableTok{var}\NormalTok{(}\VariableTok{noise\_estimate}\NormalTok{)))}\OperatorTok{;}
+
+\CommentTok{\% Gaussianity test}
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{subplot}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\FloatTok{2}\OperatorTok{,}\FloatTok{1}\NormalTok{)}\OperatorTok{;} \VariableTok{histogram}\NormalTok{(}\VariableTok{noise\_estimate}\OperatorTok{,} \FloatTok{50}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Normalization\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}pdf\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{hold} \VariableTok{on}\OperatorTok{;} \VariableTok{x} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\OperatorTok{{-}}\FloatTok{2}\OperatorTok{,}\FloatTok{2}\OperatorTok{,}\FloatTok{200}\NormalTok{)}\OperatorTok{;} \VariableTok{plot}\NormalTok{(}\VariableTok{x}\OperatorTok{,} \VariableTok{normpdf}\NormalTok{(}\VariableTok{x}\OperatorTok{,}\FloatTok{0}\OperatorTok{,}\FloatTok{0.5}\NormalTok{)}\OperatorTok{,}\SpecialStringTok{\textquotesingle{}r\textquotesingle{}}\OperatorTok{,}\SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Noise Histogram vs Gaussian\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{subplot}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\FloatTok{2}\OperatorTok{,}\FloatTok{2}\NormalTok{)}\OperatorTok{;} \VariableTok{qqplot}\NormalTok{(}\VariableTok{noise\_estimate}\NormalTok{)}\OperatorTok{;} \VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}QQ Plot\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\PSsubsection{16.2.2 Correlation-Based Detection}
+
+\textbf{Problem:} Detect a known signal in noise.
+
+\textbf{Method:} Correlate received signal with known template. Under $H_{0}$ (noise only), the correlator output has known distribution \ensuremath{\to} set threshold.
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Correlation Detector}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100}\OperatorTok{;}  \CommentTok{\% Signal length}
+\VariableTok{s} \OperatorTok{=} \VariableTok{ones}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\VariableTok{N}\NormalTok{)}\OperatorTok{/}\VariableTok{sqrt}\NormalTok{(}\VariableTok{N}\NormalTok{)}\OperatorTok{;}  \CommentTok{\% Known signal template (normalized)}
+\VariableTok{sigma\_n} \OperatorTok{=} \FloatTok{1}\OperatorTok{;}
+
+\CommentTok{\% H0: noise only; H1: signal + noise}
+\VariableTok{N\_trials} \OperatorTok{=} \FloatTok{10000}\OperatorTok{;}
+\VariableTok{y\_H0} \OperatorTok{=} \VariableTok{zeros}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N\_trials}\NormalTok{)}\OperatorTok{;}  \VariableTok{y\_H1} \OperatorTok{=} \VariableTok{zeros}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N\_trials}\NormalTok{)}\OperatorTok{;}
+\VariableTok{A} \OperatorTok{=} \FloatTok{2}\OperatorTok{;}  \CommentTok{\% Signal amplitude}
+
+\KeywordTok{for} \VariableTok{i} \OperatorTok{=} \FloatTok{1}\OperatorTok{:}\VariableTok{N\_trials}
+    \VariableTok{n} \OperatorTok{=} \VariableTok{sigma\_n} \OperatorTok{*} \VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{y\_H0}\NormalTok{(}\VariableTok{i}\NormalTok{) }\OperatorTok{=} \VariableTok{s} \OperatorTok{*} \VariableTok{n}\OperatorTok{\textquotesingle{};}              \CommentTok{\% Correlator output under H0}
+    \VariableTok{y\_H1}\NormalTok{(}\VariableTok{i}\NormalTok{) }\OperatorTok{=} \VariableTok{s} \OperatorTok{*}\NormalTok{ (}\VariableTok{A}\OperatorTok{*}\VariableTok{s} \OperatorTok{+} \VariableTok{n}\NormalTok{)}\OperatorTok{\textquotesingle{};}     \CommentTok{\% Correlator output under H1}
+\KeywordTok{end}
+
+\CommentTok{\% Set threshold for P\_FA = 0.01}
+\VariableTok{threshold} \OperatorTok{=} \VariableTok{sigma\_n}\OperatorTok{/}\VariableTok{sqrt}\NormalTok{(}\VariableTok{N}\NormalTok{) }\OperatorTok{*} \VariableTok{norminv}\NormalTok{(}\FloatTok{0.99}\NormalTok{)}\OperatorTok{;}
+\VariableTok{P\_FA} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{y\_H0} \OperatorTok{\textgreater{}} \VariableTok{threshold}\NormalTok{)}\OperatorTok{;}
+\VariableTok{P\_D} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{y\_H1} \OperatorTok{\textgreater{}} \VariableTok{threshold}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P\_FA = \%.4f (target: 0.01)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{P\_FA}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P\_D = \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{P\_D}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\PSsection{16.3}{Electronics}
+
+\PSsubsection{16.3.1 Component Tolerance Modeling}
+
+\textbf{Problem:} Resistors have nominal value $R_{0}$ with manufacturing tolerance.
+
+\textbf{Model:} $R \sim N(R_{0},\, \sigma_{R}^{2})$ where $\sigma_{R}$ depends on tolerance class.
+
+For $\pm 5\%$ tolerance (99.7\% within bounds): $3\sigma = 0.05R_{0} \to \sigma = 0.0167R_{0}$
+
+\PSsubsection{16.3.2 Monte Carlo Circuit Analysis}
+
+\textbf{Problem:} A voltage divider uses $R_{1}$ and $R_{2}$. What is the distribution of output voltage?
+
+$\displaystyle V_{\mathrm{out}} = V_{\mathrm{in}} \times \frac{R_{2}}{R_{1} + R_{2}}$
+
+With $R_{1},\, R_{2}$ random: $V_{\mathrm{out}}$ is a random variable!
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Monte Carlo: Voltage Divider with Tolerant Components}
+\VariableTok{V\_in} \OperatorTok{=} \FloatTok{5}\OperatorTok{;}         \CommentTok{\% Input voltage}
+\VariableTok{R1\_nom} \OperatorTok{=} \FloatTok{10e3}\OperatorTok{;}    \VariableTok{R2\_nom} \OperatorTok{=} \FloatTok{10e3}\OperatorTok{;}   \CommentTok{\% 10kΩ each}
+\VariableTok{tol} \OperatorTok{=} \FloatTok{0.05}\OperatorTok{;}       \CommentTok{\% 5\% tolerance}
+\VariableTok{sigma\_R} \OperatorTok{=} \VariableTok{tol} \OperatorTok{*} \VariableTok{R1\_nom} \OperatorTok{/} \FloatTok{3}\OperatorTok{;}  \CommentTok{\% 3{-}sigma = 5\%}
+
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+\VariableTok{R1} \OperatorTok{=} \VariableTok{R1\_nom} \OperatorTok{+} \VariableTok{sigma\_R}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{R2} \OperatorTok{=} \VariableTok{R2\_nom} \OperatorTok{+} \VariableTok{sigma\_R}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{V\_out} \OperatorTok{=} \VariableTok{V\_in} \OperatorTok{*} \VariableTok{R2} \OperatorTok{./}\NormalTok{ (}\VariableTok{R1} \OperatorTok{+} \VariableTok{R2}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Nominal V\_out = \%.3f V\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{V\_in} \OperatorTok{*} \VariableTok{R2\_nom}\OperatorTok{/}\NormalTok{(}\VariableTok{R1\_nom}\OperatorTok{+}\VariableTok{R2\_nom}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Mean V\_out = \%.4f V\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{V\_out}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Std V\_out = \%.4f V\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{std}\NormalTok{(}\VariableTok{V\_out}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}99.7\%\% range: [\%.3f, \%.3f] V\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \OperatorTok{...}
+    \VariableTok{mean}\NormalTok{(}\VariableTok{V\_out}\NormalTok{)}\OperatorTok{{-}}\FloatTok{3}\OperatorTok{*}\VariableTok{std}\NormalTok{(}\VariableTok{V\_out}\NormalTok{)}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{V\_out}\NormalTok{)}\OperatorTok{+}\FloatTok{3}\OperatorTok{*}\VariableTok{std}\NormalTok{(}\VariableTok{V\_out}\NormalTok{))}\OperatorTok{;}
+
+\CommentTok{\% Yield: fraction within ±2\% of nominal}
+\VariableTok{V\_nom} \OperatorTok{=} \FloatTok{2.5}\OperatorTok{;}
+\VariableTok{yield} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{abs}\NormalTok{(}\VariableTok{V\_out} \OperatorTok{{-}} \VariableTok{V\_nom}\NormalTok{) }\OperatorTok{\textless{}} \FloatTok{0.02}\OperatorTok{*}\VariableTok{V\_nom}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Yield (±2\%\%): \%.2f\%\%\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \FloatTok{100}\OperatorTok{*}\VariableTok{yield}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\PSsubsection{16.3.3 Measurement Uncertainty Propagation}
+
+If $Z = f(X,\, Y)$ and $X,\, Y$ have small uncertainties:
+
+\PSdisplay{\sigma_Z^2 \approx \left(\frac{\partial f}{\partial X}\right)^2 \sigma_X^2 + \left(\frac{\partial f}{\partial Y}\right)^2 \sigma_Y^2}
+
+\textbf{Example:} Power $P = \frac{V^{2}}{R}$. $\sigma_{P}^{2} \approx \frac{2\,\mathrm{V}}{R}^{2}\sigma_{V}^{2} + \frac{V^{2}}{R^{2}}^{2}\sigma_{R}^{2}$
+
+\PSsection{16.4}{Power Systems}
+
+\PSsubsection{16.4.1 Load Uncertainty}
+
+\textbf{Problem:} Peak load is uncertain. Model: $L \sim N(\mu_{L},\, \sigma_{L}^{2})$
+
+Design question: What capacity $C$ ensures $P(\text{load} > \text{capacity}) < 0.01$?
+
+$C = \mu_{L} + 2.326\sigma_{L}$ (for 1\% exceedance probability)
+
+\PSsubsection{16.4.2 System Reliability}
+
+\textbf{Series system:} All components must work.
+
+$R_{\mathrm{sys}} = R_{1} \times R_{2} \times \ldots \times R_{n}$ (for independent components)
+
+\textbf{Parallel system:} At least one must work.
+
+$R_{\mathrm{sys}} = 1 - (1-R_{1})(1-R_{2})\ldots (1-R_{n})$
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Reliability Analysis: Series{-}Parallel System}
+\CommentTok{\% System: Two subsystems in series, each with 3 parallel redundant units}
+\VariableTok{R\_unit} \OperatorTok{=} \FloatTok{0.95}\OperatorTok{;}  \CommentTok{\% Individual component reliability}
+\VariableTok{n\_parallel} \OperatorTok{=} \FloatTok{3}\OperatorTok{;}
+\VariableTok{n\_series} \OperatorTok{=} \FloatTok{2}\OperatorTok{;}
+
+\CommentTok{\% Each parallel subsystem}
+\VariableTok{R\_subsystem} \OperatorTok{=} \FloatTok{1} \OperatorTok{{-}}\NormalTok{ (}\FloatTok{1} \OperatorTok{{-}} \VariableTok{R\_unit}\NormalTok{)}\OperatorTok{\^{}}\VariableTok{n\_parallel}\OperatorTok{;}
+\CommentTok{\% Series combination}
+\VariableTok{R\_system} \OperatorTok{=} \VariableTok{R\_subsystem}\OperatorTok{\^{}}\VariableTok{n\_series}\OperatorTok{;}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Unit reliability: \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{R\_unit}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Subsystem (3 parallel): \%.6f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{R\_subsystem}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}System (2 in series): \%.6f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{R\_system}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Monte Carlo verification}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+\VariableTok{sys\_works} \OperatorTok{=} \VariableTok{true}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\KeywordTok{for} \VariableTok{s} \OperatorTok{=} \FloatTok{1}\OperatorTok{:}\VariableTok{n\_series}
+    \VariableTok{sub\_works} \OperatorTok{=} \VariableTok{false}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+    \KeywordTok{for} \VariableTok{p} \OperatorTok{=} \FloatTok{1}\OperatorTok{:}\VariableTok{n\_parallel}
+        \VariableTok{unit\_works} \OperatorTok{=} \VariableTok{rand}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{) }\OperatorTok{\textless{}} \VariableTok{R\_unit}\OperatorTok{;}
+        \VariableTok{sub\_works} \OperatorTok{=} \VariableTok{sub\_works} \OperatorTok{|} \VariableTok{unit\_works}\OperatorTok{;}
+    \KeywordTok{end}
+    \VariableTok{sys\_works} \OperatorTok{=} \VariableTok{sys\_works} \OperatorTok{\&} \VariableTok{sub\_works}\OperatorTok{;}
+\KeywordTok{end}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}System reliability (sim): \%.6f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{sys\_works}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\PSsection{16.5}{Control Systems}
+
+\PSsubsection{16.5.1 Sensor Noise Effects}
+
+\textbf{Problem:} A control system uses noisy sensor readings.
+
+Measurement: $y(k) = x(k) + n(k)$ where $n \sim N(0,\, \sigma^{2}_{n})$
+
+Controller acts on $y(k)$ \ensuremath{\to} tracking error includes noise contribution.
+
+\textbf{Solution approaches:}
+
+\begin{itemize}
+\tightlist
+\item
+  Averaging (low-pass filter): reduces noise by $\sqrt{n}$
+\item
+  Kalman filter: optimal fusion of model prediction and measurement
+\end{itemize}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Noisy Sensor in Control Loop: Effect of Averaging}
+\VariableTok{true\_value} \OperatorTok{=} \FloatTok{10}\OperatorTok{;}    \CommentTok{\% Constant being measured}
+\VariableTok{sigma\_n} \OperatorTok{=} \FloatTok{0.5}\OperatorTok{;}      \CommentTok{\% Sensor noise std dev}
+\VariableTok{N\_measurements} \OperatorTok{=} \FloatTok{1000}\OperatorTok{;}
+
+\CommentTok{\% Raw measurements}
+\VariableTok{measurements} \OperatorTok{=} \VariableTok{true\_value} \OperatorTok{+} \VariableTok{sigma\_n}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N\_measurements}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Moving average filter (window size M)}
+\VariableTok{M\_values} \OperatorTok{=}\NormalTok{ [}\FloatTok{1}\OperatorTok{,} \FloatTok{5}\OperatorTok{,} \FloatTok{10}\OperatorTok{,} \FloatTok{20}\OperatorTok{,} \FloatTok{50}\NormalTok{]}\OperatorTok{;}
+\VariableTok{figure}\OperatorTok{;} \VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+\KeywordTok{for} \VariableTok{M} \OperatorTok{=} \VariableTok{M\_values}
+    \VariableTok{filtered} \OperatorTok{=} \VariableTok{movmean}\NormalTok{(}\VariableTok{measurements}\OperatorTok{,} \VariableTok{M}\NormalTok{)}\OperatorTok{;}
+    \VariableTok{plot}\NormalTok{(}\VariableTok{filtered}\NormalTok{(}\FloatTok{100}\OperatorTok{:}\FloatTok{500}\NormalTok{))}\OperatorTok{;}
+\KeywordTok{end}
+\VariableTok{yline}\NormalTok{(}\VariableTok{true\_value}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}k{-}{-}\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{legend}\NormalTok{(}\VariableTok{arrayfun}\NormalTok{(}\OperatorTok{@}\NormalTok{(}\VariableTok{m}\NormalTok{) }\VariableTok{sprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}M=\%d, σ=\%.3f\textquotesingle{}}\OperatorTok{,} \VariableTok{m}\OperatorTok{,} \VariableTok{sigma\_n}\OperatorTok{/}\VariableTok{sqrt}\NormalTok{(}\VariableTok{m}\NormalTok{))}\OperatorTok{,} \OperatorTok{...}
+    \VariableTok{M\_values}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}UniformOutput\textquotesingle{}}\OperatorTok{,} \VariableTok{false}\NormalTok{))}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Sample\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Estimate\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Noise Reduction by Averaging\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\PSsubsection{16.5.2 Parameter Uncertainty}
+
+System model: $G(s) = \frac{K}{\tau s + 1}$ where $K$ and $\tau$ are uncertain.
+
+Monte Carlo approach: sample $K$ and $\tau$ from their distributions, simulate system response many times, compute statistics of output.
+
+\PSsection{16.6}{Machine Learning / AI Connections}
+
+\PSsubsection{16.6.1 Sampling and Data Collection}
+
+\begin{itemize}
+\tightlist
+\item
+  Training data = sample from population
+\item
+  Test data = independent sample for validation
+\item
+  i.i.d. assumption underlies most ML theory
+\end{itemize}
+
+\PSsubsection{16.6.2 Estimation as Foundation of ML}
+
+\begin{itemize}
+\tightlist
+\item
+  Linear regression = MLE under Gaussian noise assumption
+\item
+  Neural network training = MLE (or MAP) for model parameters
+\item
+  Loss function minimization = maximum likelihood principle
+\end{itemize}
+
+\PSsubsection{16.6.3 Probability Distributions in ML}
+
+\begin{itemize}
+\tightlist
+\item
+  Generative models: learn $P(X)$ directly
+\item
+  Gaussian Mixture Models: weighted sum of Gaussians
+\item
+  Variational Autoencoders: latent variables with Gaussian priors
+\end{itemize}
+
+\PSsubsection{16.6.4 Bias-Variance Tradeoff}
+
+\PSdisplay{\text{Test Error} = \text{Bias}^2 + \text{Variance} + \text{Irreducible Noise}}
+
+This is exactly the MSE decomposition from estimation theory (Module 13)!
+
+\begin{itemize}
+\tightlist
+\item
+  High bias: underfitting (too simple model)
+\item
+  High variance: overfitting (too complex model)
+\item
+  Optimal: balance between the two
+\end{itemize}
+
+\PSsubsection{16.6.5 Confidence and Uncertainty in Predictions}
+
+\begin{itemize}
+\tightlist
+\item
+  Confidence intervals for model predictions
+\item
+  Bayesian neural networks: posterior over weights \ensuremath{\to} prediction uncertainty
+\item
+  Calibration: predicted probabilities should match observed frequencies
+\end{itemize}
+
+\PSsection{16.7}{Comprehensive MATLAB Project: Communication System Analysis}
+
+\tcbset{PScodemode/.style={breakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Complete Communication System Statistical Analysis}
+\CommentTok{\% Simulate BPSK over Rayleigh fading with AWGN}
+\CommentTok{\% Apply estimation, CI, and hypothesis testing}
+
+\CommentTok{\% System parameters}
+\VariableTok{N\_bits} \OperatorTok{=} \FloatTok{1e5}\OperatorTok{;}
+\VariableTok{EbN0\_dB} \OperatorTok{=} \FloatTok{10}\OperatorTok{;}
+\VariableTok{EbN0} \OperatorTok{=} \FloatTok{10}\OperatorTok{\^{}}\NormalTok{(}\VariableTok{EbN0\_dB}\OperatorTok{/}\FloatTok{10}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Generate channel and signal}
+\VariableTok{bits} \OperatorTok{=} \VariableTok{randi}\NormalTok{([}\FloatTok{0}\OperatorTok{,}\FloatTok{1}\NormalTok{]}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \VariableTok{N\_bits}\NormalTok{)}\OperatorTok{;}
+\VariableTok{symbols} \OperatorTok{=} \FloatTok{2}\OperatorTok{*}\VariableTok{bits} \OperatorTok{{-}} \FloatTok{1}\OperatorTok{;}  \CommentTok{\% BPSK: ±1}
+
+\CommentTok{\% Rayleigh fading channel}
+\VariableTok{h} \OperatorTok{=}\NormalTok{ (}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\VariableTok{N\_bits}\NormalTok{) }\OperatorTok{+} \FloatTok{1j}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\VariableTok{N\_bits}\NormalTok{)) }\OperatorTok{/} \VariableTok{sqrt}\NormalTok{(}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{h\_mag} \OperatorTok{=} \VariableTok{abs}\NormalTok{(}\VariableTok{h}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% AWGN noise}
+\VariableTok{noise\_var} \OperatorTok{=} \FloatTok{1}\OperatorTok{/}\NormalTok{(}\FloatTok{2}\OperatorTok{*}\VariableTok{EbN0}\NormalTok{)}\OperatorTok{;}
+\VariableTok{noise} \OperatorTok{=} \VariableTok{sqrt}\NormalTok{(}\VariableTok{noise\_var}\NormalTok{) }\OperatorTok{*} \VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N\_bits}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Received signal (with fading)}
+\VariableTok{received} \OperatorTok{=} \VariableTok{h\_mag} \OperatorTok{.*} \VariableTok{symbols} \OperatorTok{+} \VariableTok{noise}\OperatorTok{;}
+
+\CommentTok{\% Detection (coherent, known channel)}
+\VariableTok{detected} \OperatorTok{=} \VariableTok{sign}\NormalTok{(}\VariableTok{real}\NormalTok{(}\VariableTok{received} \OperatorTok{./} \VariableTok{h\_mag}\NormalTok{))}\OperatorTok{;}  \CommentTok{\% Zero{-}forcing}
+\VariableTok{errors} \OperatorTok{=} \VariableTok{sum}\NormalTok{(}\VariableTok{detected} \OperatorTok{\textasciitilde{}=} \VariableTok{symbols}\NormalTok{)}\OperatorTok{;}
+\VariableTok{BER\_measured} \OperatorTok{=} \VariableTok{errors} \OperatorTok{/} \VariableTok{N\_bits}\OperatorTok{;}
+
+\CommentTok{\% {-}{-}{-} Statistical Analysis {-}{-}{-}}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}=== Communication System Statistical Analysis ===\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Eb/N0 = \%d dB, N = \%d bits\textbackslash{}n\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{EbN0\_dB}\OperatorTok{,} \VariableTok{N\_bits}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% 1. BER Estimation}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}1. BER ESTIMATION\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}   Measured BER: \%.4e (\%d errors)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{BER\_measured}\OperatorTok{,} \VariableTok{errors}\NormalTok{)}\OperatorTok{;}
+\VariableTok{BER\_theory\_rayleigh} \OperatorTok{=} \FloatTok{0.5}\OperatorTok{*}\NormalTok{(}\FloatTok{1} \OperatorTok{{-}} \VariableTok{sqrt}\NormalTok{(}\VariableTok{EbN0}\OperatorTok{/}\NormalTok{(}\FloatTok{1}\OperatorTok{+}\VariableTok{EbN0}\NormalTok{)))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}   Theory (Rayleigh): \%.4e\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{BER\_theory\_rayleigh}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% 2. Confidence Interval}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}\textbackslash{}n2. CONFIDENCE INTERVAL (95\%\%)\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{margin} \OperatorTok{=} \FloatTok{1.96}\OperatorTok{*}\VariableTok{sqrt}\NormalTok{(}\VariableTok{BER\_measured}\OperatorTok{*}\NormalTok{(}\FloatTok{1}\OperatorTok{{-}}\VariableTok{BER\_measured}\NormalTok{)}\OperatorTok{/}\VariableTok{N\_bits}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}   CI: [\%.4e, \%.4e]\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{BER\_measured}\OperatorTok{{-}}\VariableTok{margin}\OperatorTok{,} \VariableTok{BER\_measured}\OperatorTok{+}\VariableTok{margin}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}   Theory in CI? \%s\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \OperatorTok{...}
+    \VariableTok{string}\NormalTok{(}\VariableTok{BER\_theory\_rayleigh} \OperatorTok{\textgreater{}=} \VariableTok{BER\_measured}\OperatorTok{{-}}\VariableTok{margin} \OperatorTok{\&} \OperatorTok{...}
+           \VariableTok{BER\_theory\_rayleigh} \OperatorTok{\textless{}=} \VariableTok{BER\_measured}\OperatorTok{+}\VariableTok{margin}\NormalTok{))}\OperatorTok{;}
+
+\CommentTok{\% 3. Channel Statistics}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}\textbackslash{}n3. CHANNEL STATISTICS\textbackslash{}n\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}   Mean |h|: \%.3f (theory: \%.3f)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{h\_mag}\NormalTok{)}\OperatorTok{,} \VariableTok{sqrt}\NormalTok{(}\VariableTok{pi}\OperatorTok{/}\FloatTok{4}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}   Var |h|²: \%.3f (theory: \%.3f)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{var}\NormalTok{(}\VariableTok{h\_mag}\OperatorTok{.\^{}}\FloatTok{2}\NormalTok{)}\OperatorTok{,} \FloatTok{1}\OperatorTok{{-}}\NormalTok{(}\VariableTok{pi}\OperatorTok{/}\FloatTok{4}\NormalTok{))}\OperatorTok{;}
+
+\CommentTok{\% 4. Outage Probability}
+\VariableTok{SNR\_threshold} \OperatorTok{=} \FloatTok{3}\OperatorTok{;}  \CommentTok{\% dB}
+\VariableTok{gamma\_th} \OperatorTok{=} \FloatTok{10}\OperatorTok{\^{}}\NormalTok{(}\VariableTok{SNR\_threshold}\OperatorTok{/}\FloatTok{10}\NormalTok{)}\OperatorTok{;}
+\VariableTok{P\_outage\_sim} \OperatorTok{=} \VariableTok{mean}\NormalTok{(}\VariableTok{EbN0}\OperatorTok{*}\VariableTok{h\_mag}\OperatorTok{.\^{}}\FloatTok{2} \OperatorTok{\textless{}} \VariableTok{gamma\_th}\NormalTok{)}\OperatorTok{;}
+\VariableTok{P\_outage\_theory} \OperatorTok{=} \FloatTok{1} \OperatorTok{{-}} \VariableTok{exp}\NormalTok{(}\OperatorTok{{-}}\VariableTok{gamma\_th}\OperatorTok{/}\VariableTok{EbN0}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}\textbackslash{}n4. OUTAGE PROBABILITY (threshold = \%d dB)\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{SNR\_threshold}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}   Simulated: \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{P\_outage\_sim}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}   Theory:    \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{P\_outage\_theory}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\PSsection{16.8}{Key Integration Points}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}cc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{Module} & \PSth{Application in EE} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+1. Probability & Event probabilities, fault diagnosis \\
+2. Random Variables & Modeling uncertain quantities \\
+3. Distributions & Choosing noise/fading/failure models \\
+4. Moments & Signal power, noise power, SNR \\
+5. Transformations & dB conversion, power from voltage \\
+$6-7$. Joint/Functions & Signal+noise, system combinations \\
+8. Conditional & Performance under different states \\
+9. Correlation & MIMO channels, sensor arrays \\
+10. Multiple RVs & Vector processing, beamforming \\
+11. CLT & Why noise is Gaussian, averaging \\
+12. Statistics & Estimating system parameters \\
+13. Estimation & MLE for channel/noise parameters \\
+14. Confidence & Quantifying measurement uncertainty \\
+15. Hypothesis & Quality control, performance comparison \\
+\end{longtable}
+}
+
+\emph{End of course modules. See {Supplementary Materials} for decision guides, MATLAB reference, and formula sheet.}

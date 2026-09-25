@@ -1,0 +1,42 @@
+% ============================================================
+%  ProbAndStats — English (LTR) preamble
+%  Compile with XeLaTeX (or tectonic).  \PSroot must point to template/
+% ============================================================
+\input{\PSroot/probstats-packages}
+\usepackage{fontspec}
+\setmainfont{Times New Roman}
+\setmonofont[Scale=0.84]{Menlo}
+\newfontfamily\PSfarsi[Path=\PSroot/fonts/, Extension=.ttf, Script=Arabic, AutoFakeBold=1.6]{BNazanin}
+\newfontfamily\PSfaDisplay[Path=\PSroot/fonts/, Extension=.ttf, Script=Arabic, AutoFakeBold=2.6]{BNazanin}
+\usepackage{bidi}
+
+\linespread{1.12}
+\newif\ifPSrtl \PSrtlfalse
+% \rl{} for Persian snippets on the cover (Persian font + RTL)
+\newcommand{\rl}[1]{\RL{\PSfarsi #1}}
+
+% language strings
+\def\PSlangCourse{Engineering Probability \& Statistics}
+\def\PSlangCourseOther{\rl{آمار و احتمال مهندسی}}
+\def\PSlangTerm{Fall 2026-2027}
+\def\PSyearfa{\LR{۱۴۰۵-۱۴۰۶}}
+\def\PSlangTermOther{\rl{نیمسال پاییز \PSyearfa}}
+\def\PSlangUni{Ferdowsi University of Mashhad}
+\def\PSlangUniOther{\rl{دانشگاه فردوسی مشهد}}
+\def\PSlangNotes{Lecture Notes}
+\def\PSlangNotesOther{\rl{جزوه درسی}}
+\def\PSlangModule{Module}
+\def\PSlangSolution{Solution}
+\def\PSlangPage{Page}
+\def\PSlangContents{Contents}
+\def\PSlangModuleContents{In This Module}
+\def\PSlangSyllabus{Course Syllabus}
+\def\PSlangFaculty{Faculty of Engineering}
+\def\PSlangInstructorLabel{Instructor:}
+\def\PSlangInstructor{Amin Azari}
+\def\PSlangInstructorOther{استاد: امین آذری}
+\def\PSinstructorURL{https://github.com/AminAzari}
+\def\PSlangCompiler{Compiled by: Aidin Shekari}
+\def\PScompilerURL{https://shekari.me}
+
+\input{\PSroot/probstats-style}

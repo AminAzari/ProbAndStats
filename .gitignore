@@ -1,0 +1,10 @@
+# build tooling & intermediate files (only the topic folders are published)
+tools/
+*.log
+*.aux
+*.toc
+*.out
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+.DS_Store

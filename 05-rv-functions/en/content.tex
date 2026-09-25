@@ -1,0 +1,438 @@
+\begin{PSbox}[unbreakable]{obj}{Learning Objectives}
+
+After completing this module, students will be able to:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Apply linear transformations to random variables
+\item
+  Derive PDFs of nonlinear transformations using the CDF and Jacobian methods
+\item
+  Apply transformations to engineering problems (power, SNR, envelope)
+\item
+  Verify analytical results with MATLAB simulation
+\end{enumerate}
+
+\end{PSbox}
+
+\PSsection{5.1}{Introduction: Why Transform Random Variables?}
+
+In engineering, we often know the statistics of one quantity but need the statistics of a \textbf{derived} quantity:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}ccc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}\PSth{Known} & \PSth{Needed} & \PSth{Transformation} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Voltage $V$ & Power $P$ & $P = \frac{V^{2}}{R}$ \\
+Linear SNR & SNR in dB & $Y = 10 \cdot \log_{10}(X)$ \\
+Gaussian I, $Q$ & Envelope & $R = \sqrt{I^{2} + Q^{2}}$ \\
+Current I & Power & $P = I^{2}R$ \\
+Distance $d$ & Path loss & $L = d^{\alpha}$ \\
+\end{longtable}
+}
+
+\PSsection{5.2}{Linear Transformations: $Y$ = aX $+ b$}
+
+\PSsubsection{Result}
+
+If $X$ has PDF $f_{X}(x)$, then $Y$ = aX $+ b$ has:
+
+\PSdisplay{f_Y(y) = \frac{1}{|a|} f_X\left(\frac{y-b}{a}\right)}
+
+\PSsubsection{Mean and Variance}
+
+\begin{itemize}
+\tightlist
+\item
+  $E[Y]$ = aE[X] $+ b$
+\item
+  $\operatorname{Var}(Y) = a^{2}\operatorname{Var}(X)$
+\end{itemize}
+
+\begin{PSbox}[unbreakable]{ex}{Engineering Example: Amplifier}
+
+Input signal $X \sim N(0,\, \sigma^{2})$ passes through amplifier with gain $G = 10$ and DC offset $V_{0} = 1.5\,\mathrm{V}$.
+
+Output: $Y = 10X + 1.5$
+
+\begin{itemize}
+\tightlist
+\item
+  $Y \sim N(10 \cdot 0 + 1.5,\, 10^{2} \cdot \sigma^{2}) = N(1.5,\, 100\sigma^{2})$
+\item
+  Output noise power increased by $G^{2} = 100$
+\end{itemize}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{Engineering Example: Temperature Sensor}
+
+Sensor output $V = 0.01 \cdot T + 0.5$ (V in volts, $T$ in \ensuremath{^{\circ}}C)
+
+If $T \sim N(25,\, 4)$: $V \sim N(0.01 \times 25 + 0.5,\, 0.01^{2} \times 4) = N(0.75,\, 0.0004)$
+
+\end{PSbox}
+
+\PSsection{5.3}{General Monotonic Transformations}
+
+\PSsubsection{CDF Method (Most General)}
+
+For $Y = g(X)$, find $f_{Y}(y)$ by:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Write $F_{Y}(y) = P(Y \le y) = P(g(X) \le y)$
+\item
+  Solve the inequality for $X$
+\item
+  Express in terms of $F_{X}$
+\item
+  Differentiate to get $f_{Y}(y)$
+\end{enumerate}
+
+\PSsubsection{Formula for Monotonic $g$}
+
+If $g$ is strictly increasing with inverse $g^{-1}$:\PSdisplay{f_Y(y) = f_X(g^{-1}(y)) \cdot \frac{d}{dy}[g^{-1}(y)]}
+
+If $g$ is strictly decreasing:\PSdisplay{f_Y(y) = f_X(g^{-1}(y)) \cdot \left|\frac{d}{dy}[g^{-1}(y)]\right|}
+
+Combined (works for both):\PSdisplay{f_Y(y) = \frac{f_X(x)}{|g'(x)|}\bigg|_{x=g^{-1}(y)}}
+
+\begin{PSbox}[unbreakable]{ex}{Engineering Example: SNR in dB}
+
+Linear SNR: $X \sim \mathrm{Exponential}(1)$ (normalized Rayleigh fading power).\PSbr{}dB SNR: $Y = 10 \cdot \log_{10}(X)$
+
+\begin{itemize}
+\tightlist
+\item
+  $\displaystyle g(x) = 10 \cdot \log_{10}(x),\, g'(x) = \frac{10}{x \cdot \ln 10}$
+\item
+  $g^{-1}(y) = 10^{y/10}$
+\end{itemize}
+
+\PSdisplay{f_Y(y) = \frac{f_X(10^{y/10})}{10/(10^{y/10} \cdot \ln 10)} = \frac{\ln 10}{10} \cdot 10^{y/10} \cdot e^{-10^{y/10}}}
+
+This is NOT Gaussian — it has a longer left tail (deep fades).
+
+\end{PSbox}
+
+\PSsection{5.4}{Nonlinear Transformations: Non-Monotonic Case}
+
+\PSsubsection{When $Y = g(X)$ is Not One-to-One}
+
+If multiple x-values map to the same $y$, sum over all solutions:
+
+\PSdisplay{f_Y(y) = \sum_{i} \frac{f_X(x_i)}{|g'(x_i)|}}
+
+where $x_{1},\, x_{2}$, … are all roots of $g(x) = y$.
+
+\begin{PSbox}[unbreakable]{ex}{Engineering Example: Power from Voltage $(Y = X^{2})$}
+
+Voltage $X \sim N(0,\, \sigma^{2})$. Power: $Y = X^{2}$.
+
+For $y > 0$, solutions are $x = +\sqrt{y}$ and $x = -\sqrt{y}$. $g'(x) = 2x$.
+
+\PSdisplay{f_Y(y) = \frac{f_X(\sqrt{y})}{2\sqrt{y}} + \frac{f_X(-\sqrt{y})}{2\sqrt{y}} = \frac{1}{\sqrt{2\pi}\sigma} \cdot \frac{e^{-y/(2\sigma^2)}}{\sqrt{y}}}
+
+This is a \textbf{Chi-squared distribution with 1 degree of freedom} (scaled by $\sigma^{2}$).
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{Engineering Example: Full-Wave Rectifier $(Y = \lvert X\rvert)$}
+
+Input $X \sim N(0,\, \sigma^{2})$. Output $Y = \lvert X\rvert$.
+
+For $y > 0$: $x = +y$ and $x = -y$ are solutions. $\lvert g'(x)\rvert = 1$.
+
+\PSdisplay{f_Y(y) = f_X(y) + f_X(-y) = \frac{2}{\sigma\sqrt{2\pi}} e^{-y^2/(2\sigma^2)}, \quad y \geq 0}
+
+This is the \textbf{folded normal} (half-normal) distribution.
+
+\end{PSbox}
+
+\PSsection{5.5}{The Jacobian Method}
+
+\PSsubsection{Procedure for $Y = g(X)$}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Identify the transformation $y = g(x)$
+\item
+  Find the inverse: $x = g^{-1}(y)$
+\item
+  Compute the Jacobian: $J = \lvert \frac{dx}{dy}\rvert = \lvert \frac{d[g^{-1}(y)]}{dy}\rvert$
+\item
+  Apply: $f_{Y}(y) = f_{X}(g^{-1}(y)) \cdot \lvert J\rvert$
+\end{enumerate}
+
+\PSsubsection{Step-by-Step Example: Exponential of Gaussian}
+
+$X \sim N(\mu,\, \sigma^{2})$. $Y = e^{x}$ (log-normal transformation).
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  $g(x) = e^{x}$ (monotonically increasing)
+\item
+  $x = \ln (y)$, valid for $y > 0$
+\item
+  $\displaystyle J = \lvert \frac{dx}{dy}\rvert = \frac{1}{y}$
+\item
+  $\displaystyle f_{Y}(y) = f_{X}(\ln y) \cdot \frac{1}{y} = \frac{1}{y\sigma \sqrt{2\pi}} \cdot \exp \left(-\frac{(\ln y - \mu)^{2}}{2\sigma^{2}}\right)$
+\end{enumerate}
+
+This is the \textbf{log-normal distribution} — models many engineering quantities (shadowing in wireless, stock prices, component lifetimes with wear).
+
+\PSsection{5.6}{Engineering Application: Rayleigh from Gaussian}
+
+\PSsubsection{Derivation of Rayleigh Distribution}
+
+In communications, the received signal has in-phase $(I)$ and quadrature $(Q)$ components:
+
+\begin{itemize}
+\tightlist
+\item
+  $I \sim N(0,\, \sigma^{2}),\, Q \sim N(0,\, \sigma^{2})$, independent
+\end{itemize}
+
+Envelope: $R = \sqrt{I^{2} + Q^{2}}$
+
+Using the transformation from $(I,\, Q) \to (R,\, \theta)$ with polar coordinates:
+
+\begin{itemize}
+\tightlist
+\item
+  $I = R \cdot \cos (\theta),\, Q = R \cdot \sin (\theta)$
+\item
+  Jacobian: $\lvert \frac{\partial (I,\,Q)}{\partial (R,\,\theta)}\rvert = R$
+\end{itemize}
+
+Joint PDF of $(R,\, \theta)$:\PSbr{}$\displaystyle f_{R,\Theta}(r,\,\theta) = f_{I,Q}(r \cdot \cos \theta,\, r \cdot \sin \theta) \cdot r = \frac{r}{2\pi \sigma^{2}} \cdot e^{-r^{2}/(2\sigma^{2})}$
+
+Marginalizing over $\theta \in [0,\, 2\pi)$:
+
+\PSdisplay{f_R(r) = \frac{r}{\sigma^2} e^{-r^2/(2\sigma^2)}, \quad r \geq 0}
+
+This is the \textbf{Rayleigh distribution} — fundamental to wireless fading channel modeling.
+
+\PSsection{5.7}{MATLAB Examples}
+
+\begin{PSbox}[unbreakable]{ex}{Example 1: Linear Transformation Verification}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Linear Transformation: Amplifier Output}
+\VariableTok{sigma\_in} \OperatorTok{=} \FloatTok{0.1}\OperatorTok{;}  \VariableTok{G} \OperatorTok{=} \FloatTok{5}\OperatorTok{;}  \VariableTok{offset} \OperatorTok{=} \FloatTok{2}\OperatorTok{;}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+
+\VariableTok{X} \OperatorTok{=} \VariableTok{sigma\_in} \OperatorTok{*} \VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}   \CommentTok{\% Input noise}
+\VariableTok{Y} \OperatorTok{=} \VariableTok{G}\OperatorTok{*}\VariableTok{X} \OperatorTok{+} \VariableTok{offset}\OperatorTok{;}              \CommentTok{\% Output}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{subplot}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\FloatTok{2}\OperatorTok{,}\FloatTok{1}\NormalTok{)}\OperatorTok{;}
+\VariableTok{histogram}\NormalTok{(}\VariableTok{X}\OperatorTok{,} \FloatTok{80}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Normalization\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}pdf\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+\VariableTok{x} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\OperatorTok{{-}}\FloatTok{0.5}\OperatorTok{,} \FloatTok{0.5}\OperatorTok{,} \FloatTok{200}\NormalTok{)}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{x}\OperatorTok{,} \VariableTok{normpdf}\NormalTok{(}\VariableTok{x}\OperatorTok{,} \FloatTok{0}\OperatorTok{,} \VariableTok{sigma\_in}\NormalTok{)}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Input X \textasciitilde{} N(0, 0.01)\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Voltage (V)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{subplot}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\FloatTok{2}\OperatorTok{,}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{histogram}\NormalTok{(}\VariableTok{Y}\OperatorTok{,} \FloatTok{80}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Normalization\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}pdf\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+\VariableTok{y} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\FloatTok{0}\OperatorTok{,} \FloatTok{4}\OperatorTok{,} \FloatTok{200}\NormalTok{)}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{y}\OperatorTok{,} \VariableTok{normpdf}\NormalTok{(}\VariableTok{y}\OperatorTok{,} \VariableTok{offset}\OperatorTok{,} \VariableTok{G}\OperatorTok{*}\VariableTok{sigma\_in}\NormalTok{)}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Output Y = 5X + 2\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Voltage (V)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{Example 2: Power from Gaussian Voltage}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Nonlinear: Y = X\^{}2 (instantaneous power)}
+\VariableTok{sigma} \OperatorTok{=} \FloatTok{1}\OperatorTok{;} \VariableTok{N} \OperatorTok{=} \FloatTok{200000}\OperatorTok{;}
+\VariableTok{X} \OperatorTok{=} \VariableTok{sigma} \OperatorTok{*} \VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{Y} \OperatorTok{=} \VariableTok{X}\OperatorTok{.\^{}}\FloatTok{2}\OperatorTok{;}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{histogram}\NormalTok{(}\VariableTok{Y}\OperatorTok{,} \FloatTok{150}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Normalization\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}pdf\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}BinLimits\textquotesingle{}}\OperatorTok{,}\NormalTok{ [}\FloatTok{0}\OperatorTok{,} \FloatTok{8}\NormalTok{])}\OperatorTok{;}
+\VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+\VariableTok{y} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\FloatTok{0.01}\OperatorTok{,} \FloatTok{8}\OperatorTok{,} \FloatTok{300}\NormalTok{)}\OperatorTok{;}
+\VariableTok{f\_theory} \OperatorTok{=} \VariableTok{chi2pdf}\NormalTok{(}\VariableTok{y}\OperatorTok{/}\VariableTok{sigma}\OperatorTok{\^{}}\FloatTok{2}\OperatorTok{,} \FloatTok{1}\NormalTok{) }\OperatorTok{/} \VariableTok{sigma}\OperatorTok{\^{}}\FloatTok{2}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{y}\OperatorTok{,} \VariableTok{f\_theory}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Power (V²)\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}PDF\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Distribution of Power Y = X²\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{legend}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Simulation\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Theory (scaled χ²₁)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{Example 3: SNR in dB from Linear SNR}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% SNR transformation: Y = 10*log10(X)}
+\CommentTok{\% X \textasciitilde{} Exponential(1) (Rayleigh fading power, normalized)}
+\VariableTok{N} \OperatorTok{=} \FloatTok{200000}\OperatorTok{;}
+\VariableTok{X} \OperatorTok{=} \VariableTok{exprnd}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{Y} \OperatorTok{=} \FloatTok{10}\OperatorTok{*}\VariableTok{log10}\NormalTok{(}\VariableTok{X}\NormalTok{)}\OperatorTok{;}   \CommentTok{\% SNR in dB}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{histogram}\NormalTok{(}\VariableTok{Y}\OperatorTok{,} \FloatTok{150}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Normalization\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}pdf\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+\VariableTok{y} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\OperatorTok{{-}}\FloatTok{30}\OperatorTok{,} \FloatTok{15}\OperatorTok{,} \FloatTok{300}\NormalTok{)}\OperatorTok{;}
+\CommentTok{\% Theoretical PDF of Y = 10*log10(X) where X \textasciitilde{} Exp(1)}
+\VariableTok{f\_Y} \OperatorTok{=}\NormalTok{ (}\VariableTok{log}\NormalTok{(}\FloatTok{10}\NormalTok{)}\OperatorTok{/}\FloatTok{10}\NormalTok{) }\OperatorTok{.*} \FloatTok{10}\OperatorTok{.\^{}}\NormalTok{(}\VariableTok{y}\OperatorTok{/}\FloatTok{10}\NormalTok{) }\OperatorTok{.*} \VariableTok{exp}\NormalTok{(}\OperatorTok{{-}}\FloatTok{10}\OperatorTok{.\^{}}\NormalTok{(}\VariableTok{y}\OperatorTok{/}\FloatTok{10}\NormalTok{))}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{y}\OperatorTok{,} \VariableTok{f\_Y}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}SNR (dB)\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}PDF\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Distribution of SNR in dB (Rayleigh Fading)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{legend}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Simulation\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Theory\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{Example 4: Rayleigh Envelope from Gaussian Components}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Envelope of Complex Gaussian}
+\VariableTok{sigma} \OperatorTok{=} \FloatTok{1}\OperatorTok{;} \VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+\VariableTok{I} \OperatorTok{=} \VariableTok{sigma} \OperatorTok{*} \VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{Q} \OperatorTok{=} \VariableTok{sigma} \OperatorTok{*} \VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{R} \OperatorTok{=} \VariableTok{sqrt}\NormalTok{(}\VariableTok{I}\OperatorTok{.\^{}}\FloatTok{2} \OperatorTok{+} \VariableTok{Q}\OperatorTok{.\^{}}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{histogram}\NormalTok{(}\VariableTok{R}\OperatorTok{,} \FloatTok{100}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Normalization\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}pdf\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+\VariableTok{r} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\FloatTok{0}\OperatorTok{,} \FloatTok{5}\OperatorTok{,} \FloatTok{200}\NormalTok{)}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{r}\OperatorTok{,} \VariableTok{raylpdf}\NormalTok{(}\VariableTok{r}\OperatorTok{,} \VariableTok{sigma}\NormalTok{)}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Envelope |h|\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}PDF\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Rayleigh Distribution from I/Q Components\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{legend}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Simulation\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Theory\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Mean: Sim=\%.3f, Theory=\%.3f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{R}\NormalTok{)}\OperatorTok{,} \VariableTok{sigma}\OperatorTok{*}\VariableTok{sqrt}\NormalTok{(}\VariableTok{pi}\OperatorTok{/}\FloatTok{2}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{Example 5: Log-Normal from Gaussian}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Log{-}Normal: Y = exp(X) where X \textasciitilde{} N(mu, sigma\^{}2)}
+\VariableTok{mu} \OperatorTok{=} \FloatTok{0}\OperatorTok{;} \VariableTok{sigma\_x} \OperatorTok{=} \FloatTok{0.5}\OperatorTok{;} \VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+\VariableTok{X} \OperatorTok{=} \VariableTok{mu} \OperatorTok{+} \VariableTok{sigma\_x}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{Y} \OperatorTok{=} \VariableTok{exp}\NormalTok{(}\VariableTok{X}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{histogram}\NormalTok{(}\VariableTok{Y}\OperatorTok{,} \FloatTok{150}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Normalization\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}pdf\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}BinLimits\textquotesingle{}}\OperatorTok{,}\NormalTok{ [}\FloatTok{0}\OperatorTok{,} \FloatTok{5}\NormalTok{])}\OperatorTok{;}
+\VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+\VariableTok{y} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\FloatTok{0.01}\OperatorTok{,} \FloatTok{5}\OperatorTok{,} \FloatTok{300}\NormalTok{)}\OperatorTok{;}
+\VariableTok{f\_lognorm} \OperatorTok{=} \VariableTok{lognpdf}\NormalTok{(}\VariableTok{y}\OperatorTok{,} \VariableTok{mu}\OperatorTok{,} \VariableTok{sigma\_x}\NormalTok{)}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{y}\OperatorTok{,} \VariableTok{f\_lognorm}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Y = e\^{}X\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}PDF\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Log{-}Normal Distribution\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{legend}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Simulation\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Theory\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\PSsection{5.8}{Practice Problems}
+
+\begin{PSbox}[unbreakable]{prob}{Problem 1}
+
+Signal $X \sim \mathrm{Uniform}[0,\, 1]$. Output $Y = -2 \cdot \ln (X)$. Find the PDF of $Y$ and identify the distribution.
+
+\PSsolution{} CDF method: $F_{Y}(y) = P(-2\ln (X) \le y) = P(X \ge e^{-y/2}) = 1 - e^{-y/2}$ for $y \ge 0$.\PSbr{}$f_{Y}(y) = \frac{1}{2}e^{-y/2} \to Y \sim \mathrm{Exponential}(\beta = 2)$. (This is the inverse CDF method for generating exponentials!)
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{Problem 2}
+
+Noise voltage $X \sim N(0,\, \sigma^{2})$ with $\sigma = 2\,\mathrm{V}$. Power dissipated in $R = 50\,\Omega$: $P = \frac{X^{2}}{R}$.
+
+\begin{enumerate}
+\def\labelenumi{(\alph{enumi})}
+\tightlist
+\item
+  Find $E[P]$. (b) Find the PDF of $P$. (c) Find $P(P > 0.2\,\mathrm{W})$.
+\end{enumerate}
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\alph{enumi})}
+\tightlist
+\item
+  $\displaystyle E[P] = \frac{E[X^{2}]}{R} = \frac{\sigma^{2}}{R} = \frac{4}{50} = 0.08\,\mathrm{W}$
+\item
+  $P = \frac{X^{2}}{50}$. Let $W = X^{2} \sim \sigma^{2} \cdot \chi^{2}(1)$. Then $P = \frac{W}{50}$. $f_{P}(p) = 50 \cdot f_{W}(50p) = \frac{50}{2\sigma^{2}} \cdot \frac{50p}{\sigma^{2}}^{-1/2} \cdot e^{-50p/(2\sigma^{2})}$ for $p > 0$.
+\item
+  Use MATLAB: \PScode{1 - chi2cdf(0.2*50/4, 1)} $= 1 - \texttt{chi2cdf}(2.5,\, 1) \approx 0.114$
+\end{enumerate}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{Problem 3}
+
+$X \sim \mathrm{Exponential}(\lambda = 1)$. $Y = \sqrt{X}$. Find $f_{Y}(y)$.
+
+\PSsolution{} $\displaystyle g(x) = \sqrt{x} \to x = y^{2},\, \frac{dx}{dy} = 2y$.\PSbr{}$f_{Y}(y) = f_{X}(y^{2}) \cdot \lvert 2y\rvert = e^{-y^{2}} \cdot 2y$ for $y \ge 0$. This is a Rayleigh distribution with $\sigma^{2} = \frac{1}{2}$.
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{Problem 4}
+
+Distance $D \sim \mathrm{Uniform}[1,\, 10]$ km. Path loss: $L = 20 \cdot \log_{10}(D)$ dB. Find $E[L]$ and the PDF of $L$.
+
+\PSsolution{} $\displaystyle E[L] = E[20 \cdot \log_{10}(D)] = \int_{1}^{10} 20 \cdot \log_{10}(d) \cdot \frac{1}{9}\,dd = \frac{20}{9} \cdot \int_{1}^{10} \log_{10}(d)\,dd$\PSbr{}$= \frac{20}{9} \cdot \left[d \cdot \log_{10}(d) - \frac{d}{\ln (10)}\right]_{1}^{10} = \frac{20}{9} \cdot \left[10 - \frac{10}{\ln 10} + \frac{1}{\ln 10}\right] = \frac{20}{9} \cdot \left(10 - \frac{9}{\ln 10}\right) \approx 13.55$ dB
+
+PDF: $L$ ranges from 0 to 20 dB. $g^{-1}(l) = 10^{l/20},\, \lvert \frac{dg^{-1}}{dl}\rvert = \frac{\ln 10}{20} \cdot 10^{l/20}$.\PSbr{}$f_{L}(l) = \frac{1}{9} \cdot \frac{\ln 10}{20} \cdot 10^{l/20}$ for $0 \le l \le 20$.
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{Problem 5}
+
+Write MATLAB code to verify Problem 2 by simulation.
+
+\PSsolution{} 
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\VariableTok{sigma} \OperatorTok{=} \FloatTok{2}\OperatorTok{;} \VariableTok{R} \OperatorTok{=} \FloatTok{50}\OperatorTok{;} \VariableTok{N} \OperatorTok{=} \FloatTok{500000}\OperatorTok{;}
+\VariableTok{X} \OperatorTok{=} \VariableTok{sigma}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{P} \OperatorTok{=} \VariableTok{X}\OperatorTok{.\^{}}\FloatTok{2} \OperatorTok{/} \VariableTok{R}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}E[P]: Theory=\%.4f W, Sim=\%.4f W\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{sigma}\OperatorTok{\^{}}\FloatTok{2}\OperatorTok{/}\VariableTok{R}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{P}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(P\textgreater{}0.2): Theory=\%.4f, Sim=\%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \FloatTok{1}\OperatorTok{{-}}\VariableTok{chi2cdf}\NormalTok{(}\FloatTok{0.2}\OperatorTok{*}\VariableTok{R}\OperatorTok{/}\VariableTok{sigma}\OperatorTok{\^{}}\FloatTok{2}\OperatorTok{,}\FloatTok{1}\NormalTok{)}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{P}\OperatorTok{\textgreater{}}\FloatTok{0.2}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{Next Module: {Module 6 — Two Random Variables}}
+
+\end{PSbox}

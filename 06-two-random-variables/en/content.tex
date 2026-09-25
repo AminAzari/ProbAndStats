@@ -1,0 +1,429 @@
+\begin{PSbox}[unbreakable]{obj}{Learning Objectives}
+
+After completing this module, students will be able to:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Define and compute joint PMF, PDF, and CDF
+\item
+  Derive marginal distributions from joint distributions
+\item
+  Compute conditional distributions
+\item
+  Test independence of two random variables
+\item
+  Compute conditional expectations
+\item
+  Visualize joint distributions in MATLAB
+\end{enumerate}
+
+\end{PSbox}
+
+\PSsection{6.1}{Introduction: Why Study Joint Distributions?}
+
+Real engineering systems involve \textbf{multiple interacting uncertain quantities}:
+
+\begin{itemize}
+\tightlist
+\item
+  Voltage AND current in a noisy circuit
+\item
+  Signal AND noise at a receiver
+\item
+  Temperature AND resistance of a sensor
+\item
+  I-channel AND Q-channel of a communication signal
+\end{itemize}
+
+Understanding the \textbf{joint behavior} tells us things marginals cannot — like correlation, dependence, and conditional behavior.
+
+\PSsection{6.2}{Joint PMF (Discrete Case)}
+
+\begin{PSbox}[unbreakable]{def}{Definition}
+
+For discrete RVs $X,\, Y$:\PSdisplay{p_{X,Y}(x,y) = P(X = x, Y = y)}
+
+\end{PSbox}
+
+\PSsubsection{Properties}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  $p_{X,Y}(x,\,y) \ge 0$
+\item
+  $\sum_{x} \Sigma_{y} p_{X,Y}(x,\,y) = 1$
+\end{enumerate}
+
+\PSsubsection{Visualization: Probability Table}
+
+\textbf{Example:} $X$ = number of retransmissions $(0,\,1,\,2),\, Y$ = acknowledgment delay category $(1 = \text{fast},\, 2 = \text{slow})$
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[c]{@{}cccc@{}}
+\toprule\noalign{}
+\rowcolor{PSnavy}& \PSth{$Y = 1$} & \PSth{$Y = 2$} & \PSth{$p_{X}(x)$} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+$X = 0$ & 0.30 & 0.10 & 0.40 \\
+$X = 1$ & 0.15 & 0.20 & 0.35 \\
+$X = 2$ & 0.05 & 0.20 & 0.25 \\
+$p_{Y}(y)$ & 0.50 & 0.50 & 1.00 \\
+\end{longtable}
+}
+
+\PSsection{6.3}{Joint PDF (Continuous Case)}
+
+\begin{PSbox}[unbreakable]{def}{Definition}
+
+For continuous RVs $X,\, Y$, the joint PDF $f_{X,Y}(x,\,y)$ satisfies:\PSdisplay{P((X,Y) \in A) = \iint_A f_{X,Y}(x,y) \, dx \, dy}
+
+\end{PSbox}
+
+\PSsubsection{Properties}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  $f_{X,Y}(x,\,y) \ge 0$
+\item
+  $\int \int f_{X,Y}(x,\,y)\,dx\,dy = 1$
+\end{enumerate}
+
+\PSsubsection{Visualization}
+
+The joint PDF is a \textbf{surface} over the $(x,\,y)$ plane. Probability = volume under surface over a region.
+
+\begin{PSbox}[unbreakable]{ex}{Engineering Example: Bivariate Gaussian}
+
+Two correlated noise voltages $(X,\, Y)$ with correlation $\rho$:
+
+\PSdisplay{f_{X,Y}(x,y) = \frac{1}{2\pi\sigma_X\sigma_Y\sqrt{1-\rho^2}} \exp\left(-\frac{1}{2(1-\rho^2)}\left[\frac{x^2}{\sigma_X^2} - \frac{2\rho xy}{\sigma_X\sigma_Y} + \frac{y^2}{\sigma_Y^2}\right]\right)}
+
+\end{PSbox}
+
+\PSsection{6.4}{Joint CDF}
+
+\begin{PSbox}[unbreakable]{def}{Definition}
+
+\PSdisplay{F_{X,Y}(x,y) = P(X \leq x, Y \leq y)}
+
+\end{PSbox}
+
+\PSsubsection{Properties}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  $F_{X,Y}(-\infty,\, y) = 0,\, F_{X,Y}(x,\, -\infty) = 0$
+\item
+  $F_{X,Y}(\infty,\, \infty) = 1$
+\item
+  Non-decreasing in both arguments
+\item
+  $\displaystyle f_{X,Y}(x,\,y) = \frac{\partial^{2}F_{X,Y}}{\partial x \partial y}$
+\end{enumerate}
+
+\PSsection{6.5}{Marginal Distributions}
+
+\PSsubsection{Obtaining Marginals from Joint}
+
+\textbf{Discrete:}\PSdisplay{p_X(x) = \sum_y p_{X,Y}(x,y), \quad p_Y(y) = \sum_x p_{X,Y}(x,y)}
+
+\textbf{Continuous:}\PSdisplay{f_X(x) = \int_{-\infty}^{\infty} f_{X,Y}(x,y) \, dy, \quad f_Y(y) = \int_{-\infty}^{\infty} f_{X,Y}(x,y) \, dx}
+
+\PSsubsection{Visual Interpretation}
+
+The marginal PDF $f_{X}(x)$ is the \textbf{projection} (integral) of the joint surface onto the x-axis. Similarly $f_{Y}(y)$ projects onto the y-axis.
+
+\begin{PSbox}[unbreakable]{ex}{Engineering Example}
+
+Joint PDF: $f_{X,Y}(x,\,y) = 2e^{-x}e^{-2y},\, x \ge 0,\, y \ge 0$
+
+Marginals:
+
+\begin{itemize}
+\tightlist
+\item
+  $\displaystyle f_{X}(x) = \int_{0}^{\infty} 2e^{-x}e^{-2y}\,dy = 2e^{-x} \cdot \left[\frac{1}{2}\right] = e^{-x} \to X \sim \mathrm{Exp}(1)$
+\item
+  $f_{Y}(y) = \int_{0}^{\infty} 2e^{-x}e^{-2y}\,dx = 2e^{-2y} \cdot [1] = 2e^{-2y} \to Y \sim \mathrm{Exp}(2)$
+\end{itemize}
+
+\end{PSbox}
+
+\PSsection{6.6}{Conditional Distributions}
+
+\PSsubsection{Discrete}
+
+\PSdisplay{p_{X|Y}(x|y) = \frac{p_{X,Y}(x,y)}{p_Y(y)}}
+
+\PSsubsection{Continuous}
+
+\PSdisplay{f_{X|Y}(x|y) = \frac{f_{X,Y}(x,y)}{f_Y(y)}}
+
+\PSsubsection{Interpretation}
+
+The conditional distribution describes $X$ when we \textbf{know} $Y = y$. It’s a ``slice'' of the joint distribution at a fixed $y$ value, renormalized to integrate to 1.
+
+\begin{PSbox}[unbreakable]{ex}{Engineering Example: Signal Given Channel State}
+
+Received power $Y$ given channel state $X$:
+
+\begin{itemize}
+\tightlist
+\item
+  If channel is good $(X = 1)$: $Y \sim N(10,\, 1)$
+\item
+  If channel is poor $(X = 0)$: $Y \sim N(2,\, 4)$
+\item
+  $P(X = 1) = 0.7,\, P(X = 0) = 0.3$
+\end{itemize}
+
+Conditional PDFs describe receiver behavior in each state.
+
+\end{PSbox}
+
+\PSsection{6.7}{Independence of Two Random Variables}
+
+\begin{PSbox}[unbreakable]{def}{Definition}
+
+$X$ and $Y$ are independent if and only if:
+
+\PSdisplay{f_{X,Y}(x,y) = f_X(x) \cdot f_Y(y) \quad \text{for all } x, y}
+
+(Or equivalently for PMFs: $p_{X,Y}(x,\,y) = p_{X}(x) \cdot p_{Y}(y)$)
+
+\end{PSbox}
+
+\PSsubsection{Consequences of Independence}
+
+\begin{itemize}
+\tightlist
+\item
+  $f_{X \mid Y}(x \mid y) = f_{X}(x)$ (knowing $Y$ doesn’t change $X$)
+\item
+  $E[XY] = E[X]E[Y]$
+\item
+  $\operatorname{Var}(X + Y) = \operatorname{Var}(X) + \operatorname{Var}(Y)$
+\end{itemize}
+
+\PSsubsection{Testing Independence}
+
+Check: Does the joint factor into a product of a function of $x$ alone and $y$ alone?
+
+\begin{itemize}
+\tightlist
+\item
+  $f_{X,Y}(x,\,y) = 2e^{-x} \cdot e^{-2y} = [e^{-x}] \cdot [2e^{-2y}]$ \PSyes{} Independent!
+\item
+  $f_{X,Y}(x,\,y) = x + y$ for $0 \le x,\,y \le 1$ \ensuremath{\to} cannot factor \ensuremath{\to} NOT independent
+\end{itemize}
+
+\begin{PSbox}[unbreakable]{ex}{Engineering Example: Signal and Independent Noise}
+
+Transmitted signal $S$ and channel noise $N$ are independent by physical assumption:\PSbr{}$f_{S,N}(s,\,n) = f_{S}(s) \cdot f_{N}(n)$
+
+This independence assumption is fundamental to communication system design.
+
+\end{PSbox}
+
+\PSsection{6.8}{Conditional Expectation}
+
+\begin{PSbox}[unbreakable]{def}{Definition}
+
+\PSdisplay{E[X|Y=y] = \begin{cases} \sum_x x \cdot p_{X|Y}(x|y) & \text{discrete} \\ \int_{-\infty}^{\infty} x \cdot f_{X|Y}(x|y) \, dx & \text{continuous} \end{cases}}
+
+\end{PSbox}
+
+\PSsubsection{Interpretation}
+
+$E[X \mid Y = y]$ is the \textbf{best prediction} of $X$ given that we observed $Y = y$ (in the mean-square sense).
+
+\begin{PSbox}[unbreakable]{ex}{Engineering Example: Temperature-Dependent Resistance}
+
+A resistor’s value $R$ depends on temperature $T$. If $R \mid T \sim N(1000 + 0.5T,\, 4)$:
+
+$E[R \mid T = 50^{\circ}C] = 1000 + 0.5(50) = 1025\,\Omega$
+
+Given temperature, we can predict resistance.
+
+\end{PSbox}
+
+\PSsection{6.9}{MATLAB Examples}
+
+\begin{PSbox}[unbreakable]{ex}{Example 1: Joint PMF Visualization}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Joint PMF: Retransmissions vs Delay Category}
+\VariableTok{pXY} \OperatorTok{=}\NormalTok{ [}\FloatTok{0.30} \FloatTok{0.10}\OperatorTok{;} \FloatTok{0.15} \FloatTok{0.20}\OperatorTok{;} \FloatTok{0.05} \FloatTok{0.20}\NormalTok{]}\OperatorTok{;}
+\VariableTok{x} \OperatorTok{=} \FloatTok{0}\OperatorTok{:}\FloatTok{2}\OperatorTok{;} \VariableTok{y} \OperatorTok{=} \FloatTok{1}\OperatorTok{:}\FloatTok{2}\OperatorTok{;}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{bar3}\NormalTok{(}\VariableTok{pXY}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Delay Category Y\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Retransmissions X\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{zlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}P(X=x, Y=y)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Joint PMF\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\% Marginals}
+\VariableTok{pX} \OperatorTok{=} \VariableTok{sum}\NormalTok{(}\VariableTok{pXY}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{\textquotesingle{};}   \CommentTok{\% Sum over Y}
+\VariableTok{pY} \OperatorTok{=} \VariableTok{sum}\NormalTok{(}\VariableTok{pXY}\OperatorTok{,} \FloatTok{1}\NormalTok{)}\OperatorTok{;}    \CommentTok{\% Sum over X}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Marginal of X: [\%.2f \%.2f \%.2f]\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{pX}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Marginal of Y: [\%.2f \%.2f]\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{pY}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{Example 2: Bivariate Gaussian Visualization}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Joint Gaussian PDF with Correlation}
+\VariableTok{mu} \OperatorTok{=}\NormalTok{ [}\FloatTok{0} \FloatTok{0}\NormalTok{]}\OperatorTok{;} \VariableTok{sigma\_x} \OperatorTok{=} \FloatTok{1}\OperatorTok{;} \VariableTok{sigma\_y} \OperatorTok{=} \FloatTok{1.5}\OperatorTok{;} \VariableTok{rho} \OperatorTok{=} \FloatTok{0.7}\OperatorTok{;}
+\VariableTok{Sigma} \OperatorTok{=}\NormalTok{ [}\VariableTok{sigma\_x}\OperatorTok{\^{}}\FloatTok{2}\OperatorTok{,} \VariableTok{rho}\OperatorTok{*}\VariableTok{sigma\_x}\OperatorTok{*}\VariableTok{sigma\_y}\OperatorTok{;} \VariableTok{rho}\OperatorTok{*}\VariableTok{sigma\_x}\OperatorTok{*}\VariableTok{sigma\_y}\OperatorTok{,} \VariableTok{sigma\_y}\OperatorTok{\^{}}\FloatTok{2}\NormalTok{]}\OperatorTok{;}
+
+\NormalTok{[}\VariableTok{X}\OperatorTok{,} \VariableTok{Y}\NormalTok{] }\OperatorTok{=} \VariableTok{meshgrid}\NormalTok{(}\VariableTok{linspace}\NormalTok{(}\OperatorTok{{-}}\FloatTok{4}\OperatorTok{,} \FloatTok{4}\OperatorTok{,} \FloatTok{100}\NormalTok{)}\OperatorTok{,} \VariableTok{linspace}\NormalTok{(}\OperatorTok{{-}}\FloatTok{5}\OperatorTok{,} \FloatTok{5}\OperatorTok{,} \FloatTok{100}\NormalTok{))}\OperatorTok{;}
+\VariableTok{XY} \OperatorTok{=}\NormalTok{ [}\VariableTok{X}\NormalTok{(}\OperatorTok{:}\NormalTok{) }\VariableTok{Y}\NormalTok{(}\OperatorTok{:}\NormalTok{)]}\OperatorTok{;}
+\VariableTok{Z} \OperatorTok{=} \VariableTok{mvnpdf}\NormalTok{(}\VariableTok{XY}\OperatorTok{,} \VariableTok{mu}\OperatorTok{,} \VariableTok{Sigma}\NormalTok{)}\OperatorTok{;}
+\VariableTok{Z} \OperatorTok{=} \VariableTok{reshape}\NormalTok{(}\VariableTok{Z}\OperatorTok{,} \VariableTok{size}\NormalTok{(}\VariableTok{X}\NormalTok{))}\OperatorTok{;}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{subplot}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\FloatTok{2}\OperatorTok{,}\FloatTok{1}\NormalTok{)}\OperatorTok{;}
+\VariableTok{surf}\NormalTok{(}\VariableTok{X}\OperatorTok{,} \VariableTok{Y}\OperatorTok{,} \VariableTok{Z}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}EdgeColor\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}none\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{view}\NormalTok{(}\FloatTok{30}\OperatorTok{,} \FloatTok{40}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}X\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Y\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{zlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}f\_\{X,Y\}(x,y)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\VariableTok{sprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Joint Gaussian (ρ = \%.1f)\textquotesingle{}}\OperatorTok{,} \VariableTok{rho}\NormalTok{))}\OperatorTok{;}
+
+\VariableTok{subplot}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\FloatTok{2}\OperatorTok{,}\FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{contour}\NormalTok{(}\VariableTok{X}\OperatorTok{,} \VariableTok{Y}\OperatorTok{,} \VariableTok{Z}\OperatorTok{,} \FloatTok{20}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}X\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Y\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Contour Plot\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{axis} \VariableTok{equal}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{Example 3: Testing Independence}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Independence Check via Simulation}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+
+\CommentTok{\% Case 1: Independent (signal and noise)}
+\VariableTok{S} \OperatorTok{=} \VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}               \CommentTok{\% Signal}
+\VariableTok{Noise} \OperatorTok{=} \FloatTok{0.5}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}       \CommentTok{\% Independent noise}
+\VariableTok{R} \OperatorTok{=} \VariableTok{S} \OperatorTok{+} \VariableTok{Noise}\OperatorTok{;}                  \CommentTok{\% Received}
+
+\CommentTok{\% Case 2: Dependent (voltage and current through same resistor)}
+\VariableTok{V} \OperatorTok{=} \VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}               \CommentTok{\% Voltage}
+\VariableTok{I} \OperatorTok{=} \VariableTok{V} \OperatorTok{/} \FloatTok{50} \OperatorTok{+} \FloatTok{0.01}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\VariableTok{N}\NormalTok{)}\OperatorTok{;} \CommentTok{\% Current (dependent on V!)}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Independent (S, Noise): corr = \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{corr}\NormalTok{(}\VariableTok{S}\OperatorTok{\textquotesingle{},} \VariableTok{Noise}\OperatorTok{\textquotesingle{}}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Dependent (V, I): corr = \%.4f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{corr}\NormalTok{(}\VariableTok{V}\OperatorTok{\textquotesingle{},} \VariableTok{I}\OperatorTok{\textquotesingle{}}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{Example 4: Conditional Distribution}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Conditional PDF: Slice of Bivariate Gaussian}
+\VariableTok{rho} \OperatorTok{=} \FloatTok{0.8}\OperatorTok{;} \VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+\VariableTok{X} \OperatorTok{=} \VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{Y} \OperatorTok{=} \VariableTok{rho}\OperatorTok{*}\VariableTok{X} \OperatorTok{+} \VariableTok{sqrt}\NormalTok{(}\FloatTok{1}\OperatorTok{{-}}\VariableTok{rho}\OperatorTok{\^{}}\FloatTok{2}\NormalTok{)}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}  \CommentTok{\% Y|X \textasciitilde{} N(rho*x, 1{-}rho\^{}2)}
+
+\CommentTok{\% Conditional: Y given X ≈ 1 (take samples where 0.9 \textless{} X \textless{} 1.1)}
+\VariableTok{mask} \OperatorTok{=}\NormalTok{ (}\VariableTok{X} \OperatorTok{\textgreater{}} \FloatTok{0.9}\NormalTok{) }\OperatorTok{\&}\NormalTok{ (}\VariableTok{X} \OperatorTok{\textless{}} \FloatTok{1.1}\NormalTok{)}\OperatorTok{;}
+\VariableTok{Y\_cond} \OperatorTok{=} \VariableTok{Y}\NormalTok{(}\VariableTok{mask}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{histogram}\NormalTok{(}\VariableTok{Y\_cond}\OperatorTok{,} \FloatTok{50}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Normalization\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}pdf\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+\VariableTok{y} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\OperatorTok{{-}}\FloatTok{3}\OperatorTok{,} \FloatTok{4}\OperatorTok{,} \FloatTok{200}\NormalTok{)}\OperatorTok{;}
+\VariableTok{plot}\NormalTok{(}\VariableTok{y}\OperatorTok{,} \VariableTok{normpdf}\NormalTok{(}\VariableTok{y}\OperatorTok{,} \VariableTok{rho}\OperatorTok{*}\FloatTok{1}\OperatorTok{,} \VariableTok{sqrt}\NormalTok{(}\FloatTok{1}\OperatorTok{{-}}\VariableTok{rho}\OperatorTok{\^{}}\FloatTok{2}\NormalTok{))}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Y\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}PDF\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}f\_\{Y|X\}(y|X≈1) for Bivariate Gaussian\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{legend}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Empirical\textquotesingle{}}\OperatorTok{,} \VariableTok{sprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}N(\%.1f, \%.2f)\textquotesingle{}}\OperatorTok{,} \VariableTok{rho}\OperatorTok{,} \FloatTok{1}\OperatorTok{{-}}\VariableTok{rho}\OperatorTok{\^{}}\FloatTok{2}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\PSsection{6.10}{Practice Problems}
+
+\begin{PSbox}[unbreakable]{prob}{Problem 1}
+
+Joint PDF: $f_{X,Y}(x,\,y) = 6(1-y)$ for $0 \le x \le y \le 1$, zero elsewhere.
+
+\begin{enumerate}
+\def\labelenumi{(\alph{enumi})}
+\tightlist
+\item
+  Verify normalization. (b) Find marginals. (c) Are X,Y independent? (d) Find $P(X < 0.5,\, Y < 0.5)$.
+\end{enumerate}
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\alph{enumi})}
+\tightlist
+\item
+  $\int_{0}^{1} \int_{0}^{y} 6(1-y)\,dx\,dy = \int_{0}^{1} 6y(1-y)\,dy = 6\left[\frac{y^{2}}{2} - \frac{y^{3}}{3}\right]_{0}^{1} = 6\left(\frac{1}{2} - \frac{1}{3}\right) = 1$ \PSyes{}
+\item
+  $f_{X}(x) = \int_{x}^{1} 6(1-y)\,dy = 6\left[\left(1-\frac{y^{2}}{2}\right) - (y)\right]_{x}^{1} = 3(1-x)^{2}$; $f_{Y}(y) = 6y(1-y)$
+\item
+  $f_{X,Y} \ne f_{X} \cdot f_{Y}$ \ensuremath{\to} NOT independent (also, the support is triangular, not rectangular)
+\item
+  $\displaystyle P(X < 0.5,\, Y < 0.5) = \int_{0}^{0.5} \int_{0}^{y} 6(1-y)\,dx\,dy = \int_{0}^{0.5} 6y(1-y)\,dy = 6\left[\frac{y^{2}}{2} - \frac{y^{3}}{3}\right]_{0}^{0.5} = 0.500$
+\end{enumerate}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{Problem 2}
+
+Two sensors measure the same signal with independent noise. $X = S + N_{1},\, Y = S + N_{2}$ where $S = 5\,\mathrm{V},\, N_{1} \sim N(0,\,1),\, N_{2} \sim N(0,\,4)$. Are $X$ and $Y$ independent? Find $E[X],\, E[Y]$, and explain why $\operatorname{Cov}(X,\,Y) \ne 0$.
+
+\PSsolution{} $X$ and $Y$ are NOT independent because they share $S$ (though noise is independent). $E[X] = E[Y] = 5$. $\operatorname{Cov}(X,\,Y) = \operatorname{Cov}(S+N_{1},\, S+N_{2}) = \operatorname{Var}(S) + \operatorname{Cov}(S,\,N_{1}) + \operatorname{Cov}(N_{2},\,S) + \operatorname{Cov}(N_{1},\,N_{2})$. Since $S$ is constant, $\operatorname{Var}(S) = 0$, so if $S$ were random they’d be correlated. With $S$ fixed, $X$ and $Y$ are actually independent in this case. If $S$ is random with $\operatorname{Var}(S) = \sigma_{S}^{2}$, then $\operatorname{Cov}(X,\,Y) = \sigma_{S}^{2}$.
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{Problem 3}
+
+Given joint PMF in the table of Section 6.2, find (a) $P(X \le 1,\, Y = 2)$, (b) $f_{X \mid Y}(x \mid Y = 1)$, (c) $E[X \mid Y = 1]$.
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\alph{enumi})}
+\tightlist
+\item
+  $P(X \le 1,\, Y = 2) = p(0,\,2) + p(1,\,2) = 0.10 + 0.20 = 0.30$
+\item
+  $p_{X \mid Y}(x \mid 1) = \frac{p(x,\,1)}{p_{Y}(1)}$: $p(0 \mid 1) = \frac{0.30}{0.50} = 0.60,\, p(1 \mid 1) = \frac{0.15}{0.50} = 0.30,\, p(2 \mid 1) = \frac{0.05}{0.50} = 0.10$
+\item
+  $E[X \mid Y = 1] = 0(0.60) + 1(0.30) + 2(0.10) = 0.50$
+\end{enumerate}
+
+\emph{Next Module: {Module 7 — Functions of Two Random Variables}}
+
+\end{PSbox}

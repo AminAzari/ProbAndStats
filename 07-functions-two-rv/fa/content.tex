@@ -1,0 +1,339 @@
+\begin{PSbox}[unbreakable]{obj}{اهداف یادگیری}
+
+پس از تکمیل این ماژول، دانشجویان قادر خواهند بود:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  توزیع \lr{$Z = X + Y$} را با استفاده از کانولوشن استخراج کنند
+\item
+  توزیع تفاضل، حاصل‌ضرب، نسبت، بیشینه و کمینه را بیابند
+\item
+  روش تبدیل ژاکوبی دوبعدی را به کار ببرند
+\item
+  این نتایج را به کاربردهای مهندسی (سیگنال+نویز، قابلیت اطمینان) مرتبط کنند
+\end{enumerate}
+
+\end{PSbox}
+
+\PSsection{7.1}{مقدمه}
+
+سیستم‌های مهندسی متغیرهای تصادفی را ترکیب می‌کنند:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{سیگنال دریافتی} = ارسالی + نویز: \lr{$R = S + N$}
+\item
+  \textbf{تداخل کل} = جمع چند منبع: \lr{$I = I_{1} + I_{2} + \ldots + I_{n}$}
+\item
+  \textbf{عمر سیستم} = کمینه عمر قطعات: \lr{$T = \min (T_{1},\, T_{2})$}
+\item
+  \lr{\textbf{\lr{\mbox{SNR}}} $= \dfrac{\text{\rl{توان سیگنال}}}{\text{\rl{توان نویز}}}$}: نسبت متغیرهای تصادفی
+\end{itemize}
+
+به روش‌هایی برای یافتن توزیع \textbf{توابع دو (یا چند) متغیر تصادفی} نیاز داریم.
+
+\PSsection{7.2}{جمع دو متغیر تصادفی: \lr{$Z = X + Y$}}
+
+\PSsubsection{روش \lr{\mbox{CDF}}}
+
+\lr{$F_{Z}(z) = P(X + Y \le z) = \int \int_{x+y \le z} f_{X,Y}(x,\,y)\,dx\,dy$}
+
+\PSsubsection{فرمول کانولوشن (حالت مستقل)}
+
+اگر \lr{$X$} و \lr{$Y$} \textbf{مستقل} باشند:
+
+\PSdisplay{f_Z(z) = \int_{-\infty}^{\infty} f_X(x) \cdot f_Y(z-x) \, dx = (f_X * f_Y)(z)}
+
+این همان \textbf{کانولوشن} \lr{$f_{X}$} و \lr{$f_{Y}$} است.
+
+\PSsubsection{استخراج}
+
+\lr{$F_{Z}(z) = P(X + Y \le z) = \int_{-\infty}^{\infty} \int_{-\infty}^{z-x} f_{X}(x)f_{Y}(y)\,dy\,dx$}\PSbr{}\lr{$= \int_{-\infty}^{\infty} f_{X}(x) F_{Y}(z-x)\,dx$}
+
+با مشتق‌گیری: \lr{$f_{Z}(z) = \int_{-\infty}^{\infty} f_{X}(x) f_{Y}(z-x)\,dx$ \PSyes{}}
+
+\PSsubsection{حالت‌های خاص مهم}
+
+\textbf{جمع دو گاوسی (مستقل):}\PSbr{}\lr{$X \sim N(\mu_{1},\, \sigma_{1}^{2})$}، \lr{$Y \sim N(\mu_{2},\, \sigma_{2}^{2}) \to Z = X+Y \sim N(\mu_{1}+\mu_{2},\, \sigma_{1}^{2}+\sigma_{2}^{2})$}
+
+\textbf{جمع دو نمایی (با نرخ یکسان):}\PSbr{}\lr{$X$}، \lr{$Y \sim \mathrm{Exp}(\lambda)$} مستقل \lr{$\to Z \sim \mathrm{Gamma}\left(2,\, \frac{1}{\lambda}\right) = \mathrm{Erlang}(2,\, \lambda)$}
+
+\textbf{جمع دو پواسون:}\PSbr{}\lr{$X \sim \mathrm{Poisson}(\lambda_{1})$}، \lr{$Y \sim \mathrm{Poisson}(\lambda_{2})$} مستقل \lr{$\to Z \sim \mathrm{Poisson}(\lambda_{1}+\lambda_{2})$}
+
+\textbf{جمع دو یکنواخت:}\PSbr{}\lr{$X$}، \lr{$Y \sim \mathrm{Uniform}(0,\,1)$} مستقل \lr{$\to Z$} توزیع مثلثی روی \lr{\mbox{[0,2]}} دارد
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی: سیگنال + نویز}
+
+سیگنال ارسالی \lr{$S \sim N(A,\, \sigma_{s}^{2})$}، نویز \lr{$N \sim N(0,\, \sigma_{n}^{2})$}، مستقل.\PSbr{}دریافتی: \lr{$R = S + N \sim N(A,\, \sigma_{s}^{2} + \sigma_{n}^{2})$}
+
+سیگنال دریافتی همچنان گاوسی است \lr{—} با واریانس بیشتر (\lr{\mbox{SNR}} کاهش‌یافته).
+
+\end{PSbox}
+
+\PSsection{7.3}{تفاضل: \lr{$Z = X - Y$}}
+
+برای \lr{$X$}، \lr{$Y$} مستقل:\PSdisplay{f_Z(z) = \int_{-\infty}^{\infty} f_X(x) \cdot f_Y(x-z) \, dx}
+
+\textbf{حالت گاوسی:} \lr{$X \sim N(\mu_{1},\, \sigma_{1}^{2})$}، \lr{$Y \sim N(\mu_{2},\, \sigma_{2}^{2}) \to Z = X-Y \sim N(\mu_{1}-\mu_{2},\, \sigma_{1}^{2}+\sigma_{2}^{2})$}
+
+توجه: واریانس‌ها همچنان \textbf{جمع} می‌شوند (نه تفریق) زیرا \lr{$\operatorname{Var}(-Y) = \operatorname{Var}(Y)$}.
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی: اندازه‌گیری تفاضلی}
+
+دو حسگر یک کمیت را اندازه‌گیری می‌کنند: \lr{$X_{1} = \theta + N_{1}$}، \lr{$X_{2} = \theta + N_{2}$}.\PSbr{}تفاضل: \lr{$X_{1} - X_{2} = N_{1} - N_{2} \sim N(0,\, \sigma_{1}^{2} + \sigma_{2}^{2})$}
+
+تفاضل، سیگنال مشترک را حذف می‌کند اما واریانس نویز را دو برابر می‌کند.
+
+\end{PSbox}
+
+\PSsection{7.4}{حاصل‌ضرب: \lr{\mbox{$Z$ = XY}}}
+
+برای \lr{$X$}، \lr{$Y$} مستقل:\PSdisplay{f_Z(z) = \int_{-\infty}^{\infty} \frac{1}{|x|} f_X(x) \cdot f_Y(z/x) \, dx}
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی: توان}
+
+ولتاژ \lr{$V$} و جریان \lr{$I$} در یک مدار خطی: \lr{$P = V \cdot I$}.\PSbr{}اگر \lr{$V$} و \lr{$I$} توزیع مشترک معلومی داشته باشند، می‌توانیم توزیع توان را بیابیم.
+
+\end{PSbox}
+
+\PSsection{7.5}{نسبت: \lr{$Z = \frac{X}{Y}$}}
+
+برای \lr{$X$}، \lr{$Y$} مستقل:\PSdisplay{f_Z(z) = \int_{-\infty}^{\infty} |y| \cdot f_X(zy) \cdot f_Y(y) \, dy}
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی: \lr{\mbox{SNR}}}
+
+\lr{$\mathrm{SNR} = \dfrac{\text{\rl{توان سیگنال}}}{\text{\rl{توان نویز}}} = \dfrac{P_s}{P_n}$}
+
+اگر هر دو دارای توزیع کای‌دو باشند (جمع مربعات گاوسی‌ها)، نسبت از یک \textbf{توزیع \lr{$F$}} پیروی می‌کند.
+
+\end{PSbox}
+
+\PSsection{7.6}{بیشینه: \lr{$Z = \max (X,\, Y)$}}
+
+\PSsubsection{رویکرد \lr{\mbox{CDF}}}
+
+\lr{$F_{Z}(z) = P(\max (X,\,Y) \le z) = P(X \le z\ \PSmtext{AND}\ Y \le z)$}
+
+اگر مستقل باشند: \lr{$F_{Z}(z) = F_{X}(z) \cdot F_{Y}(z)$}
+
+\lr{\mbox{PDF}}: \lr{$f_{Z}(z) = f_{X}(z)F_{Y}(z) + F_{X}(z)f_{Y}(z)$}
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی: افزونگی موازی}
+
+سیستم کار می‌کند اگر \textbf{حداقل یکی} از قطعات کار کند. سیستم تنها زمانی خراب می‌شود که \textbf{همه} خراب شوند.\PSbr{}عمر سیستم \lr{$= \max (T_{1},\, T_{2})$} برای قطعات افزونه موازی.
+
+برای \lr{$T_{1}$}، \lr{$T_{2} \sim \mathrm{Exp}(\lambda)$} مستقل:\PSbr{}\lr{$F_{Z}(z) = (1 - e^{-\lambda z})^{2}$} برای \lr{$z \ge 0$}
+
+\lr{$f_{Z}(z) = 2\lambda e^{-\lambda z}(1 - e^{-\lambda z})$}
+
+عمر میانگین: \lr{$E[\max] = \frac{3}{2\lambda} > \frac{1}{\lambda} = E[\text{\rl{تک قطعه}}]$} (قابلیت اطمینان بهبود یافته!)
+
+\end{PSbox}
+
+\PSsection{7.7}{کمینه: \lr{$Z = \min (X,\, Y)$}}
+
+\PSsubsection{رویکرد تابع بقا}
+
+\lr{$P(Z > z) = P(\min (X,\,Y) > z) = P(X > z\ \PSmtext{AND}\ Y > z)$}
+
+اگر مستقل باشند: \lr{$P(Z > z) = P(X > z) \cdot P(Y > z) = [1-F_{X}(z)][1-F_{Y}(z)]$}
+
+\lr{\mbox{CDF}}: \lr{$F_{Z}(z) = 1 - [1-F_{X}(z)][1-F_{Y}(z)]$}
+
+\begin{PSbox}[unbreakable]{ex}{مثال مهندسی: سیستم سری}
+
+سیستم زمانی خراب می‌شود که \textbf{نخستین} قطعه خراب شود. عمر سیستم \lr{$= \min (T_{1},\, T_{2})$}.
+
+برای \lr{$T_{1} \sim \mathrm{Exp}(\lambda_{1})$}، \lr{$T_{2} \sim \mathrm{Exp}(\lambda_{2})$} مستقل:\PSbr{}\lr{$P(Z > z) = e^{-\lambda_{1}z} \cdot e^{-\lambda_{2}z} = e^{-(\lambda_{1}+\lambda_{2})z}$}
+
+بنابراین: \lr{$\min (T_{1},\, T_{2}) \sim \mathrm{Exp}(\lambda_{1} + \lambda_{2})$}
+
+\textbf{نتیجه کلیدی:} نرخ‌های خرابی در سیستم‌های سری \textbf{جمع} می‌شوند. عمر میانگین \lr{$= \frac{1}{\lambda_{1}+\lambda_{2}} < \min \left(\frac{1}{\lambda_{1}},\, \frac{1}{\lambda_{2}}\right)$}.
+
+\end{PSbox}
+
+\PSsection{7.8}{تبدیل دوبعدی عمومی (روش ژاکوبی)}
+
+\PSsubsection{صورت‌بندی}
+
+با داشتن \lr{$(X,\, Y)$} با \lr{\mbox{PDF}} مشترک معلوم، \lr{\mbox{PDF}} مشترک \lr{$(U,\, V)$} را بیابید که در آن:
+
+\begin{itemize}
+\tightlist
+\item
+  \lr{$U = g_{1}(X,\, Y)$}
+\item
+  \lr{$V = g_{2}(X,\, Y)$}
+\end{itemize}
+
+\PSsubsection{رویه}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  برای وارون حل کنید: \lr{$X = h_{1}(U,\, V)$}، \lr{$Y = h_{2}(U,\, V)$}
+\item
+  دترمینان ژاکوبی را محاسبه کنید:
+\end{enumerate}
+
+\PSdisplay{J = \begin{vmatrix} \frac{\partial x}{\partial u} & \frac{\partial x}{\partial v} \\ \frac{\partial y}{\partial u} & \frac{\partial y}{\partial v} \end{vmatrix}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\item
+  اعمال کنید:\PSdisplay{f_{U,V}(u,v) = f_{X,Y}(h_1(u,v), h_2(u,v)) \cdot |J|}
+\item
+  اگر فقط \lr{$U$} لازم باشد، \lr{$V$} را حاشیه‌سازی کنید.
+\end{enumerate}
+
+\begin{PSbox}[unbreakable]{ex}{مثال: جمع و تفاضل}
+
+\lr{$U = X + Y$}، \lr{$V = X - Y \to X = \frac{U+V}{2}$}، \lr{$Y = \frac{U-V}{2}$}
+
+\lr{$\displaystyle J = \lvert \frac{\partial x}{\partial u} \cdot \frac{\partial y}{\partial v} - \frac{\partial x}{\partial v} \cdot \frac{\partial y}{\partial u}\rvert = \lvert \frac{1}{2}\left(-\frac{1}{2}\right) - \frac{1}{2}\left(\frac{1}{2}\right)\rvert = \frac{1}{2}$}
+
+\lr{$\displaystyle f_{U,V}(u,\,v) = \frac{1}{2} \cdot f_{X,Y}\left(\frac{u+v}{2},\, \frac{u-v}{2}\right)$}
+
+\end{PSbox}
+
+\PSsection{7.9}{مثال‌های \lr{\mbox{MATLAB}}}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 1: کانولوشن \lr{—} جمع دو یکنواخت}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Z = X + Y, both Uniform(0,1)}
+\VariableTok{N} \OperatorTok{=} \FloatTok{200000}\OperatorTok{;}
+\VariableTok{X} \OperatorTok{=} \VariableTok{rand}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;} \VariableTok{Y} \OperatorTok{=} \VariableTok{rand}\NormalTok{(}\FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{Z} \OperatorTok{=} \VariableTok{X} \OperatorTok{+} \VariableTok{Y}\OperatorTok{;}
+
+\VariableTok{figure}\OperatorTok{;}
+\VariableTok{histogram}\NormalTok{(}\VariableTok{Z}\OperatorTok{,} \FloatTok{100}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Normalization\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}pdf\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{hold} \VariableTok{on}\OperatorTok{;}
+\VariableTok{z} \OperatorTok{=} \VariableTok{linspace}\NormalTok{(}\FloatTok{0}\OperatorTok{,} \FloatTok{2}\OperatorTok{,} \FloatTok{200}\NormalTok{)}\OperatorTok{;}
+\VariableTok{f\_theory} \OperatorTok{=} \VariableTok{max}\NormalTok{(}\FloatTok{0}\OperatorTok{,} \FloatTok{1} \OperatorTok{{-}} \VariableTok{abs}\NormalTok{(}\VariableTok{z} \OperatorTok{{-}} \FloatTok{1}\NormalTok{))}\OperatorTok{;}  \CommentTok{\% Triangular PDF}
+\VariableTok{plot}\NormalTok{(}\VariableTok{z}\OperatorTok{,} \VariableTok{f\_theory}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}r\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}LineWidth\textquotesingle{}}\OperatorTok{,} \FloatTok{2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{xlabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Z = X + Y\textquotesingle{}}\NormalTok{)}\OperatorTok{;} \VariableTok{ylabel}\NormalTok{(}\SpecialStringTok{\textquotesingle{}PDF\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{title}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Sum of Two Uniforms → Triangular\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\VariableTok{legend}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Simulation\textquotesingle{}}\OperatorTok{,} \SpecialStringTok{\textquotesingle{}Theory\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 2: جمع گاوسی‌ها (سیگنال + نویز)}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Received = Signal + Noise}
+\VariableTok{mu\_s} \OperatorTok{=} \FloatTok{3}\OperatorTok{;} \VariableTok{sigma\_s} \OperatorTok{=} \FloatTok{0.5}\OperatorTok{;}  \CommentTok{\% Signal}
+\VariableTok{sigma\_n} \OperatorTok{=} \FloatTok{1}\OperatorTok{;}               \CommentTok{\% Noise (zero{-}mean)}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+
+\VariableTok{S} \OperatorTok{=} \VariableTok{mu\_s} \OperatorTok{+} \VariableTok{sigma\_s}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{Noise} \OperatorTok{=} \VariableTok{sigma\_n}\OperatorTok{*}\VariableTok{randn}\NormalTok{(}\FloatTok{1}\OperatorTok{,}\VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{R} \OperatorTok{=} \VariableTok{S} \OperatorTok{+} \VariableTok{Noise}\OperatorTok{;}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}E[R]: Theory=\%.2f, Sim=\%.2f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mu\_s}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{R}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}Var(R): Theory=\%.2f, Sim=\%.2f\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{sigma\_s}\OperatorTok{\^{}}\FloatTok{2}\OperatorTok{+}\VariableTok{sigma\_n}\OperatorTok{\^{}}\FloatTok{2}\OperatorTok{,} \VariableTok{var}\NormalTok{(}\VariableTok{R}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}SNR = \%.2f dB\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \FloatTok{10}\OperatorTok{*}\VariableTok{log10}\NormalTok{(}\VariableTok{mu\_s}\OperatorTok{\^{}}\FloatTok{2}\OperatorTok{/}\NormalTok{(}\VariableTok{sigma\_s}\OperatorTok{\^{}}\FloatTok{2}\OperatorTok{+}\VariableTok{sigma\_n}\OperatorTok{\^{}}\FloatTok{2}\NormalTok{)))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 3: قابلیت اطمینان سیستم سری (کمینه)}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Series System: T\_sys = min(T1, T2)}
+\VariableTok{lambda1} \OperatorTok{=} \FloatTok{0.001}\OperatorTok{;} \VariableTok{lambda2} \OperatorTok{=} \FloatTok{0.002}\OperatorTok{;}  \CommentTok{\% Failure rates per hour}
+\VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+
+\VariableTok{T1} \OperatorTok{=} \VariableTok{exprnd}\NormalTok{(}\FloatTok{1}\OperatorTok{/}\VariableTok{lambda1}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{T2} \OperatorTok{=} \VariableTok{exprnd}\NormalTok{(}\FloatTok{1}\OperatorTok{/}\VariableTok{lambda2}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{T\_sys} \OperatorTok{=} \VariableTok{min}\NormalTok{(}\VariableTok{T1}\OperatorTok{,} \VariableTok{T2}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}MTTF component 1: \%.0f hours\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \FloatTok{1}\OperatorTok{/}\VariableTok{lambda1}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}MTTF component 2: \%.0f hours\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \FloatTok{1}\OperatorTok{/}\VariableTok{lambda2}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}MTTF system (theory): \%.0f hours\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \FloatTok{1}\OperatorTok{/}\NormalTok{(}\VariableTok{lambda1}\OperatorTok{+}\VariableTok{lambda2}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}MTTF system (sim): \%.0f hours\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{T\_sys}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{ex}{مثال 4: سیستم موازی (بیشینه)}
+
+\tcbset{PScodemode/.style={unbreakable}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\% Parallel System: T\_sys = max(T1, T2)}
+\VariableTok{lambda} \OperatorTok{=} \FloatTok{0.01}\OperatorTok{;} \VariableTok{N} \OperatorTok{=} \FloatTok{100000}\OperatorTok{;}
+\VariableTok{T1} \OperatorTok{=} \VariableTok{exprnd}\NormalTok{(}\FloatTok{1}\OperatorTok{/}\VariableTok{lambda}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{T2} \OperatorTok{=} \VariableTok{exprnd}\NormalTok{(}\FloatTok{1}\OperatorTok{/}\VariableTok{lambda}\OperatorTok{,} \FloatTok{1}\OperatorTok{,} \VariableTok{N}\NormalTok{)}\OperatorTok{;}
+\VariableTok{T\_parallel} \OperatorTok{=} \VariableTok{max}\NormalTok{(}\VariableTok{T1}\OperatorTok{,} \VariableTok{T2}\NormalTok{)}\OperatorTok{;}
+
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}MTTF single: \%.0f hours\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \FloatTok{1}\OperatorTok{/}\VariableTok{lambda}\NormalTok{)}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}MTTF parallel (theory): \%.0f hours\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \FloatTok{3}\OperatorTok{/}\NormalTok{(}\FloatTok{2}\OperatorTok{*}\VariableTok{lambda}\NormalTok{))}\OperatorTok{;}
+\VariableTok{fprintf}\NormalTok{(}\SpecialStringTok{\textquotesingle{}MTTF parallel (sim): \%.0f hours\textbackslash{}n\textquotesingle{}}\OperatorTok{,} \VariableTok{mean}\NormalTok{(}\VariableTok{T\_parallel}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\end{PSbox}
+
+\PSsection{7.10}{مسایل تمرینی}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 1}
+
+\lr{$X \sim \mathrm{Exp}(1)$}، \lr{$Y \sim \mathrm{Exp}(1)$}، مستقل. \lr{\mbox{PDF}} مربوط به \lr{$Z = X + Y$} را بیابید.
+
+\PSsolution{} کانولوشن: \lr{$f_{Z}(z) = \int_{0}^{z} e^{-x} \cdot e^{-(z-x)}\,dx = \int_{0}^{z} e^{-z}\,dx = ze^{-z}$}، \lr{$z \ge 0$}.\PSbr{}این \lr{$\mathrm{Gamma}(2,\,1) = \mathrm{Erlang}(2,\,1)$} است. \lr{$E[Z] = 2$}، \lr{$\operatorname{Var}(Z) = 2$}.
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 2}
+
+سه قطعه در آرایش سری با نرخ‌های خرابی \lr{$\lambda_{1} = 0.001$}، \lr{$\lambda_{2} = 0.002$}، \lr{$\lambda_{3} = 0.003$} در هر ساعت.
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  \lr{\mbox{MTTF}} سیستم را بیابید. (ب) \lr{$P(\text{\rl{سیستم 100 ساعت دوام می‌آورد}})$} را بیابید.
+\end{enumerate}
+
+\PSsolution{} 
+
+\begin{enumerate}
+\def\labelenumi{(\PSalph{enumi})}
+\tightlist
+\item
+  \lr{$\mathrm{MTTF} = \frac{1}{0.001+0.002+0.003} = \frac{1}{0.006} = 166.7$} ساعت
+\item
+  \lr{$P(T_{\PSmtext{sys}} > 100) = e^{-0.006 \times 100} = e^{-0.6} = 0.549$}
+\end{enumerate}
+
+\end{PSbox}
+
+\begin{PSbox}[unbreakable]{prob}{مسیله 3}
+
+\lr{$X \sim N(5,\, 4)$}، \lr{$Y \sim N(3,\, 9)$}، مستقل. توزیع و \lr{$P(X + Y > 12)$} را بیابید.
+
+\PSsolution{} \lr{$Z = X+Y \sim N(8,\, 13)$. $P(Z > 12) = P\left(Z' > \frac{12-8}{\sqrt{13}}\right) = Q(1.109) = 0.1337$.}
+
+\emph{ماژول بعدی: {ماژول 8 \lr{—} امید ریاضی و واریانس شرطی}}
+
+\end{PSbox}

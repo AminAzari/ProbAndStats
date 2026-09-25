@@ -1,0 +1,452 @@
+% !TEX program = xelatex
+% Engineering Probability & Statistics — Fall 2026-2027 (Persian)
+% Instructor: Amin Azari — compile with XeLaTeX (or tectonic).
+\documentclass[12pt]{article}
+\def\PSroot{../../template}
+\input{\PSroot/probstats-fa}
+\begin{document}
+\PScoverpage{جزوه کامل درس}{ماژول‌های ۱ تا ۱۶}{Complete Lecture Notes - Modules 1-16}
+\PSsetmodule{}{\PSlangContents}{}
+\begin{PSbooktoc}
+\PStocmodule{PSmod:syl}{\PSlangSyllabus}
+\PStocitemk{syl}{1}{}{۱. اهداف کلی درس}
+\PStocitemk{syl}{2}{}{۲. جایگاه درس در برنامه درسی}
+\PStocitemk{syl}{3}{}{۳. رویکرد آموزشی}
+\PStocitemk{syl}{4}{}{۴. سرفصل تفصیلی و توزیع زمانی (۱۶ هفته)}
+\PStocitemk{syl}{5}{}{۵. روش ارزشیابی}
+\PStocmodule{PSmod:1}{ماژول ۱\quad احتمال}
+\PStocitemk{1}{1}{1.1}{مقدمه: چرا احتمال در مهندسی؟}
+\PStocitemk{1}{2}{1.2}{آزمایش‌های تصادفی}
+\PStocitemk{1}{3}{1.3}{فضاهای نمونه}
+\PStocitemk{1}{4}{1.4}{رویدادها}
+\PStocitemk{1}{5}{1.5}{اصول موضوعه احتمال}
+\PStocitemk{1}{6}{1.6}{قواعد احتمال}
+\PStocitemk{1}{7}{1.7}{احتمال شرطی}
+\PStocitemk{1}{8}{1.8}{استقلال}
+\PStocitemk{1}{9}{1.9}{قضیه بیز}
+\PStocitemk{1}{10}{1.10}{قضیه احتمال کل}
+\PStocitemk{1}{11}{1.11}{مثال‌های \lr{\mbox{MATLAB}}}
+\PStocitemk{1}{12}{1.12}{خلاصه: تمایزهای کلیدی}
+\PStocitemk{1}{13}{1.13}{مسایل تمرینی}
+\PStocitemk{1}{14}{1.14}{نکات کلیدی}
+\PStocmodule{PSmod:2}{ماژول ۲\quad یک متغیر تصادفی و توابع آن}
+\PStocitemk{2}{1}{2.1}{مقدمه: چرا متغیرهای تصادفی؟}
+\PStocitemk{2}{2}{2.2}{تعریف متغیر تصادفی}
+\PStocitemk{2}{3}{2.3}{متغیرهای تصادفی گسسته}
+\PStocitemk{2}{4}{2.4}{متغیرهای تصادفی پیوسته}
+\PStocitemk{2}{5}{2.5}{تابع جرم احتمال \lr{\mbox{(PMF)}}}
+\PStocitemk{2}{6}{2.6}{تابع چگالی احتمال \lr{\mbox{(PDF)}}}
+\PStocitemk{2}{7}{2.7}{تابع توزیع تجمعی \lr{\mbox{(CDF)}}}
+\PStocitemk{2}{8}{2.8}{تمایز کلیدی: جرم در برابر چگالی در برابر تجمعی}
+\PStocitemk{2}{9}{2.9}{تبدیل‌های متغیرهای تصادفی}
+\PStocitemk{2}{10}{2.10}{مثال‌های \lr{\mbox{MATLAB}}}
+\PStocitemk{2}{11}{2.11}{مسایل تمرینی}
+\PStocitemk{2}{12}{2.12}{نکات کلیدی}
+\PStocmodule{PSmod:3}{ماژول ۳\quad توزیع‌های مهم احتمال}
+\PStocitemk{3}{1}{3.1}{مقدمه: انتخاب توزیع مناسب}
+\PStocitemk{3}{2}{3.2}{توزیع برنولی}
+\PStocitemk{3}{3}{3.3}{توزیع دوجمله‌ای}
+\PStocitemk{3}{4}{3.4}{توزیع هندسی}
+\PStocitemk{3}{5}{3.5}{توزیع دوجمله‌ای منفی}
+\PStocitemk{3}{6}{3.6}{توزیع پواسون}
+\PStocitemk{3}{7}{3.7}{توزیع یکنواخت (پیوسته)}
+\PStocitemk{3}{8}{3.8}{توزیع نمایی}
+\PStocitemk{3}{9}{3.9}{توزیع گاوسی (نرمال)}
+\PStocitemk{3}{10}{3.10}{توزیع گاما}
+\PStocitemk{3}{11}{3.11}{توزیع رایلی}
+\PStocitemk{3}{12}{3.12}{توزیع کای‌دو}
+\PStocitemk{3}{13}{3.13}{راهنمای انتخاب توزیع}
+\PStocitemk{3}{14}{3.14}{جدول خلاصه}
+\PStocitemk{3}{15}{3.15}{مسایل تمرینی}
+\PStocmodule{PSmod:4}{ماژول ۴\quad امید ریاضی و گشتاورها}
+\PStocitemk{4}{1}{4.1}{مقدمه: چرا آماره‌های خلاصه؟}
+\PStocitemk{4}{2}{4.2}{مقدار امید ریاضی (میانگین)}
+\PStocitemk{4}{3}{4.3}{مقدار امید ریاضی یک تابع: \lr{$E[g(X)]$}}
+\PStocitemk{4}{4}{4.4}{واریانس}
+\PStocitemk{4}{5}{4.5}{انحراف معیار}
+\PStocitemk{4}{6}{4.6}{ویژگی‌های امید ریاضی}
+\PStocitemk{4}{7}{4.7}{ویژگی‌های واریانس}
+\PStocitemk{4}{8}{4.8}{گشتاورهای مراتب بالاتر}
+\PStocitemk{4}{9}{4.9}{تابع مولد گشتاور \lr{\mbox{(MGF)}}}
+\PStocitemk{4}{10}{4.10}{کاربردهای مهندسی گشتاورها}
+\PStocitemk{4}{11}{4.11}{مثال‌های \lr{\mbox{MATLAB}}}
+\PStocitemk{4}{12}{4.12}{مسایل تمرینی}
+\PStocitemk{4}{13}{4.13}{نکات کلیدی}
+\PStocmodule{PSmod:5}{ماژول ۵\quad توابع مهم متغیر تصادفی}
+\PStocitemk{5}{1}{5.1}{مقدمه: چرا متغیرهای تصادفی را تبدیل کنیم؟}
+\PStocitemk{5}{2}{5.2}{تبدیل‌های خطی: \lr{\mbox{$Y$ = aX $+ b$}}}
+\PStocitemk{5}{3}{5.3}{تبدیل‌های یکنوای عمومی}
+\PStocitemk{5}{4}{5.4}{تبدیل‌های غیرخطی: حالت غیریکنوا}
+\PStocitemk{5}{5}{5.5}{روش ژاکوبی}
+\PStocitemk{5}{6}{5.6}{کاربرد مهندسی: رایلی از گاوسی}
+\PStocitemk{5}{7}{5.7}{مثال‌های \lr{\mbox{MATLAB}}}
+\PStocitemk{5}{8}{5.8}{مسایل تمرینی}
+\PStocmodule{PSmod:6}{ماژول ۶\quad دو متغیر تصادفی}
+\PStocitemk{6}{1}{6.1}{مقدمه: چرا توزیع‌های مشترک را مطالعه کنیم؟}
+\PStocitemk{6}{2}{6.2}{\lr{\mbox{PMF}} مشترک (حالت گسسته)}
+\PStocitemk{6}{3}{6.3}{\lr{\mbox{PDF}} مشترک (حالت پیوسته)}
+\PStocitemk{6}{4}{6.4}{\lr{\mbox{CDF}} مشترک}
+\PStocitemk{6}{5}{6.5}{توزیع‌های حاشیه‌ای}
+\PStocitemk{6}{6}{6.6}{توزیع‌های شرطی}
+\PStocitemk{6}{7}{6.7}{استقلال دو متغیر تصادفی}
+\PStocitemk{6}{8}{6.8}{امید ریاضی شرطی}
+\PStocitemk{6}{9}{6.9}{مثال‌های \lr{\mbox{MATLAB}}}
+\PStocitemk{6}{10}{6.10}{مسایل تمرینی}
+\PStocmodule{PSmod:7}{ماژول ۷\quad توابع دو متغیر تصادفی}
+\PStocitemk{7}{1}{7.1}{مقدمه}
+\PStocitemk{7}{2}{7.2}{جمع دو متغیر تصادفی: \lr{$Z = X + Y$}}
+\PStocitemk{7}{3}{7.3}{تفاضل: \lr{$Z = X - Y$}}
+\PStocitemk{7}{4}{7.4}{حاصل‌ضرب: \lr{\mbox{$Z$ = XY}}}
+\PStocitemk{7}{5}{7.5}{نسبت: \lr{$Z = \frac{X}{Y}$}}
+\PStocitemk{7}{6}{7.6}{بیشینه: \lr{$Z = \max (X,\, Y)$}}
+\PStocitemk{7}{7}{7.7}{کمینه: \lr{$Z = \min (X,\, Y)$}}
+\PStocitemk{7}{8}{7.8}{تبدیل دوبعدی عمومی (روش ژاکوبی)}
+\PStocitemk{7}{9}{7.9}{مثال‌های \lr{\mbox{MATLAB}}}
+\PStocitemk{7}{10}{7.10}{مسایل تمرینی}
+\PStocmodule{PSmod:8}{ماژول ۸\quad امید ریاضی و واریانس شرطی}
+\PStocitemk{8}{1}{8.1}{مقدمه}
+\PStocitemk{8}{2}{8.2}{امید ریاضی شرطی \lr{$E[X \mid Y = y]$}}
+\PStocitemk{8}{3}{8.3}{واریانس شرطی \lr{$\operatorname{Var}(X \mid Y = y)$}}
+\PStocitemk{8}{4}{8.4}{قانون امید ریاضی کل (خاصیت برج)}
+\PStocitemk{8}{5}{8.5}{قانون واریانس کل}
+\PStocitemk{8}{6}{8.6}{مثال‌های \lr{\mbox{MATLAB}}}
+\PStocitemk{8}{7}{8.7}{مسایل تمرینی}
+\PStocmodule{PSmod:9}{ماژول ۹\quad کوواریانس و همبستگی}
+\PStocitemk{9}{1}{9.1}{مقدمه: اندازه‌گیری روابط خطی}
+\PStocitemk{9}{2}{9.2}{کوواریانس}
+\PStocitemk{9}{3}{9.3}{ضریب همبستگی}
+\PStocitemk{9}{4}{9.4}{همبستگی متقابل}
+\PStocitemk{9}{5}{9.5}{استقلال در برابر ناهمبستگی}
+\PStocitemk{9}{6}{9.6}{ماتریس همبستگی}
+\PStocitemk{9}{7}{9.7}{واریانس ترکیب‌های خطی}
+\PStocitemk{9}{8}{9.8}{مثال‌های \lr{\mbox{MATLAB}}}
+\PStocitemk{9}{9}{9.9}{مسایل تمرینی}
+\PStocmodule{PSmod:10}{ماژول ۱۰\quad چند متغیر تصادفی}
+\PStocitemk{10}{1}{10.1}{مقدمه: از 2 به \lr{$N$} متغیر}
+\PStocitemk{10}{2}{10.2}{توزیع‌های مشترک برای \lr{$N$} متغیر تصادفی}
+\PStocitemk{10}{3}{10.3}{بردارهای تصادفی}
+\PStocitemk{10}{4}{10.4}{بردار میانگین}
+\PStocitemk{10}{5}{10.5}{ماتریس کوواریانس}
+\PStocitemk{10}{6}{10.6}{توزیع گاوسی چندمتغیره}
+\PStocitemk{10}{7}{10.7}{تبدیل‌های خطی بردارهای تصادفی}
+\PStocitemk{10}{8}{10.8}{مثال‌های \lr{\mbox{MATLAB}}}
+\PStocitemk{10}{9}{10.9}{مسایل تمرینی}
+\PStocmodule{PSmod:11}{ماژول ۱۱\quad قضیه حد مرکزی}
+\PStocitemk{11}{1}{11.1}{مقدمه: چرا گاوسی همه‌جا هست؟}
+\PStocitemk{11}{2}{11.2}{قانون اعداد بزرگ \lr{\mbox{(LLN)}}}
+\PStocitemk{11}{3}{11.3}{قضیه حد مرکزی \lr{\mbox{(CLT)}}}
+\PStocitemk{11}{4}{11.4}{نرخ همگرایی}
+\PStocitemk{11}{5}{11.5}{نمایش بصری}
+\PStocitemk{11}{6}{11.6}{اهمیت مهندسی}
+\PStocitemk{11}{7}{11.7}{نمایش‌های مونت‌کارلوی \lr{\mbox{MATLAB}}}
+\PStocitemk{11}{8}{11.8}{تقریب‌زنی با استفاده از \lr{\mbox{CLT}}}
+\PStocitemk{11}{9}{11.9}{مسایل تمرینی}
+\PStocmodule{PSmod:12}{ماژول ۱۲\quad مقدمه‌ای بر آمار}
+\PStocitemk{12}{1}{12.1}{مقدمه: از احتمال به آمار}
+\PStocitemk{12}{2}{12.2}{جامعه در برابر نمونه}
+\PStocitemk{12}{3}{12.3}{پارامتر در برابر آماره}
+\PStocitemk{12}{4}{12.4}{نمونه تصادفی}
+\PStocitemk{12}{5}{12.5}{توزیع‌های نمونه‌گیری}
+\PStocitemk{12}{6}{12.6}{میانگین نمونه \lr{$\bar{X}$}}
+\PStocitemk{12}{7}{12.7}{واریانس نمونه \lr{$S^{2}$}}
+\PStocitemk{12}{8}{12.8}{انحراف معیار نمونه}
+\PStocitemk{12}{9}{12.9}{ارتباط با \lr{\mbox{CLT}}}
+\PStocitemk{12}{10}{12.10}{مثال‌های \lr{\mbox{MATLAB}}}
+\PStocitemk{12}{11}{12.11}{مسایل تمرینی}
+\PStocmodule{PSmod:13}{ماژول ۱۳\quad برآورد پارامتر}
+\PStocitemk{13}{1}{13.1}{مقدمه}
+\PStocitemk{13}{2}{13.2}{برآوردگر در برابر برآورد}
+\PStocitemk{13}{3}{13.3}{ویژگی‌های برآوردگرها}
+\PStocitemk{13}{4}{13.4}{روش گشتاورها \lr{\mbox{(MoM)}}}
+\PStocitemk{13}{5}{13.5}{برآورد بیشینه درست‌نمایی \lr{\mbox{(MLE)}}}
+\PStocitemk{13}{6}{13.6}{مثال‌های مهندسی}
+\PStocitemk{13}{7}{13.7}{مقایسه برآوردگرها}
+\PStocitemk{13}{8}{13.8}{مثال‌های \lr{\mbox{MATLAB}}}
+\PStocitemk{13}{9}{13.9}{مسایل تمرینی}
+\PStocmodule{PSmod:14}{ماژول ۱۴\quad بازه‌های اطمینان}
+\PStocitemk{14}{1}{14.1}{مقدمه: چرا برآورد نقطه‌ای کافی نیست}
+\PStocitemk{14}{2}{14.2}{تفسیر درست بازه‌های اطمینان}
+\PStocitemk{14}{3}{14.3}{بازه اطمینان برای میانگین \lr{—} واریانس معلوم (بازه \lr{$Z$})}
+\PStocitemk{14}{4}{14.4}{بازه اطمینان برای میانگین \lr{—} واریانس نامعلوم (بازه \lr{$t$})}
+\PStocitemk{14}{5}{14.5}{بازه اطمینان برای واریانس}
+\PStocitemk{14}{6}{14.6}{بازه اطمینان برای نسبت‌ها}
+\PStocitemk{14}{7}{14.7}{عوامل مؤثر بر پهنای بازه اطمینان}
+\PStocitemk{14}{8}{14.8}{تعیین اندازه نمونه}
+\PStocitemk{14}{9}{14.9}{نمایش‌های \lr{\mbox{MATLAB}}}
+\PStocitemk{14}{10}{14.10}{مسایل تمرینی}
+\PStocmodule{PSmod:15}{ماژول ۱۵\quad آزمون فرض}
+\PStocitemk{15}{1}{15.1}{مقدمه: تصمیم‌گیری از داده}
+\PStocitemk{15}{2}{15.2}{چارچوب}
+\PStocitemk{15}{3}{15.3}{انواع خطا}
+\PStocitemk{15}{4}{15.4}{سطح معناداری \lr{$\alpha$}}
+\PStocitemk{15}{5}{15.5}{توان یک آزمون}
+\PStocitemk{15}{6}{15.6}{مقدار \lr{$p$}}
+\PStocitemk{15}{7}{15.7}{آزمون‌های یک‌طرفه در برابر دوطرفه}
+\PStocitemk{15}{8}{15.8}{آزمون‌های میانگین}
+\PStocitemk{15}{9}{15.9}{آزمون واریانس (آزمون کای‌دو)}
+\PStocitemk{15}{10}{15.10}{رویه گام‌به‌گام آزمون فرض}
+\PStocitemk{15}{11}{15.11}{مثال‌های مهندسی}
+\PStocitemk{15}{12}{15.12}{مثال‌های \lr{\mbox{MATLAB}}}
+\PStocitemk{15}{13}{15.13}{مسایل تمرینی}
+\PStocmodule{PSmod:16}{ماژول ۱۶\quad کاربردهای آماری مهندسی}
+\PStocitemk{16}{1}{16.1}{مخابرات}
+\PStocitemk{16}{2}{16.2}{پردازش سیگنال}
+\PStocitemk{16}{3}{16.3}{الکترونیک}
+\PStocitemk{16}{4}{16.4}{سیستم‌های قدرت}
+\PStocitemk{16}{5}{16.5}{سیستم‌های کنترل}
+\PStocitemk{16}{6}{16.6}{ارتباط با یادگیری ماشین / هوش مصنوعی}
+\PStocitemk{16}{7}{16.7}{پروژه جامع \lr{\mbox{MATLAB}}: تحلیل سیستم مخابراتی}
+\PStocitemk{16}{8}{16.8}{نقاط یکپارچه‌سازی کلیدی}
+\end{PSbooktoc}
+\clearpage
+\PSsetmodule{}{\PSlangSyllabus}{}\gdef\PSmodkey{syl}
+\phantomsection\label{PSmod:syl}
+\input{../../00-syllabus/fa/content}
+\PSmoduleopener{1}{احتمال}{Probability}
+\begin{PSminitoc}
+\PStocitem{1}{1.1}{مقدمه: چرا احتمال در مهندسی؟}
+\PStocitem{2}{1.2}{آزمایش‌های تصادفی}
+\PStocitem{3}{1.3}{فضاهای نمونه}
+\PStocitem{4}{1.4}{رویدادها}
+\PStocitem{5}{1.5}{اصول موضوعه احتمال}
+\PStocitem{6}{1.6}{قواعد احتمال}
+\PStocitem{7}{1.7}{احتمال شرطی}
+\PStocitem{8}{1.8}{استقلال}
+\PStocitem{9}{1.9}{قضیه بیز}
+\PStocitem{10}{1.10}{قضیه احتمال کل}
+\PStocitem{11}{1.11}{مثال‌های \lr{\mbox{MATLAB}}}
+\PStocitem{12}{1.12}{خلاصه: تمایزهای کلیدی}
+\PStocitem{13}{1.13}{مسایل تمرینی}
+\PStocitem{14}{1.14}{نکات کلیدی}
+\end{PSminitoc}
+\clearpage
+\input{../../01-probability/fa/content}
+\PSmoduleopener{2}{یک متغیر تصادفی و توابع آن}{One Random Variable and Its Functions}
+\begin{PSminitoc}
+\PStocitem{1}{2.1}{مقدمه: چرا متغیرهای تصادفی؟}
+\PStocitem{2}{2.2}{تعریف متغیر تصادفی}
+\PStocitem{3}{2.3}{متغیرهای تصادفی گسسته}
+\PStocitem{4}{2.4}{متغیرهای تصادفی پیوسته}
+\PStocitem{5}{2.5}{تابع جرم احتمال \lr{\mbox{(PMF)}}}
+\PStocitem{6}{2.6}{تابع چگالی احتمال \lr{\mbox{(PDF)}}}
+\PStocitem{7}{2.7}{تابع توزیع تجمعی \lr{\mbox{(CDF)}}}
+\PStocitem{8}{2.8}{تمایز کلیدی: جرم در برابر چگالی در برابر تجمعی}
+\PStocitem{9}{2.9}{تبدیل‌های متغیرهای تصادفی}
+\PStocitem{10}{2.10}{مثال‌های \lr{\mbox{MATLAB}}}
+\PStocitem{11}{2.11}{مسایل تمرینی}
+\PStocitem{12}{2.12}{نکات کلیدی}
+\end{PSminitoc}
+\clearpage
+\input{../../02-one-random-variable/fa/content}
+\PSmoduleopener{3}{توزیع‌های مهم احتمال}{Important Probability Distributions}
+\begin{PSminitoc}
+\PStocitem{1}{3.1}{مقدمه: انتخاب توزیع مناسب}
+\PStocitem{2}{3.2}{توزیع برنولی}
+\PStocitem{3}{3.3}{توزیع دوجمله‌ای}
+\PStocitem{4}{3.4}{توزیع هندسی}
+\PStocitem{5}{3.5}{توزیع دوجمله‌ای منفی}
+\PStocitem{6}{3.6}{توزیع پواسون}
+\PStocitem{7}{3.7}{توزیع یکنواخت (پیوسته)}
+\PStocitem{8}{3.8}{توزیع نمایی}
+\PStocitem{9}{3.9}{توزیع گاوسی (نرمال)}
+\PStocitem{10}{3.10}{توزیع گاما}
+\PStocitem{11}{3.11}{توزیع رایلی}
+\PStocitem{12}{3.12}{توزیع کای‌دو}
+\PStocitem{13}{3.13}{راهنمای انتخاب توزیع}
+\PStocitem{14}{3.14}{جدول خلاصه}
+\PStocitem{15}{3.15}{مسایل تمرینی}
+\end{PSminitoc}
+\clearpage
+\input{../../03-important-distributions/fa/content}
+\PSmoduleopener{4}{امید ریاضی و گشتاورها}{Expectation and Moments}
+\begin{PSminitoc}
+\PStocitem{1}{4.1}{مقدمه: چرا آماره‌های خلاصه؟}
+\PStocitem{2}{4.2}{مقدار امید ریاضی (میانگین)}
+\PStocitem{3}{4.3}{مقدار امید ریاضی یک تابع: \lr{$E[g(X)]$}}
+\PStocitem{4}{4.4}{واریانس}
+\PStocitem{5}{4.5}{انحراف معیار}
+\PStocitem{6}{4.6}{ویژگی‌های امید ریاضی}
+\PStocitem{7}{4.7}{ویژگی‌های واریانس}
+\PStocitem{8}{4.8}{گشتاورهای مراتب بالاتر}
+\PStocitem{9}{4.9}{تابع مولد گشتاور \lr{\mbox{(MGF)}}}
+\PStocitem{10}{4.10}{کاربردهای مهندسی گشتاورها}
+\PStocitem{11}{4.11}{مثال‌های \lr{\mbox{MATLAB}}}
+\PStocitem{12}{4.12}{مسایل تمرینی}
+\PStocitem{13}{4.13}{نکات کلیدی}
+\end{PSminitoc}
+\clearpage
+\input{../../04-expectation-moments/fa/content}
+\PSmoduleopener{5}{توابع مهم متغیر تصادفی}{Important Random-Variable Functions}
+\begin{PSminitoc}
+\PStocitem{1}{5.1}{مقدمه: چرا متغیرهای تصادفی را تبدیل کنیم؟}
+\PStocitem{2}{5.2}{تبدیل‌های خطی: \lr{\mbox{$Y$ = aX $+ b$}}}
+\PStocitem{3}{5.3}{تبدیل‌های یکنوای عمومی}
+\PStocitem{4}{5.4}{تبدیل‌های غیرخطی: حالت غیریکنوا}
+\PStocitem{5}{5.5}{روش ژاکوبی}
+\PStocitem{6}{5.6}{کاربرد مهندسی: رایلی از گاوسی}
+\PStocitem{7}{5.7}{مثال‌های \lr{\mbox{MATLAB}}}
+\PStocitem{8}{5.8}{مسایل تمرینی}
+\end{PSminitoc}
+\clearpage
+\input{../../05-rv-functions/fa/content}
+\PSmoduleopener{6}{دو متغیر تصادفی}{Two Random Variables}
+\begin{PSminitoc}
+\PStocitem{1}{6.1}{مقدمه: چرا توزیع‌های مشترک را مطالعه کنیم؟}
+\PStocitem{2}{6.2}{\lr{\mbox{PMF}} مشترک (حالت گسسته)}
+\PStocitem{3}{6.3}{\lr{\mbox{PDF}} مشترک (حالت پیوسته)}
+\PStocitem{4}{6.4}{\lr{\mbox{CDF}} مشترک}
+\PStocitem{5}{6.5}{توزیع‌های حاشیه‌ای}
+\PStocitem{6}{6.6}{توزیع‌های شرطی}
+\PStocitem{7}{6.7}{استقلال دو متغیر تصادفی}
+\PStocitem{8}{6.8}{امید ریاضی شرطی}
+\PStocitem{9}{6.9}{مثال‌های \lr{\mbox{MATLAB}}}
+\PStocitem{10}{6.10}{مسایل تمرینی}
+\end{PSminitoc}
+\clearpage
+\input{../../06-two-random-variables/fa/content}
+\PSmoduleopener{7}{توابع دو متغیر تصادفی}{Functions of Two Random Variables}
+\begin{PSminitoc}
+\PStocitem{1}{7.1}{مقدمه}
+\PStocitem{2}{7.2}{جمع دو متغیر تصادفی: \lr{$Z = X + Y$}}
+\PStocitem{3}{7.3}{تفاضل: \lr{$Z = X - Y$}}
+\PStocitem{4}{7.4}{حاصل‌ضرب: \lr{\mbox{$Z$ = XY}}}
+\PStocitem{5}{7.5}{نسبت: \lr{$Z = \frac{X}{Y}$}}
+\PStocitem{6}{7.6}{بیشینه: \lr{$Z = \max (X,\, Y)$}}
+\PStocitem{7}{7.7}{کمینه: \lr{$Z = \min (X,\, Y)$}}
+\PStocitem{8}{7.8}{تبدیل دوبعدی عمومی (روش ژاکوبی)}
+\PStocitem{9}{7.9}{مثال‌های \lr{\mbox{MATLAB}}}
+\PStocitem{10}{7.10}{مسایل تمرینی}
+\end{PSminitoc}
+\clearpage
+\input{../../07-functions-two-rv/fa/content}
+\PSmoduleopener{8}{امید ریاضی و واریانس شرطی}{Conditional Expectation and Variance}
+\begin{PSminitoc}
+\PStocitem{1}{8.1}{مقدمه}
+\PStocitem{2}{8.2}{امید ریاضی شرطی \lr{$E[X \mid Y = y]$}}
+\PStocitem{3}{8.3}{واریانس شرطی \lr{$\operatorname{Var}(X \mid Y = y)$}}
+\PStocitem{4}{8.4}{قانون امید ریاضی کل (خاصیت برج)}
+\PStocitem{5}{8.5}{قانون واریانس کل}
+\PStocitem{6}{8.6}{مثال‌های \lr{\mbox{MATLAB}}}
+\PStocitem{7}{8.7}{مسایل تمرینی}
+\end{PSminitoc}
+\clearpage
+\input{../../08-conditional-expectation/fa/content}
+\PSmoduleopener{9}{کوواریانس و همبستگی}{Covariance and Correlation}
+\begin{PSminitoc}
+\PStocitem{1}{9.1}{مقدمه: اندازه‌گیری روابط خطی}
+\PStocitem{2}{9.2}{کوواریانس}
+\PStocitem{3}{9.3}{ضریب همبستگی}
+\PStocitem{4}{9.4}{همبستگی متقابل}
+\PStocitem{5}{9.5}{استقلال در برابر ناهمبستگی}
+\PStocitem{6}{9.6}{ماتریس همبستگی}
+\PStocitem{7}{9.7}{واریانس ترکیب‌های خطی}
+\PStocitem{8}{9.8}{مثال‌های \lr{\mbox{MATLAB}}}
+\PStocitem{9}{9.9}{مسایل تمرینی}
+\end{PSminitoc}
+\clearpage
+\input{../../09-covariance-correlation/fa/content}
+\PSmoduleopener{10}{چند متغیر تصادفی}{Multiple Random Variables}
+\begin{PSminitoc}
+\PStocitem{1}{10.1}{مقدمه: از 2 به \lr{$N$} متغیر}
+\PStocitem{2}{10.2}{توزیع‌های مشترک برای \lr{$N$} متغیر تصادفی}
+\PStocitem{3}{10.3}{بردارهای تصادفی}
+\PStocitem{4}{10.4}{بردار میانگین}
+\PStocitem{5}{10.5}{ماتریس کوواریانس}
+\PStocitem{6}{10.6}{توزیع گاوسی چندمتغیره}
+\PStocitem{7}{10.7}{تبدیل‌های خطی بردارهای تصادفی}
+\PStocitem{8}{10.8}{مثال‌های \lr{\mbox{MATLAB}}}
+\PStocitem{9}{10.9}{مسایل تمرینی}
+\end{PSminitoc}
+\clearpage
+\input{../../10-multiple-random-variables/fa/content}
+\PSmoduleopener{11}{قضیه حد مرکزی}{Central Limit Theorem}
+\begin{PSminitoc}
+\PStocitem{1}{11.1}{مقدمه: چرا گاوسی همه‌جا هست؟}
+\PStocitem{2}{11.2}{قانون اعداد بزرگ \lr{\mbox{(LLN)}}}
+\PStocitem{3}{11.3}{قضیه حد مرکزی \lr{\mbox{(CLT)}}}
+\PStocitem{4}{11.4}{نرخ همگرایی}
+\PStocitem{5}{11.5}{نمایش بصری}
+\PStocitem{6}{11.6}{اهمیت مهندسی}
+\PStocitem{7}{11.7}{نمایش‌های مونت‌کارلوی \lr{\mbox{MATLAB}}}
+\PStocitem{8}{11.8}{تقریب‌زنی با استفاده از \lr{\mbox{CLT}}}
+\PStocitem{9}{11.9}{مسایل تمرینی}
+\end{PSminitoc}
+\clearpage
+\input{../../11-central-limit-theorem/fa/content}
+\PSmoduleopener{12}{مقدمه‌ای بر آمار}{Introduction to Statistics}
+\begin{PSminitoc}
+\PStocitem{1}{12.1}{مقدمه: از احتمال به آمار}
+\PStocitem{2}{12.2}{جامعه در برابر نمونه}
+\PStocitem{3}{12.3}{پارامتر در برابر آماره}
+\PStocitem{4}{12.4}{نمونه تصادفی}
+\PStocitem{5}{12.5}{توزیع‌های نمونه‌گیری}
+\PStocitem{6}{12.6}{میانگین نمونه \lr{$\bar{X}$}}
+\PStocitem{7}{12.7}{واریانس نمونه \lr{$S^{2}$}}
+\PStocitem{8}{12.8}{انحراف معیار نمونه}
+\PStocitem{9}{12.9}{ارتباط با \lr{\mbox{CLT}}}
+\PStocitem{10}{12.10}{مثال‌های \lr{\mbox{MATLAB}}}
+\PStocitem{11}{12.11}{مسایل تمرینی}
+\end{PSminitoc}
+\clearpage
+\input{../../12-intro-statistics/fa/content}
+\PSmoduleopener{13}{برآورد پارامتر}{Parameter Estimation}
+\begin{PSminitoc}
+\PStocitem{1}{13.1}{مقدمه}
+\PStocitem{2}{13.2}{برآوردگر در برابر برآورد}
+\PStocitem{3}{13.3}{ویژگی‌های برآوردگرها}
+\PStocitem{4}{13.4}{روش گشتاورها \lr{\mbox{(MoM)}}}
+\PStocitem{5}{13.5}{برآورد بیشینه درست‌نمایی \lr{\mbox{(MLE)}}}
+\PStocitem{6}{13.6}{مثال‌های مهندسی}
+\PStocitem{7}{13.7}{مقایسه برآوردگرها}
+\PStocitem{8}{13.8}{مثال‌های \lr{\mbox{MATLAB}}}
+\PStocitem{9}{13.9}{مسایل تمرینی}
+\end{PSminitoc}
+\clearpage
+\input{../../13-parameter-estimation/fa/content}
+\PSmoduleopener{14}{بازه‌های اطمینان}{Confidence Intervals}
+\begin{PSminitoc}
+\PStocitem{1}{14.1}{مقدمه: چرا برآورد نقطه‌ای کافی نیست}
+\PStocitem{2}{14.2}{تفسیر درست بازه‌های اطمینان}
+\PStocitem{3}{14.3}{بازه اطمینان برای میانگین \lr{—} واریانس معلوم (بازه \lr{$Z$})}
+\PStocitem{4}{14.4}{بازه اطمینان برای میانگین \lr{—} واریانس نامعلوم (بازه \lr{$t$})}
+\PStocitem{5}{14.5}{بازه اطمینان برای واریانس}
+\PStocitem{6}{14.6}{بازه اطمینان برای نسبت‌ها}
+\PStocitem{7}{14.7}{عوامل مؤثر بر پهنای بازه اطمینان}
+\PStocitem{8}{14.8}{تعیین اندازه نمونه}
+\PStocitem{9}{14.9}{نمایش‌های \lr{\mbox{MATLAB}}}
+\PStocitem{10}{14.10}{مسایل تمرینی}
+\end{PSminitoc}
+\clearpage
+\input{../../14-confidence-intervals/fa/content}
+\PSmoduleopener{15}{آزمون فرض}{Hypothesis Testing}
+\begin{PSminitoc}
+\PStocitem{1}{15.1}{مقدمه: تصمیم‌گیری از داده}
+\PStocitem{2}{15.2}{چارچوب}
+\PStocitem{3}{15.3}{انواع خطا}
+\PStocitem{4}{15.4}{سطح معناداری \lr{$\alpha$}}
+\PStocitem{5}{15.5}{توان یک آزمون}
+\PStocitem{6}{15.6}{مقدار \lr{$p$}}
+\PStocitem{7}{15.7}{آزمون‌های یک‌طرفه در برابر دوطرفه}
+\PStocitem{8}{15.8}{آزمون‌های میانگین}
+\PStocitem{9}{15.9}{آزمون واریانس (آزمون کای‌دو)}
+\PStocitem{10}{15.10}{رویه گام‌به‌گام آزمون فرض}
+\PStocitem{11}{15.11}{مثال‌های مهندسی}
+\PStocitem{12}{15.12}{مثال‌های \lr{\mbox{MATLAB}}}
+\PStocitem{13}{15.13}{مسایل تمرینی}
+\end{PSminitoc}
+\clearpage
+\input{../../15-hypothesis-testing/fa/content}
+\PSmoduleopener{16}{کاربردهای آماری مهندسی}{Engineering Statistical Applications}
+\begin{PSminitoc}
+\PStocitem{1}{16.1}{مخابرات}
+\PStocitem{2}{16.2}{پردازش سیگنال}
+\PStocitem{3}{16.3}{الکترونیک}
+\PStocitem{4}{16.4}{سیستم‌های قدرت}
+\PStocitem{5}{16.5}{سیستم‌های کنترل}
+\PStocitem{6}{16.6}{ارتباط با یادگیری ماشین / هوش مصنوعی}
+\PStocitem{7}{16.7}{پروژه جامع \lr{\mbox{MATLAB}}: تحلیل سیستم مخابراتی}
+\PStocitem{8}{16.8}{نقاط یکپارچه‌سازی کلیدی}
+\end{PSminitoc}
+\clearpage
+\input{../../16-engineering-applications/fa/content}
+\end{document}

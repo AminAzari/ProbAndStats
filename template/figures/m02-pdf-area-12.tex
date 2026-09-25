@@ -1,0 +1,13 @@
+% Module 2 — continuous probability as the area P(1 <= X <= 2) under the density
+\begin{tikzpicture}
+\begin{axis}[PSplot, width=9.5cm, height=5.2cm,
+  xmin=-0.3, xmax=3.5, ymin=0, ymax=1.02,
+  xtick={1,2}, ytick=\empty, xlabel={$x$}, ylabel={$f_X(x)$}]
+  \addplot[draw=none, fill=PSteal!28, domain=1:2, samples=50] {exp(-(x-1.5)^2/(2*0.62^2))} \closedcycle;
+  \addplot[PSnavy, line width=1.4pt, domain=-0.2:3.2, samples=120, smooth] {exp(-(x-1.5)^2/(2*0.62^2))};
+  \node[font=\small, text=PSteal!80!black, anchor=south west] (lab) at (axis cs:2.1,0.72)
+    {\PSL{Area of shaded region $= P(1\le X\le 2)$}{مساحت ناحیه سایه‌خورده $= P(1\le X\le 2)$}};
+  \draw[-{Stealth[length=5pt]}, PSteal!80!black] (lab.south west) ++(0.3,0) -- (axis cs:1.7,0.45);
+\end{axis}
+\node[font=\small, text=PSnavy] at (3.6,-1.05) {\PSL{Total area under curve $=1$}{مساحت کل زیر منحنی $=1$}};
+\end{tikzpicture}
